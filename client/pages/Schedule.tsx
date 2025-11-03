@@ -17,12 +17,12 @@ import {
 
 interface Tour {
   id: string;
-  date: string;
+  start_date: string;
   invoice: string;
   language: string;
   name: string;
   pax: number;
-  groupId: string;
+  group_id: string;
   dnr: string;
   td: string;
   agent: string;
@@ -32,14 +32,14 @@ interface Tour {
   gears: string;
   snowshoe: string;
   nlt: string;
-  cityTour: string;
+  city_tour: string;
   hiking: string;
   fishing: string;
-  dogSledging: string;
-  snowmobileAtv: string;
-  auroraVillage: string;
+  dog_sledging: string;
+  snowmobile_atv: string;
+  aurora_village: string;
   payment: string;
-  reservationNumber: string;
+  reservation_number: string;
   remarks: string;
 }
 
@@ -178,7 +178,9 @@ export default function Schedule() {
   };
 
   const sortedTours = [...tours].sort((a, b) => {
-    return new Date(a.date).getTime() - new Date(b.date).getTime();
+    return (
+      new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+    );
   });
 
   return (
