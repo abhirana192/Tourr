@@ -3,16 +3,18 @@ import { db, Tour } from "../database";
 
 export const getTours: RequestHandler = (req, res) => {
   const tours = db.getTours();
-  const searchDate = (req.query.date as string)?.toLowerCase() || "";
+  const searchDateFrom = (req.query.dateFrom as string) || "";
+  const searchDateTo = (req.query.dateTo as string) || "";
   const searchInvoice = (req.query.invoice as string)?.toLowerCase() || "";
   const searchName = (req.query.name as string)?.toLowerCase() || "";
 
   const filtered = tours.filter((tour) => {
-    const dateMatch = searchDate ? tour.date.toLowerCase().includes(searchDate) : true;
+    const dateFromMatch = searchDateFrom ? tour.date >= searchDateFrom : true;
+    const dateToMatch = searchDateTo ? tour.date <= searchDateTo : true;
     const invoiceMatch = searchInvoice ? tour.invoice.toLowerCase().includes(searchInvoice) : true;
     const nameMatch = searchName ? tour.name.toLowerCase().includes(searchName) : true;
 
-    return dateMatch && invoiceMatch && nameMatch;
+    return dateFromMatch && dateToMatch && invoiceMatch && nameMatch;
   });
 
   res.json(filtered);
