@@ -8,10 +8,9 @@ export const getTours: RequestHandler = (req, res) => {
   const filtered = search
     ? tours.filter(
         (tour) =>
-          tour.name.toLowerCase().includes(search) ||
+          tour.date.toLowerCase().includes(search) ||
           tour.invoice.toLowerCase().includes(search) ||
-          tour.agent.toLowerCase().includes(search) ||
-          tour.reservationNumber.toLowerCase().includes(search)
+          tour.name.toLowerCase().includes(search)
       )
     : tours;
 
