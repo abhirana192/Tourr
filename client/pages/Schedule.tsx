@@ -199,47 +199,53 @@ export default function Schedule() {
         </div>
 
         {/* Search Filters */}
-        <div className="mb-3 flex gap-2 flex-wrap">
-          <div className="relative flex-1 min-w-32">
-            <Input
-              type="date"
-              placeholder="From Date"
-              value={searchDateFrom}
-              onChange={(e) => handleDateFromChange(e.target.value)}
-              className="py-1 text-xs border border-gray-300 rounded"
-            />
+        <div className="mb-4 bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">From Date</label>
+              <Input
+                type="date"
+                value={searchDateFrom}
+                onChange={(e) => handleDateFromChange(e.target.value)}
+                className="py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">To Date</label>
+              <Input
+                type="date"
+                value={searchDateTo}
+                onChange={(e) => handleDateToChange(e.target.value)}
+                className="py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Invoice</label>
+              <Input
+                placeholder="Search invoice"
+                value={searchInvoice}
+                onChange={(e) => handleInvoiceChange(e.target.value)}
+                className="py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Name</label>
+              <Input
+                placeholder="Search name"
+                value={searchName}
+                onChange={(e) => handleNameChange(e.target.value)}
+                className="py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex items-end">
+              <Button
+                onClick={handleRefresh}
+                className="w-full bg-gray-500 hover:bg-gray-600 text-white text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 font-medium"
+              >
+                <RotateCcw size={14} /> Clear All
+              </Button>
+            </div>
           </div>
-          <div className="relative flex-1 min-w-32">
-            <Input
-              type="date"
-              placeholder="To Date"
-              value={searchDateTo}
-              onChange={(e) => handleDateToChange(e.target.value)}
-              className="py-1 text-xs border border-gray-300 rounded"
-            />
-          </div>
-          <div className="relative flex-1 min-w-32">
-            <Input
-              placeholder="Invoice"
-              value={searchInvoice}
-              onChange={(e) => handleInvoiceChange(e.target.value)}
-              className="py-1 text-xs border border-gray-300 rounded"
-            />
-          </div>
-          <div className="relative flex-1 min-w-32">
-            <Input
-              placeholder="Name"
-              value={searchName}
-              onChange={(e) => handleNameChange(e.target.value)}
-              className="py-1 text-xs border border-gray-300 rounded"
-            />
-          </div>
-          <Button
-            onClick={handleRefresh}
-            className="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1 px-3 flex items-center gap-1"
-          >
-            <RotateCcw size={14} /> Clear
-          </Button>
         </div>
 
         {/* Table Container */}
