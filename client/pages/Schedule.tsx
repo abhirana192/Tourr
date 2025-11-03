@@ -45,7 +45,8 @@ interface Tour {
 
 export default function Schedule() {
   const [tours, setTours] = useState<Tour[]>([]);
-  const [searchDate, setSearchDate] = useState("");
+  const [searchDateFrom, setSearchDateFrom] = useState("");
+  const [searchDateTo, setSearchDateTo] = useState("");
   const [searchInvoice, setSearchInvoice] = useState("");
   const [searchName, setSearchName] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,10 +59,11 @@ export default function Schedule() {
     fetchTours();
   }, []);
 
-  const fetchTours = async (date = "", invoice = "", name = "") => {
+  const fetchTours = async (dateFrom = "", dateTo = "", invoice = "", name = "") => {
     try {
       const params = new URLSearchParams();
-      if (date) params.append("date", date);
+      if (dateFrom) params.append("dateFrom", dateFrom);
+      if (dateTo) params.append("dateTo", dateTo);
       if (invoice) params.append("invoice", invoice);
       if (name) params.append("name", name);
 
@@ -76,26 +78,32 @@ export default function Schedule() {
     }
   };
 
-  const handleDateChange = (value: string) => {
-    setSearchDate(value);
-    fetchTours(value, searchInvoice, searchName);
+  const handleDateFromChange = (value: string) => {
+    setSearchDateFrom(value);
+    fetchTours(value, searchDateTo, searchInvoice, searchName);
+  };
+
+  const handleDateToChange = (value: string) => {
+    setSearchDateTo(value);
+    fetchTours(searchDateFrom, value, searchInvoice, searchName);
   };
 
   const handleInvoiceChange = (value: string) => {
     setSearchInvoice(value);
-    fetchTours(searchDate, value, searchName);
+    fetchTours(searchDateFrom, searchDateTo, value, searchName);
   };
 
   const handleNameChange = (value: string) => {
     setSearchName(value);
-    fetchTours(searchDate, searchInvoice, value);
+    fetchTours(searchDateFrom, searchDateTo, searchInvoice, value);
   };
 
   const handleRefresh = () => {
-    setSearchDate("");
+    setSearchDateFrom("");
+    setSearchDateTo("");
     setSearchInvoice("");
     setSearchName("");
-    fetchTours("", "", "");
+    fetchTours("", "", "", "");
   };
 
   const handleAddTour = async (tourData: Omit<Tour, "id">) => {
@@ -194,9 +202,19 @@ export default function Schedule() {
         <div className="mb-3 flex gap-2 flex-wrap">
           <div className="relative flex-1 min-w-32">
             <Input
-              placeholder="Date (YYYY-MM-DD)"
-              value={searchDate}
-              onChange={(e) => handleDateChange(e.target.value)}
+              type="date"
+              placeholder="From Date"
+              value={searchDateFrom}
+              onChange={(e) => handleDateFromChange(e.target.value)}
+              className="py-1 text-xs border border-gray-300 rounded"
+            />
+          </div>
+          <div className="relative flex-1 min-w-32">
+            <Input
+              type="date"
+              placeholder="To Date"
+              value={searchDateTo}
+              onChange={(e) => handleDateToChange(e.target.value)}
               className="py-1 text-xs border border-gray-300 rounded"
             />
           </div>
