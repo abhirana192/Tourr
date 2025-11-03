@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Index() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-white via-slate-50 to-blue-50 overflow-hidden relative">
@@ -16,14 +18,17 @@ export default function Index() {
 
         <div className="max-w-xl mx-auto mb-12">
           <p className="text-lg sm:text-xl text-slate-600 leading-relaxed">
-            Welcome to a new experience. Built with modern technology and a passion for elegant design.
+            Welcome to your Tour Management System. Built with modern technology and a passion for elegant design.
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl">
-            Get Started
-          </button>
+          <Link
+            to="/schedule"
+            className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl inline-block"
+          >
+            Go to Schedule
+          </Link>
           <button className="px-8 py-3 border-2 border-slate-300 text-slate-700 font-semibold rounded-lg hover:border-slate-400 hover:bg-slate-50 transition-all duration-200">
             Learn More
           </button>
