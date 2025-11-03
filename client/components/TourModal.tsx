@@ -14,7 +14,8 @@ interface Tour {
   dnr: string;
   td: string;
   agent: string;
-  arrivalDeparture: string;
+  arrival: string;
+  departure: string;
   accommodation: string;
   gears: string;
   snowshoe: string;
@@ -48,7 +49,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
     dnr: "",
     td: "",
     agent: "",
-    arrivalDeparture: "",
+    arrival: "",
+    departure: "",
     accommodation: "",
     gears: "",
     snowshoe: "",
@@ -79,7 +81,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
         dnr: "",
         td: "",
         agent: "",
-        arrivalDeparture: "",
+        arrival: "",
+        departure: "",
         accommodation: "",
         gears: "",
         snowshoe: "",
@@ -263,15 +266,29 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               />
             </div>
 
-            {/* ARRIVAL/DEPARTURE */}
+            {/* ARRIVAL */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Arrival/Departure
+                Arrival
               </label>
               <Input
                 type="text"
-                name="arrivalDeparture"
-                value={formData.arrivalDeparture}
+                name="arrival"
+                value={formData.arrival}
+                onChange={handleChange}
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+              />
+            </div>
+
+            {/* DEPARTURE */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Departure
+              </label>
+              <Input
+                type="text"
+                name="departure"
+                value={formData.departure}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
               />
