@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,13 +22,9 @@ export default function Navigation() {
       {/* Burger Button */}
       <button
         onClick={toggleSidebar}
-        className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-white shadow-lg hover:bg-gray-100 border border-gray-200 transition-all"
+        className="fixed top-4 left-4 z-50 w-10 h-10 rounded-lg bg-white shadow-lg hover:bg-gray-100 border border-gray-200 transition-all flex items-center justify-center"
       >
-        {isOpen ? (
-          <X className="w-6 h-6 text-slate-900" />
-        ) : (
-          <Menu className="w-6 h-6 text-slate-900" />
-        )}
+        <span className="text-slate-900 font-bold text-lg">☰</span>
       </button>
 
       {/* Sidebar Overlay */}
