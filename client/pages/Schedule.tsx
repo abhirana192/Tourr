@@ -55,6 +55,9 @@ export default function Schedule() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [tourToDelete, setTourToDelete] = useState<string | null>(null);
 
+  // Ensure tours is always an array
+  const safeTours = Array.isArray(tours) ? tours : [];
+
   useEffect(() => {
     fetchTours();
   }, []);
@@ -80,12 +83,7 @@ export default function Schedule() {
       const data = await response.json();
 
       // Ensure data is an array
-      if (Array.isArray(data)) {
-        setTours(data);
-      } else {
-        console.error("API response is not an array:", data);
-        setTours([]);
-      }
+      setTours(Array.isArray(data) ? data : []);
 
       setLoading(false);
     } catch (error) {
@@ -194,11 +192,11 @@ export default function Schedule() {
     setEditingTour(null);
   };
 
-  const sortedTours = Array.isArray(tours) ? [...tours].sort((a, b) => {
+  const sortedTours = [...safeTours].sort((a, b) => {
     return (
       new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
     );
-  }) : [];
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -306,7 +304,7 @@ export default function Schedule() {
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedTours.map((tour) => (
+                  {(sortedTours || []).map((tour) => (
                     <tr key={tour.id} className="border-b border-gray-200 hover:bg-gray-100">
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-16 whitespace-nowrap">{tour.start_date}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-14 whitespace-nowrap">{tour.invoice}</td>
