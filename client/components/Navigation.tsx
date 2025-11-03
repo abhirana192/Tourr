@@ -22,20 +22,16 @@ export default function Navigation() {
   return (
     <>
       {/* Burger Button */}
-      <div className="fixed top-0 left-0 z-50">
-        <Button
-          onClick={toggleSidebar}
-          variant="ghost"
-          size="icon"
-          className="m-4 hover:bg-gray-200 dark:hover:bg-gray-700"
-        >
-          {isOpen ? (
-            <X className="w-6 h-6" />
-          ) : (
-            <Menu className="w-6 h-6" />
-          )}
-        </Button>
-      </div>
+      <button
+        onClick={toggleSidebar}
+        className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-white shadow-lg hover:bg-gray-100 border border-gray-200 transition-all"
+      >
+        {isOpen ? (
+          <X className="w-6 h-6 text-slate-900" />
+        ) : (
+          <Menu className="w-6 h-6 text-slate-900" />
+        )}
+      </button>
 
       {/* Sidebar Overlay */}
       {isOpen && (
