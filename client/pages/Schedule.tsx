@@ -15,7 +15,8 @@ interface Tour {
   dnr: string;
   td: string;
   agent: string;
-  arrivalDeparture: string;
+  arrival: string;
+  departure: string;
   accommodation: string;
   gears: string;
   snowshoe: string;
@@ -178,7 +179,10 @@ export default function Schedule() {
                     AGENT
                   </th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 bg-yellow-100 border-r border-gray-300">
-                    ARRIVAL/DEPARTURE
+                    ARRIVAL
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 bg-yellow-100 border-r border-gray-300">
+                    DEPARTURE
                   </th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 bg-cyan-100 border-r border-gray-300">
                     ACCOMMODATION
@@ -258,7 +262,10 @@ export default function Schedule() {
                       {tour.agent}
                     </td>
                     <td className="px-3 py-2 text-sm text-gray-900 border-r border-gray-300">
-                      {tour.arrivalDeparture}
+                      {tour.arrival}
+                    </td>
+                    <td className="px-3 py-2 text-sm text-gray-900 border-r border-gray-300">
+                      {tour.departure}
                     </td>
                     <td className="px-3 py-2 text-sm text-gray-900 border-r border-gray-300">
                       {tour.accommodation}
