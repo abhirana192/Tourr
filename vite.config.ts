@@ -26,22 +26,24 @@ export default defineConfig(({ mode }) => ({
 }));
 
 function expressPlugin(): Plugin {
+  let baseApp: any;
+
   return {
     name: "express-plugin",
-    apply: "serve", // Only apply during development (serve mode)
+    apply: "serve",
     configureServer(server) {
-      const app = createServer();
+      baseApp = createServer();
 
-      // Middleware runs AFTER Vite's built-in middleware but BEFORE SPA fallback
-      server.middlewares.use((req: any, res: any, next: any) => {
-        // Pass API and specific routes to Express
+      // This function runs AFTER Vite's built-in middleware
+      // Return a post-middleware that checks for API routes
+      return (req: any, res: any, next: any) => {
+        // Only handle API routes with Express
         if (req.url?.startsWith("/api") || req.url?.startsWith("/demo")) {
-          app(req, res, next);
+          baseApp(req, res);
         } else {
-          // Let Vite handle everything else
           next();
         }
-      });
+      };
     },
   };
 }
