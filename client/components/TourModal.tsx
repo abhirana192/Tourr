@@ -5,12 +5,12 @@ import { X } from "lucide-react";
 
 interface Tour {
   id: string;
-  date: string;
+  start_date: string;
   invoice: string;
   language: string;
   name: string;
   pax: number;
-  groupId: string;
+  group_id: string;
   dnr: string;
   td: string;
   agent: string;
@@ -20,14 +20,14 @@ interface Tour {
   gears: string;
   snowshoe: string;
   nlt: string;
-  cityTour: string;
+  city_tour: string;
   hiking: string;
   fishing: string;
-  dogSledging: string;
-  snowmobileAtv: string;
-  auroraVillage: string;
+  dog_sledging: string;
+  snowmobile_atv: string;
+  aurora_village: string;
   payment: string;
-  reservationNumber: string;
+  reservation_number: string;
   remarks: string;
 }
 
@@ -40,12 +40,12 @@ interface TourModalProps {
 
 export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModalProps) {
   const [formData, setFormData] = useState<Omit<Tour, "id">>({
-    date: "",
+    start_date: "",
     invoice: "",
     language: "",
     name: "",
     pax: 0,
-    groupId: "",
+    group_id: "",
     dnr: "",
     td: "",
     agent: "",
@@ -55,14 +55,14 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
     gears: "",
     snowshoe: "",
     nlt: "",
-    cityTour: "",
+    city_tour: "",
     hiking: "",
     fishing: "",
-    dogSledging: "",
-    snowmobileAtv: "",
-    auroraVillage: "",
+    dog_sledging: "",
+    snowmobile_atv: "",
+    aurora_village: "",
     payment: "",
-    reservationNumber: "",
+    reservation_number: "",
     remarks: "",
   });
 
@@ -72,12 +72,12 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
       setFormData(rest);
     } else {
       setFormData({
-        date: "",
+        start_date: "",
         invoice: "",
         language: "",
         name: "",
         pax: 0,
-        groupId: "",
+        group_id: "",
         dnr: "",
         td: "",
         agent: "",
@@ -87,14 +87,14 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
         gears: "",
         snowshoe: "",
         nlt: "",
-        cityTour: "",
+        city_tour: "",
         hiking: "",
         fishing: "",
-        dogSledging: "",
-        snowmobileAtv: "",
-        auroraVillage: "",
+        dog_sledging: "",
+        snowmobile_atv: "",
+        aurora_village: "",
         payment: "",
-        reservationNumber: "",
+        reservation_number: "",
         remarks: "",
       });
     }
@@ -143,8 +143,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               </label>
               <Input
                 type="date"
-                name="date"
-                value={formData.date}
+                name="start_date"
+                value={formData.start_date}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
                 required
@@ -217,8 +217,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               </label>
               <Input
                 type="text"
-                name="groupId"
-                value={formData.groupId}
+                name="group_id"
+                value={formData.group_id}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
               />
@@ -357,8 +357,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               </label>
               <Input
                 type="text"
-                name="cityTour"
-                value={formData.cityTour}
+                name="city_tour"
+                value={formData.city_tour}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
               />
@@ -399,8 +399,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               </label>
               <Input
                 type="text"
-                name="dogSledging"
-                value={formData.dogSledging}
+                name="dog_sledging"
+                value={formData.dog_sledging}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
               />
@@ -413,8 +413,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               </label>
               <Input
                 type="text"
-                name="snowmobileAtv"
-                value={formData.snowmobileAtv}
+                name="snowmobile_atv"
+                value={formData.snowmobile_atv}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
               />
@@ -427,8 +427,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               </label>
               <Input
                 type="text"
-                name="auroraVillage"
-                value={formData.auroraVillage}
+                name="aurora_village"
+                value={formData.aurora_village}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
               />
@@ -455,8 +455,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               </label>
               <Input
                 type="text"
-                name="reservationNumber"
-                value={formData.reservationNumber}
+                name="reservation_number"
+                value={formData.reservation_number}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
               />
