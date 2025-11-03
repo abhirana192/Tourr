@@ -69,11 +69,28 @@ export default function Schedule() {
 
       const url = `/api/tours${params.toString() ? `?${params.toString()}` : ""}`;
       const response = await fetch(url);
+
+      if (!response.ok) {
+        console.error("Error response from API:", response.status);
+        setTours([]);
+        setLoading(false);
+        return;
+      }
+
       const data = await response.json();
-      setTours(data);
+
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        setTours(data);
+      } else {
+        console.error("API response is not an array:", data);
+        setTours([]);
+      }
+
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tours:", error);
+      setTours([]);
       setLoading(false);
     }
   };
@@ -177,11 +194,11 @@ export default function Schedule() {
     setEditingTour(null);
   };
 
-  const sortedTours = [...tours].sort((a, b) => {
+  const sortedTours = Array.isArray(tours) ? [...tours].sort((a, b) => {
     return (
       new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
     );
-  });
+  }) : [];
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
