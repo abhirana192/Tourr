@@ -200,7 +200,7 @@ export default function Schedule() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <div className="flex-1 flex flex-col p-2">
+      <div className="flex-1 flex flex-col p-2 pt-16">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
           <h1 className="text-2xl font-bold text-gray-900">Tour Schedule</h1>
