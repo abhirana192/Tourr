@@ -32,17 +32,18 @@ function expressPlugin(): Plugin {
     configureServer(server) {
       const app = createServer();
 
-      // Add Express middleware directly to Vite's middleware chain
-      // Must run before Vite's HTML fallback middleware
-      server.middlewares.use((req, res, next) => {
-        // Pass API and specific routes to Express
-        if (req.url?.startsWith("/api") || req.url?.startsWith("/demo")) {
-          app(req, res);
-        } else {
-          // Let Vite handle everything else
-          next();
-        }
-      });
+      // Return a pre-middleware to run BEFORE Vite's middleware
+      return {
+        pre: (req, res, next) => {
+          // Pass API and specific routes to Express
+          if (req.url?.startsWith("/api") || req.url?.startsWith("/demo")) {
+            app(req, res, next);
+          } else {
+            // Let Vite handle everything else
+            next();
+          }
+        },
+      };
     },
   };
 }
