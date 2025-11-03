@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, Edit2, Search } from "lucide-react";
+import { Plus, Trash2, Edit2, Search, AlertTriangle } from "lucide-react";
 import TourModal from "@/components/TourModal";
+import { toast } from "sonner";
 
 interface Tour {
   id: string;
@@ -94,12 +95,22 @@ export default function Schedule() {
   };
 
   const handleDeleteTour = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this tour?")) return;
+    const confirmed = window.confirm(
+      "⚠️ WARNING: Are you sure you want to DELETE this tour?\n\nThis action CANNOT be undone and the tour will be permanently deleted from the system."
+    );
+    if (!confirmed) return;
+
     try {
       await fetch(`/api/tours/${id}`, { method: "DELETE" });
       setTours(tours.filter((t) => t.id !== id));
+      toast.success("Tour deleted successfully", {
+        description: "The tour has been permanently removed from the system.",
+      });
     } catch (error) {
       console.error("Error deleting tour:", error);
+      toast.error("Failed to delete tour", {
+        description: "Something went wrong. Please try again.",
+      });
     }
   };
 
