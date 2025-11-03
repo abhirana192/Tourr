@@ -106,12 +106,34 @@ export default function MonthlyPlan() {
         if (tour.nlt && tour.nlt.toLowerCase() === "yes") dayData.nlt += 1;
       });
       
-      // Convert map to sorted array
-      const sorted = Array.from(dateMap.values()).sort((a, b) => 
-        new Date(a.date).getTime() - new Date(b.date).getTime()
-      );
-      
-      setActivities(sorted);
+      // Generate all dates for the selected month
+      const year = selectedMonth.getFullYear();
+      const month = selectedMonth.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      const allDates: DailyActivityCount[] = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = new Date(year, month, day).toISOString().split("T")[0];
+        allDates.push(
+          dateMap.get(dateStr) || {
+            date: dateStr,
+            count: 0,
+            hiking: 0,
+            fishing: 0,
+            dog_sledging: 0,
+            snowmobile_atv: 0,
+            aurora_village: 0,
+            city_tour: 0,
+            snowshoe: 0,
+            gears: 0,
+            dnr: 0,
+            td: 0,
+            nlt: 0,
+          }
+        );
+      }
+
+      setActivities(allDates);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to load activities";
       setError(errorMessage);
