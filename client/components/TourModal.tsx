@@ -37,8 +37,6 @@ interface TourModalProps {
   onSubmit: (tour: Omit<Tour, "id">) => void;
 }
 
-const yesNoOptions = ["Yes", "No"];
-
 export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModalProps) {
   const [formData, setFormData] = useState<Omit<Tour, "id">>({
     date: "",
@@ -228,19 +226,13 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 DNR
               </label>
-              <select
+              <Input
+                type="text"
                 name="dnr"
                 value={formData.dnr}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">Select</option>
-                {yesNoOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             {/* T/D */}
@@ -318,19 +310,13 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Snowshoe
               </label>
-              <select
+              <Input
+                type="text"
                 name="snowshoe"
                 value={formData.snowshoe}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">Select</option>
-                {yesNoOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             {/* NLT */}
@@ -338,19 +324,13 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 NLT
               </label>
-              <select
+              <Input
+                type="text"
                 name="nlt"
                 value={formData.nlt}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">Select</option>
-                {yesNoOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             {/* CITY TOUR */}
@@ -358,19 +338,13 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 City Tour
               </label>
-              <select
+              <Input
+                type="text"
                 name="cityTour"
                 value={formData.cityTour}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">Select</option>
-                {yesNoOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             {/* HIKING */}
@@ -378,19 +352,13 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Hiking
               </label>
-              <select
+              <Input
+                type="text"
                 name="hiking"
                 value={formData.hiking}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">Select</option>
-                {yesNoOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             {/* FISHING */}
@@ -398,19 +366,13 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Fishing
               </label>
-              <select
+              <Input
+                type="text"
                 name="fishing"
                 value={formData.fishing}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">Select</option>
-                {yesNoOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             {/* DOG SLEDGING */}
@@ -418,19 +380,13 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Dog Sledging
               </label>
-              <select
+              <Input
+                type="text"
                 name="dogSledging"
                 value={formData.dogSledging}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">Select</option>
-                {yesNoOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             {/* SNOWMOBILE/ATV */}
@@ -438,19 +394,13 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Snowmobile/ATV
               </label>
-              <select
+              <Input
+                type="text"
                 name="snowmobileAtv"
                 value={formData.snowmobileAtv}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">Select</option>
-                {yesNoOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             {/* AURORA VILLAGE */}
@@ -458,19 +408,13 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Aurora Village
               </label>
-              <select
+              <Input
+                type="text"
                 name="auroraVillage"
                 value={formData.auroraVillage}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">Select</option>
-                {yesNoOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             {/* PAYMENT */}
