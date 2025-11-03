@@ -1,52 +1,69 @@
 import { RequestHandler } from "express";
-import { db, Tour } from "../database";
+import { tourDb } from "../supabase";
 
-export const getTours: RequestHandler = (req, res) => {
-  const tours = db.getTours();
-  const searchDateFrom = (req.query.dateFrom as string) || "";
-  const searchDateTo = (req.query.dateTo as string) || "";
-  const searchInvoice = (req.query.invoice as string)?.toLowerCase() || "";
-  const searchName = (req.query.name as string)?.toLowerCase() || "";
+export const getTours: RequestHandler = async (req, res) => {
+  try {
+    const dateFrom = (req.query.dateFrom as string) || "";
+    const dateTo = (req.query.dateTo as string) || "";
+    const invoice = (req.query.invoice as string) || "";
+    const name = (req.query.name as string) || "";
 
-  const filtered = tours.filter((tour) => {
-    const dateFromMatch = searchDateFrom ? tour.date >= searchDateFrom : true;
-    const dateToMatch = searchDateTo ? tour.date <= searchDateTo : true;
-    const invoiceMatch = searchInvoice ? tour.invoice.toLowerCase().includes(searchInvoice) : true;
-    const nameMatch = searchName ? tour.name.toLowerCase().includes(searchName) : true;
+    const tours = await tourDb.searchTours(
+      dateFrom || undefined,
+      dateTo || undefined,
+      invoice || undefined,
+      name || undefined
+    );
 
-    return dateFromMatch && dateToMatch && invoiceMatch && nameMatch;
-  });
-
-  res.json(filtered);
-};
-
-export const createTour: RequestHandler = (req, res) => {
-  const tour = req.body;
-  const newTour = db.addTour(tour);
-  res.status(201).json(newTour);
-};
-
-export const updateTour: RequestHandler = (req, res) => {
-  const { id } = req.params;
-  const updates = req.body;
-  const tour = db.updateTour(id, updates);
-
-  if (!tour) {
-    res.status(404).json({ error: "Tour not found" });
-    return;
+    res.json(tours);
+  } catch (error) {
+    console.error("Error fetching tours:", error);
+    res.status(500).json({ error: "Failed to fetch tours" });
   }
-
-  res.json(tour);
 };
 
-export const deleteTour: RequestHandler = (req, res) => {
-  const { id } = req.params;
-  const success = db.deleteTour(id);
-
-  if (!success) {
-    res.status(404).json({ error: "Tour not found" });
-    return;
+export const createTour: RequestHandler = async (req, res) => {
+  try {
+    const tour = req.body;
+    const newTour = await tourDb.addTour({
+      ...tour,
+      start_date: tour.date,
+    });
+    res.status(201).json(newTour);
+  } catch (error) {
+    console.error("Error creating tour:", error);
+    res.status(500).json({ error: "Failed to create tour" });
   }
+};
 
-  res.json({ success: true });
+export const updateTour: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+    const updated = await tourDb.updateTour(id, {
+      ...updates,
+      start_date: updates.date,
+    });
+
+    if (!updated) {
+      res.status(404).json({ error: "Tour not found" });
+      return;
+    }
+
+    res.json(updated);
+  } catch (error) {
+    console.error("Error updating tour:", error);
+    res.status(500).json({ error: "Failed to update tour" });
+  }
+};
+
+export const deleteTour: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await tourDb.deleteTour(id);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting tour:", error);
+    res.status(500).json({ error: "Failed to delete tour" });
+  }
 };
