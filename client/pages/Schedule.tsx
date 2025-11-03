@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, Edit2, Search, AlertTriangle } from "lucide-react";
+import { Plus, Trash2, Edit2, Search, AlertTriangle, RotateCcw } from "lucide-react";
 import TourModal from "@/components/TourModal";
 import { toast } from "sonner";
 import {
@@ -72,6 +72,11 @@ export default function Schedule() {
   const handleSearch = (value: string) => {
     setSearch(value);
     fetchTours(value);
+  };
+
+  const handleRefresh = () => {
+    setSearch("");
+    fetchTours("");
   };
 
   const handleAddTour = async (tourData: Omit<Tour, "id">) => {
@@ -167,14 +172,22 @@ export default function Schedule() {
         </div>
 
         {/* Search */}
-        <div className="mb-3 relative">
-          <Search className="absolute left-2 top-2 text-gray-400" size={16} />
-          <Input
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="pl-8 py-1 text-xs border border-gray-300 rounded"
-          />
+        <div className="mb-3 flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-2 top-2 text-gray-400" size={16} />
+            <Input
+              placeholder="Search by Date (YYYY-MM-DD), Invoice, or Name..."
+              value={search}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="pl-8 py-1 text-xs border border-gray-300 rounded"
+            />
+          </div>
+          <Button
+            onClick={handleRefresh}
+            className="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1 px-3 flex items-center gap-1"
+          >
+            <RotateCcw size={14} /> Refresh
+          </Button>
         </div>
 
         {/* Table Container */}
