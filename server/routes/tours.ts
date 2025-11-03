@@ -1,14 +1,14 @@
 import { RequestHandler } from "express";
-import { tourDb } from "../supabase";
+import { db } from "../database";
 
-export const getTours: RequestHandler = async (req, res) => {
+export const getTours: RequestHandler = (req, res) => {
   try {
     const dateFrom = (req.query.dateFrom as string) || "";
     const dateTo = (req.query.dateTo as string) || "";
     const invoice = (req.query.invoice as string) || "";
     const name = (req.query.name as string) || "";
 
-    const tours = await tourDb.searchTours(
+    const tours = db.searchTours(
       dateFrom || undefined,
       dateTo || undefined,
       invoice || undefined,
@@ -22,12 +22,12 @@ export const getTours: RequestHandler = async (req, res) => {
   }
 };
 
-export const createTour: RequestHandler = async (req, res) => {
+export const createTour: RequestHandler = (req, res) => {
   try {
     const tour = req.body;
-    const newTour = await tourDb.addTour({
+    const newTour = db.addTour({
       ...tour,
-      start_date: tour.date,
+      start_date: tour.start_date,
     });
     res.status(201).json(newTour);
   } catch (error) {
@@ -36,13 +36,13 @@ export const createTour: RequestHandler = async (req, res) => {
   }
 };
 
-export const updateTour: RequestHandler = async (req, res) => {
+export const updateTour: RequestHandler = (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    const updated = await tourDb.updateTour(id, {
+    const updated = db.updateTour(id, {
       ...updates,
-      start_date: updates.date,
+      start_date: updates.start_date,
     });
 
     if (!updated) {
@@ -57,10 +57,16 @@ export const updateTour: RequestHandler = async (req, res) => {
   }
 };
 
-export const deleteTour: RequestHandler = async (req, res) => {
+export const deleteTour: RequestHandler = (req, res) => {
   try {
     const { id } = req.params;
-    await tourDb.deleteTour(id);
+    const success = db.deleteTour(id);
+
+    if (!success) {
+      res.status(404).json({ error: "Tour not found" });
+      return;
+    }
+
     res.json({ success: true });
   } catch (error) {
     console.error("Error deleting tour:", error);

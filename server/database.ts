@@ -1,12 +1,12 @@
 // Simple in-memory database for tours
 export interface Tour {
   id: string;
-  date: string;
+  start_date: string;
   invoice: string;
   language: string;
   name: string;
   pax: number;
-  groupId: string;
+  group_id: string;
   dnr: string;
   td: string;
   agent: string;
@@ -16,26 +16,26 @@ export interface Tour {
   gears: string;
   snowshoe: string;
   nlt: string;
-  cityTour: string;
+  city_tour: string;
   hiking: string;
   fishing: string;
-  dogSledging: string;
-  snowmobileAtv: string;
-  auroraVillage: string;
+  dog_sledging: string;
+  snowmobile_atv: string;
+  aurora_village: string;
   payment: string;
-  reservationNumber: string;
+  reservation_number: string;
   remarks: string;
 }
 
 let tours: Tour[] = [
   {
     id: "1",
-    date: "2024-01-15",
+    start_date: "2024-01-15",
     invoice: "INV001",
     language: "English",
     name: "John Smith (5)",
     pax: 5,
-    groupId: "G001",
+    group_id: "G001",
     dnr: "Yes",
     td: "2h",
     agent: "ABC Tours",
@@ -45,14 +45,14 @@ let tours: Tour[] = [
     gears: "Included",
     snowshoe: "Yes",
     nlt: "No",
-    cityTour: "Yes",
+    city_tour: "Yes",
     hiking: "Yes",
     fishing: "No",
-    dogSledging: "Yes",
-    snowmobileAtv: "No",
-    auroraVillage: "Yes",
+    dog_sledging: "Yes",
+    snowmobile_atv: "No",
+    aurora_village: "Yes",
     payment: "Paid",
-    reservationNumber: "RES001",
+    reservation_number: "RES001",
     remarks: "VIP Group",
   },
 ];
@@ -79,5 +79,24 @@ export const db = {
     if (index === -1) return false;
     tours.splice(index, 1);
     return true;
+  },
+  searchTours: (
+    dateFrom?: string,
+    dateTo?: string,
+    invoice?: string,
+    name?: string
+  ) => {
+    return tours.filter((tour) => {
+      const dateFromMatch = dateFrom ? tour.start_date >= dateFrom : true;
+      const dateToMatch = dateTo ? tour.start_date <= dateTo : true;
+      const invoiceMatch = invoice
+        ? tour.invoice.toLowerCase().includes(invoice.toLowerCase())
+        : true;
+      const nameMatch = name
+        ? tour.name.toLowerCase().includes(name.toLowerCase())
+        : true;
+
+      return dateFromMatch && dateToMatch && invoiceMatch && nameMatch;
+    });
   },
 };
