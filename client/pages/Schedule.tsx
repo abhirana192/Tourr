@@ -4,6 +4,16 @@ import { Input } from "@/components/ui/input";
 import { Plus, Trash2, Edit2, Search, AlertTriangle } from "lucide-react";
 import TourModal from "@/components/TourModal";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Tour {
   id: string;
@@ -39,6 +49,8 @@ export default function Schedule() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTour, setEditingTour] = useState<Tour | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [tourToDelete, setTourToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchTours();
@@ -94,24 +106,33 @@ export default function Schedule() {
     }
   };
 
-  const handleDeleteTour = async (id: string) => {
-    const confirmed = window.confirm(
-      "⚠️ WARNING: Are you sure you want to DELETE this tour?\n\nThis action CANNOT be undone and the tour will be permanently deleted from the system."
-    );
-    if (!confirmed) return;
+  const handleDeleteClick = (id: string) => {
+    setTourToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!tourToDelete) return;
 
     try {
-      await fetch(`/api/tours/${id}`, { method: "DELETE" });
-      setTours(tours.filter((t) => t.id !== id));
+      await fetch(`/api/tours/${tourToDelete}`, { method: "DELETE" });
+      setTours(tours.filter((t) => t.id !== tourToDelete));
       toast.success("Tour deleted successfully", {
         description: "The tour has been permanently removed from the system.",
       });
+      setDeleteConfirmOpen(false);
+      setTourToDelete(null);
     } catch (error) {
       console.error("Error deleting tour:", error);
       toast.error("Failed to delete tour", {
         description: "Something went wrong. Please try again.",
       });
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirmOpen(false);
+    setTourToDelete(null);
   };
 
   const handleEditClick = (tour: Tour) => {
@@ -225,7 +246,7 @@ export default function Schedule() {
                         <button onClick={() => handleEditClick(tour)} className="text-blue-600 hover:text-blue-800 p-0.5">
                           <Edit2 size={12} />
                         </button>
-                        <button onClick={() => handleDeleteTour(tour.id)} className="text-red-600 hover:text-red-800 p-0.5">
+                        <button onClick={() => handleDeleteClick(tour.id)} className="text-red-600 hover:text-red-800 p-0.5">
                           <Trash2 size={12} />
                         </button>
                       </td>
@@ -238,7 +259,7 @@ export default function Schedule() {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Tour Edit Modal */}
       <TourModal
         isOpen={isModalOpen}
         tour={editingTour}
@@ -249,6 +270,30 @@ export default function Schedule() {
             : handleAddTour
         }
       />
+
+      {/* Delete Confirmation Modal */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle size={20} />
+              Delete Tour Permanently?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-gray-600">
+              This action cannot be undone. The tour will be permanently deleted from the system and all its data will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete Tour
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
