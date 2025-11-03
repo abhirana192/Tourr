@@ -113,6 +113,10 @@ export default function Schedule() {
     setEditingTour(null);
   };
 
+  const sortedTours = [...tours].sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="flex-1 flex flex-col p-2">
@@ -180,7 +184,7 @@ export default function Schedule() {
                   </tr>
                 </thead>
                 <tbody>
-                  {tours.map((tour) => (
+                  {sortedTours.map((tour) => (
                     <tr key={tour.id} className="border-b border-gray-200 hover:bg-gray-100">
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-16 whitespace-nowrap">{tour.date}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-14 whitespace-nowrap">{tour.invoice}</td>
