@@ -22,9 +22,27 @@ export default function Navigation() {
       {/* Burger Button */}
       <button
         onClick={toggleSidebar}
-        className="fixed top-4 left-4 z-50 w-10 h-10 rounded-lg bg-white shadow-lg hover:bg-gray-100 border border-gray-200 transition-all flex items-center justify-center"
+        style={{
+          position: "fixed",
+          top: "16px",
+          left: "16px",
+          zIndex: 50,
+          width: "40px",
+          height: "40px",
+          borderRadius: "8px",
+          backgroundColor: "white",
+          border: "1px solid #e5e7eb",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+          fontSize: "24px",
+          fontWeight: "bold",
+          color: "#0f172a",
+        }}
       >
-        <span className="text-slate-900 font-bold text-lg">☰</span>
+        ☰
       </button>
 
       {/* Sidebar Overlay */}
