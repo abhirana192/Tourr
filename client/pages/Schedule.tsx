@@ -45,7 +45,9 @@ interface Tour {
 
 export default function Schedule() {
   const [tours, setTours] = useState<Tour[]>([]);
-  const [search, setSearch] = useState("");
+  const [searchDate, setSearchDate] = useState("");
+  const [searchInvoice, setSearchInvoice] = useState("");
+  const [searchName, setSearchName] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTour, setEditingTour] = useState<Tour | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,9 +58,14 @@ export default function Schedule() {
     fetchTours();
   }, []);
 
-  const fetchTours = async (searchQuery = "") => {
+  const fetchTours = async (date = "", invoice = "", name = "") => {
     try {
-      const url = `/api/tours${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ""}`;
+      const params = new URLSearchParams();
+      if (date) params.append("date", date);
+      if (invoice) params.append("invoice", invoice);
+      if (name) params.append("name", name);
+
+      const url = `/api/tours${params.toString() ? `?${params.toString()}` : ""}`;
       const response = await fetch(url);
       const data = await response.json();
       setTours(data);
@@ -69,14 +76,26 @@ export default function Schedule() {
     }
   };
 
-  const handleSearch = (value: string) => {
-    setSearch(value);
-    fetchTours(value);
+  const handleDateChange = (value: string) => {
+    setSearchDate(value);
+    fetchTours(value, searchInvoice, searchName);
+  };
+
+  const handleInvoiceChange = (value: string) => {
+    setSearchInvoice(value);
+    fetchTours(searchDate, value, searchName);
+  };
+
+  const handleNameChange = (value: string) => {
+    setSearchName(value);
+    fetchTours(searchDate, searchInvoice, value);
   };
 
   const handleRefresh = () => {
-    setSearch("");
-    fetchTours("");
+    setSearchDate("");
+    setSearchInvoice("");
+    setSearchName("");
+    fetchTours("", "", "");
   };
 
   const handleAddTour = async (tourData: Omit<Tour, "id">) => {
@@ -171,22 +190,37 @@ export default function Schedule() {
           </Button>
         </div>
 
-        {/* Search */}
-        <div className="mb-3 flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-2 top-2 text-gray-400" size={16} />
+        {/* Search Filters */}
+        <div className="mb-3 flex gap-2 flex-wrap">
+          <div className="relative flex-1 min-w-32">
             <Input
-              placeholder="Search by Date (YYYY-MM-DD), Invoice, or Name..."
-              value={search}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="pl-8 py-1 text-xs border border-gray-300 rounded"
+              placeholder="Date (YYYY-MM-DD)"
+              value={searchDate}
+              onChange={(e) => handleDateChange(e.target.value)}
+              className="py-1 text-xs border border-gray-300 rounded"
+            />
+          </div>
+          <div className="relative flex-1 min-w-32">
+            <Input
+              placeholder="Invoice"
+              value={searchInvoice}
+              onChange={(e) => handleInvoiceChange(e.target.value)}
+              className="py-1 text-xs border border-gray-300 rounded"
+            />
+          </div>
+          <div className="relative flex-1 min-w-32">
+            <Input
+              placeholder="Name"
+              value={searchName}
+              onChange={(e) => handleNameChange(e.target.value)}
+              className="py-1 text-xs border border-gray-300 rounded"
             />
           </div>
           <Button
             onClick={handleRefresh}
             className="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1 px-3 flex items-center gap-1"
           >
-            <RotateCcw size={14} /> Refresh
+            <RotateCcw size={14} /> Clear
           </Button>
         </div>
 
