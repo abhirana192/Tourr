@@ -32,9 +32,9 @@ function expressPlugin(): Plugin {
     configureServer(server) {
       const app = createServer();
 
-      // Return a pre-middleware to run BEFORE Vite's middleware
-      return {
-        pre: (req, res, next) => {
+      // Add as a pre middleware by prepending to the middleware stack
+      server.middlewares.stack?.unshift({
+        handle: (req, res, next) => {
           // Pass API and specific routes to Express
           if (req.url?.startsWith("/api") || req.url?.startsWith("/demo")) {
             app(req, res, next);
@@ -43,7 +43,7 @@ function expressPlugin(): Plugin {
             next();
           }
         },
-      };
+      } as any);
     },
   };
 }
