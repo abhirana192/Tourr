@@ -291,12 +291,12 @@ export default function Schedule() {
                 <tbody>
                   {sortedTours.map((tour) => (
                     <tr key={tour.id} className="border-b border-gray-200 hover:bg-gray-100">
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-16 whitespace-nowrap">{tour.date}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-16 whitespace-nowrap">{tour.start_date}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-14 whitespace-nowrap">{tour.invoice}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-12 whitespace-nowrap">{tour.language}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 font-semibold min-w-20 whitespace-nowrap">{tour.name}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-8 whitespace-nowrap">{tour.pax}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-12 whitespace-nowrap">{tour.groupId}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-12 whitespace-nowrap">{tour.group_id}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-10 whitespace-nowrap">{tour.dnr}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-10 whitespace-nowrap">{tour.td}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-14 whitespace-nowrap">{tour.agent}</td>
@@ -306,14 +306,14 @@ export default function Schedule() {
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-12 whitespace-nowrap">{tour.gears}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-10 whitespace-nowrap">{tour.snowshoe}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-10 whitespace-nowrap">{tour.nlt}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.cityTour}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.city_tour}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-10 whitespace-nowrap">{tour.hiking}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-10 whitespace-nowrap">{tour.fishing}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.dogSledging}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.snowmobileAtv}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.auroraVillage}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.dog_sledging}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.snowmobile_atv}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.aurora_village}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-12 whitespace-nowrap">{tour.payment}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-14 whitespace-nowrap">{tour.reservationNumber}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-14 whitespace-nowrap">{tour.reservation_number}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-14 whitespace-nowrap">{tour.remarks}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 flex gap-1 min-w-12">
                         <button onClick={() => handleEditClick(tour)} className="text-blue-600 hover:text-blue-800 p-0.5">
