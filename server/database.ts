@@ -10,7 +10,8 @@ export interface Tour {
   dnr: string;
   td: string;
   agent: string;
-  arrivalDeparture: string;
+  arrival: string;
+  departure: string;
   accommodation: string;
   gears: string;
   snowshoe: string;
@@ -38,7 +39,8 @@ let tours: Tour[] = [
     dnr: "Yes",
     td: "2h",
     agent: "ABC Tours",
-    arrivalDeparture: "09:00-17:00",
+    arrival: "09:00",
+    departure: "17:00",
     accommodation: "Hotel X",
     gears: "Included",
     snowshoe: "Yes",
