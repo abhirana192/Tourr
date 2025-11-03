@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import { getTours, createTour, updateTour, deleteTour } from "./routes/tours";
 
 export function createServer() {
   const app = express();
@@ -18,6 +19,12 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // Tour API routes
+  app.get("/api/tours", getTours);
+  app.post("/api/tours", createTour);
+  app.put("/api/tours/:id", updateTour);
+  app.delete("/api/tours/:id", deleteTour);
 
   return app;
 }
