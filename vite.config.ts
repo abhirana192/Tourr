@@ -32,9 +32,8 @@ function expressPlugin(): Plugin {
     configureServer(server) {
       const app = createServer();
 
-      // Add Express as middleware DIRECTLY to the middlewares chain
-      // This will run before Vite's SPA fallback
-      server.middlewares.use((req: any, res: any, next: any) => {
+      // Create our custom middleware
+      const middleware = (req: any, res: any, next: any) => {
         try {
           // Only handle API and demo routes with Express
           if (req?.url?.startsWith("/api") || req?.url?.startsWith("/demo")) {
@@ -45,7 +44,19 @@ function expressPlugin(): Plugin {
         } catch (err) {
           next(err);
         }
-      });
+      };
+
+      // PREPEND our middleware to the stack (add to beginning, not end)
+      // This ensures it runs BEFORE Vite's SPA fallback
+      if (server.middlewares.stack) {
+        server.middlewares.stack.unshift({
+          handle: middleware,
+          route: "",
+        });
+      } else {
+        // Fallback if stack is not available
+        server.middlewares.use(middleware);
+      }
     },
   };
 }
