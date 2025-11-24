@@ -128,18 +128,20 @@ export default function MonthlyPlan() {
         const dayData = dateMap.get(tour.start_date)!;
         dayData.count += 1;
 
-        // Count activities (Yes values)
-        if (tour.hiking && tour.hiking.toLowerCase() === "yes") dayData.hiking += 1;
-        if (tour.fishing && tour.fishing.toLowerCase() === "yes") dayData.fishing += 1;
-        if (tour.dog_sledging && tour.dog_sledging.toLowerCase() === "yes") dayData.dog_sledging += 1;
-        if (tour.snowmobile_atv && tour.snowmobile_atv.toLowerCase() === "yes") dayData.snowmobile_atv += 1;
-        if (tour.aurora_village && tour.aurora_village.toLowerCase() === "yes") dayData.aurora_village += 1;
-        if (tour.city_tour && tour.city_tour.toLowerCase() === "yes") dayData.city_tour += 1;
-        if (tour.snowshoe && tour.snowshoe.toLowerCase() === "yes") dayData.snowshoe += 1;
-        if (tour.gears && tour.gears.toLowerCase() === "yes") dayData.gears += 1;
-        if (tour.dnr && tour.dnr.toLowerCase() === "yes") dayData.dnr += 1;
-        if (tour.td && tour.td.toLowerCase() === "yes") dayData.td += 1;
-        if (tour.nlt && tour.nlt.toLowerCase() === "yes") dayData.nlt += 1;
+        // Count activities (Yes values) - treat empty/null fields as 0
+        const isYes = (val: any) => val && String(val).toLowerCase().trim() === "yes";
+
+        if (isYes(tour.hiking)) dayData.hiking += 1;
+        if (isYes(tour.fishing)) dayData.fishing += 1;
+        if (isYes(tour.dog_sledging)) dayData.dog_sledging += 1;
+        if (isYes(tour.snowmobile_atv)) dayData.snowmobile_atv += 1;
+        if (isYes(tour.aurora_village)) dayData.aurora_village += 1;
+        if (isYes(tour.city_tour)) dayData.city_tour += 1;
+        if (isYes(tour.snowshoe)) dayData.snowshoe += 1;
+        if (isYes(tour.gears)) dayData.gears += 1;
+        if (isYes(tour.dnr)) dayData.dnr += 1;
+        if (isYes(tour.td)) dayData.td += 1;
+        if (isYes(tour.nlt)) dayData.nlt += 1;
       });
 
       // Generate all dates for the range
