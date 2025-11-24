@@ -344,6 +344,55 @@ export default function MonthlyPlan() {
     }
   };
 
+  const handlePrint = () => {
+    const printWindow = window.open("", "", "height=900,width=900");
+    const monthlyPlanDiv = document.querySelector("[data-print='monthly-plan']");
+    const agentsSummaryDiv = document.querySelector("[data-print='agents-summary']");
+
+    if (printWindow && monthlyPlanDiv && agentsSummaryDiv) {
+      const htmlContent = `
+        <html>
+          <head>
+            <title>Monthly Plan Report</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 20px; }
+              h2 { margin-top: 30px; margin-bottom: 10px; font-size: 18px; }
+              .date-range { color: #666; font-size: 14px; margin-bottom: 20px; }
+              table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+              th, td { border: 1px solid #999; padding: 8px; text-align: left; }
+              th { background-color: #f0f0f0; font-weight: bold; }
+              tr:nth-child(even) { background-color: #f9f9f9; }
+              .text-center { text-align: center; }
+              .total-row { background-color: #e0e0e0; font-weight: bold; }
+            </style>
+          </head>
+          <body>
+            <h1>Monthly Plan Report</h1>
+            <p class="date-range">Period: ${(() => {
+              const [fromYear, fromMonth, fromDay] = dateFrom.split('-');
+              const [toYear, toMonth, toDay] = dateTo.split('-');
+              const fromDate = new Date(parseInt(fromYear), parseInt(fromMonth) - 1, parseInt(fromDay));
+              const toDate = new Date(parseInt(toYear), parseInt(toMonth) - 1, parseInt(toDay));
+              const fromStr = fromDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+              const toStr = toDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+              return `${fromStr} to ${toStr}`;
+            })()}</p>
+
+            <h2>Daily Activities</h2>
+            ${monthlyPlanDiv.innerHTML}
+
+            <h2>Agents Summary</h2>
+            ${agentsSummaryDiv.innerHTML}
+          </body>
+        </html>
+      `;
+
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
   const monthName = selectedMonth.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
