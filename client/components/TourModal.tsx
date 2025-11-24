@@ -42,10 +42,10 @@ const PREDEFINED_AGENTS = [
   { code: "OT", name: "Owen Travel" },
   { code: "DP", name: "Dragon Palace" },
   { code: "KK", name: "KKDay" },
-  { code: "Trip", name: "Tripadvior" },
+  { code: "Trip", name: "Tripadvisor" },
   { code: "T4F", name: "Tour 4 Fun" },
   { code: "FE", name: "First Express Travel" },
-  { code: "IJ", name: "JiJiang" },
+  { code: "JG", name: "JiGuang Tour" },
 ];
 
 export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModalProps) {
