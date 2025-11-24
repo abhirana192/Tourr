@@ -38,6 +38,16 @@ interface TourModalProps {
   onSubmit: (tour: Omit<Tour, "id">) => void;
 }
 
+const PREDEFINED_AGENTS = [
+  { code: "OT", name: "Owen Travel" },
+  { code: "DP", name: "Dragon Palace" },
+  { code: "KK", name: "KKDay" },
+  { code: "Trip", name: "Tripadvior" },
+  { code: "T4F", name: "Tour 4 Fun" },
+  { code: "FE", name: "First Express Travel" },
+  { code: "IJ", name: "JiJiang" },
+];
+
 export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModalProps) {
   const [formData, setFormData] = useState<Omit<Tour, "id">>({
     start_date: "",
@@ -65,6 +75,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
     reservation_number: "",
     remarks: "",
   });
+
+  const [agentType, setAgentType] = useState<"predefined" | "other">("predefined");
 
   useEffect(() => {
     if (tour) {
