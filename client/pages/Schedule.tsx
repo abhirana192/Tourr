@@ -195,6 +195,148 @@ export default function Schedule() {
     setEditingTour(null);
   };
 
+  const handlePrintClick = () => {
+    setPrintDialogOpen(true);
+  };
+
+  const handleConfirmPrint = () => {
+    if (!printDateFrom || !printDateTo) {
+      toast.error("Please select both from and to dates");
+      return;
+    }
+
+    if (new Date(printDateFrom) > new Date(printDateTo)) {
+      toast.error("'From' date must be before 'To' date");
+      return;
+    }
+
+    const filteredTours = sortedTours.filter((tour) => {
+      return tour.start_date >= printDateFrom && tour.start_date <= printDateTo;
+    });
+
+    const printWindow = window.open("", "", "height=900,width=1200");
+    if (!printWindow) {
+      toast.error("Failed to open print window");
+      return;
+    }
+
+    const tableRows = filteredTours
+      .map(
+        (tour) => `
+        <tr>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.start_date}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.invoice}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.language}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.name}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; text-align: center;">${tour.pax}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.group_id}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.dnr}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.td}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.agent}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.arrival}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.departure}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.accommodation}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.gears}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; text-align: center;">${tour.snowshoe}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; text-align: center;">${tour.nlt}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; text-align: center;">${tour.city_tour}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; text-align: center;">${tour.hiking}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; text-align: center;">${tour.fishing}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; text-align: center;">${tour.dog_sledging}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; text-align: center;">${tour.snowmobile_atv}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; text-align: center;">${tour.aurora_village}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.payment}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.reservation_number}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.remarks}</td>
+        </tr>
+      `
+      )
+      .join("");
+
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Tour Schedule Report</title>
+          <style>
+            @page { size: landscape; margin: 10mm; }
+            html { zoom: 67%; }
+            body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: white; }
+            h1 { font-size: 20px; margin-bottom: 10px; color: #1e40af; text-align: center; font-weight: bold; }
+            .date-range { color: #666; font-size: 12px; margin-bottom: 20px; text-align: center; font-style: italic; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 9px; }
+            th { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; font-weight: bold; padding: 4px; text-align: left; border: 1px solid #1e40af; }
+            @media print {
+              body { margin: 0; padding: 10mm; }
+              html { zoom: 67%; }
+              th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Tour Schedule Report</h1>
+          <p class="date-range">Period: ${new Date(printDateFrom).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })} to ${new Date(printDateTo).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })}</p>
+          <p style="color: #666; font-size: 12px; margin-bottom: 20px;">Total Tours: ${filteredTours.length}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>DATE</th>
+                <th>INV</th>
+                <th>LANG</th>
+                <th>NAME</th>
+                <th>PAX</th>
+                <th>GRP</th>
+                <th>DNR</th>
+                <th>T/D</th>
+                <th>AGT</th>
+                <th>ARR</th>
+                <th>DEP</th>
+                <th>ACCOM</th>
+                <th>GRS</th>
+                <th>SNW</th>
+                <th>NLT</th>
+                <th>CTR</th>
+                <th>HIK</th>
+                <th>FSH</th>
+                <th>DOG</th>
+                <th>SLD</th>
+                <th>AUR</th>
+                <th>PAY</th>
+                <th>RES#</th>
+                <th>RMK</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    setPrintDialogOpen(false);
+    setPrintDateFrom("");
+    setPrintDateTo("");
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
+
+  const handleCancelPrint = () => {
+    setPrintDialogOpen(false);
+    setPrintDateFrom("");
+    setPrintDateTo("");
+  };
+
   const sortedTours = [...safeTours].sort((a, b) => {
     return (
       new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
