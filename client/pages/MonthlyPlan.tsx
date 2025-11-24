@@ -243,7 +243,20 @@ export default function MonthlyPlan() {
         currentDateStr = dateObj.getFullYear() + '-' + String(dateObj.getMonth() + 1).padStart(2, '0') + '-' + String(dateObj.getDate()).padStart(2, '0');
       }
 
+      // Count tours by agent in the date range
+      const agentMap = new Map<string, number>();
+      filteredTours.forEach((tour) => {
+        const agentName = tour.agent || "Others";
+        agentMap.set(agentName, (agentMap.get(agentName) || 0) + 1);
+      });
+
+      // Convert to sorted array
+      const agentCounts = Array.from(agentMap.entries())
+        .map(([agent, total]) => ({ agent, total }))
+        .sort((a, b) => b.total - a.total);
+
       setActivities(allDates);
+      setAgents(agentCounts);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to load activities";
       setError(errorMessage);
