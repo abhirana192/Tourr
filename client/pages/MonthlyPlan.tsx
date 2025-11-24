@@ -524,10 +524,19 @@ export default function MonthlyPlan() {
         )}
 
         {/* Agents Summary Table */}
-        {!loading && !error && agents.length > 0 && (
+        {!loading && !error && (
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm mt-8">
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900">Agents Summary</h2>
+              <p className="text-sm text-gray-600 mt-1">
+                {(() => {
+                  const fromDate = new Date(dateFrom);
+                  const toDate = new Date(dateTo);
+                  const fromStr = fromDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+                  const toStr = toDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+                  return `From: ${fromStr} To: ${toStr}`;
+                })()}
+              </p>
             </div>
             <table className="w-full border-collapse">
               <thead>
