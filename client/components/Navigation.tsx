@@ -39,6 +39,10 @@ export default function Navigation() {
           fontWeight: "bold",
           color: "#0f172a",
           margin: "16px",
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          MozUserSelect: "none",
+          msUserSelect: "none",
         }}
       >
         ☰
