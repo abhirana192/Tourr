@@ -105,9 +105,6 @@ export default function MonthlyPlan() {
         return tour.start_date >= rangeStartStr && tour.start_date <= rangeEndStr;
       });
 
-      const rangeStart = new Date(rangeStartStr);
-      const rangeEnd = new Date(rangeEndStr);
-
       // Group tours by date and count activities
       const dateMap = new Map<string, DailyActivityCount>();
 
@@ -170,13 +167,10 @@ export default function MonthlyPlan() {
           }
         );
 
-        // Increment date by 1 day using string manipulation
-        const [year, month, day] = currentDateStr.split('-').map(Number);
-        const nextDate = new Date(year, month - 1, day + 1);
-        const nextYear = nextDate.getFullYear();
-        const nextMonth = nextDate.getMonth() + 1;
-        const nextDay = nextDate.getDate();
-        currentDateStr = `${nextYear}-${String(nextMonth).padStart(2, '0')}-${String(nextDay).padStart(2, '0')}`;
+        // Increment date by 1 day using Date object for calculation only
+        const parts = currentDateStr.split('-');
+        const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]) + 1);
+        currentDateStr = dateObj.getFullYear() + '-' + String(dateObj.getMonth() + 1).padStart(2, '0') + '-' + String(dateObj.getDate()).padStart(2, '0');
       }
 
       setActivities(allDates);
