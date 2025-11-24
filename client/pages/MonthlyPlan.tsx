@@ -191,11 +191,10 @@ export default function MonthlyPlan() {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    const fromStr = firstDay.toISOString().split("T")[0];
-    const toStr = lastDay.toISOString().split("T")[0];
+    const fromStr = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+    const toStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
 
     setDateFrom(fromStr);
     setDateTo(toStr);
