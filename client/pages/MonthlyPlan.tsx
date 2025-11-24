@@ -45,6 +45,11 @@ interface DailyActivityCount {
   departure: number;
 }
 
+interface AgentCount {
+  agent: string;
+  total: number;
+}
+
 export default function MonthlyPlan() {
   const now = new Date();
   const currentYear = now.getFullYear();
