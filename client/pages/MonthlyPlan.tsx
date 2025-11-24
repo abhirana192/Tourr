@@ -46,32 +46,22 @@ interface DailyActivityCount {
 }
 
 export default function MonthlyPlan() {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+  const daysInMonth = lastDayOfMonth.getDate();
+
+  const defaultFromStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-01`;
+  const defaultToStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+
   const [activities, setActivities] = useState<DailyActivityCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState(new Date());
-  const [dateFrom, setDateFrom] = useState<string>("");
-  const [dateTo, setDateTo] = useState<string>("");
+  const [selectedMonth, setSelectedMonth] = useState(new Date(currentYear, currentMonth, 1));
+  const [dateFrom, setDateFrom] = useState<string>(defaultFromStr);
+  const [dateTo, setDateTo] = useState<string>(defaultToStr);
   const [isCustomRange, setIsCustomRange] = useState(false);
-
-  // Initialize date range to current month
-  useEffect(() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-
-    // Get the last day of the month
-    const lastDayOfMonth = new Date(year, month + 1, 0);
-    const daysInMonth = lastDayOfMonth.getDate();
-
-    const fromStr = `${year}-${String(month + 1).padStart(2, '0')}-01`;
-    const toStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
-
-    // Sync selectedMonth to current month
-    setSelectedMonth(new Date(year, month, 1));
-    setDateFrom(fromStr);
-    setDateTo(toStr);
-  }, []);
 
   useEffect(() => {
     fetchActivities();
