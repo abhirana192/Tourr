@@ -23,7 +23,7 @@ export default function Navigation() {
       <button
         onClick={toggleSidebar}
         style={{
-          position: "fixed",
+          position: "sticky",
           top: "16px",
           left: "16px",
           zIndex: 50,
@@ -40,6 +40,8 @@ export default function Navigation() {
           fontSize: "24px",
           fontWeight: "bold",
           color: "#0f172a",
+          alignSelf: "flex-start",
+          margin: "16px",
         }}
       >
         ☰
