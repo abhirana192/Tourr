@@ -118,10 +118,10 @@ export default function MonthlyPlan() {
             aurora_village: 0,
             city_tour: 0,
             snowshoe: 0,
-            gears: 0,
             dnr: 0,
-            td: 0,
             nlt: 0,
+            arrival: "",
+            departure: "",
           });
         }
 
@@ -137,10 +137,16 @@ export default function MonthlyPlan() {
         if (isYes(tour.aurora_village)) dayData.aurora_village += 1;
         if (isYes(tour.city_tour)) dayData.city_tour += 1;
         if (isYes(tour.snowshoe)) dayData.snowshoe += 1;
-        if (isYes(tour.gears)) dayData.gears += 1;
         if (isYes(tour.dnr)) dayData.dnr += 1;
-        if (isYes(tour.td)) dayData.td += 1;
         if (isYes(tour.nlt)) dayData.nlt += 1;
+
+        // Store arrival and departure (take the first one for the day)
+        if (!dayData.arrival && tour.arrival) {
+          dayData.arrival = tour.arrival;
+        }
+        if (!dayData.departure && tour.departure) {
+          dayData.departure = tour.departure;
+        }
       });
 
       // Generate all dates for the range
