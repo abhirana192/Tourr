@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calendar, AlertCircle } from "lucide-react";
+import { Calendar, AlertCircle, Printer } from "lucide-react";
 
 const PREDEFINED_AGENTS = [
   { code: "OT", name: "Owen Travel" },
