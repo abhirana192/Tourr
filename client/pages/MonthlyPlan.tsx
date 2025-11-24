@@ -60,13 +60,15 @@ export default function MonthlyPlan() {
     const year = now.getFullYear();
     const month = now.getMonth();
 
-    // Get the last day of the month by going to the 1st of next month and subtracting 1 day
+    // Get the last day of the month
     const lastDayOfMonth = new Date(year, month + 1, 0);
     const daysInMonth = lastDayOfMonth.getDate();
 
     const fromStr = `${year}-${String(month + 1).padStart(2, '0')}-01`;
     const toStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
 
+    // Sync selectedMonth to current month
+    setSelectedMonth(new Date(year, month, 1));
     setDateFrom(fromStr);
     setDateTo(toStr);
   }, []);
