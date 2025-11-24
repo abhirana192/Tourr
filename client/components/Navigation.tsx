@@ -26,7 +26,7 @@ export default function Navigation() {
           position: "fixed",
           top: "16px",
           left: "16px",
-          zIndex: 20,
+          zIndex: 50,
           width: "40px",
           height: "40px",
           borderRadius: "8px",
