@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, Edit2, Search, AlertTriangle, RotateCcw } from "lucide-react";
+import { Plus, Trash2, Edit2, Search, AlertTriangle, RotateCcw, Printer } from "lucide-react";
 import TourModal from "@/components/TourModal";
 import { toast } from "sonner";
 import {
