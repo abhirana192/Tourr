@@ -21,13 +21,15 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Navigation />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/schedule" element={<Schedule />} />
-          <Route path="/monthly-plan" element={<MonthlyPlan />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <div style={{ position: "relative", zIndex: 0 }}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/schedule" element={<Schedule />} />
+            <Route path="/monthly-plan" element={<MonthlyPlan />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
