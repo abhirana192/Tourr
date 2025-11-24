@@ -399,12 +399,18 @@ export default function Schedule() {
                 className="py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            <div className="flex items-end">
+            <div className="flex items-end gap-2">
               <Button
                 onClick={handleRefresh}
-                className="w-full bg-gray-500 hover:bg-gray-600 text-white text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 font-medium"
+                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 font-medium"
               >
                 <RotateCcw size={14} /> Clear All
+              </Button>
+              <Button
+                onClick={handlePrintClick}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 font-medium"
+              >
+                <Printer size={14} /> Print
               </Button>
             </div>
           </div>
