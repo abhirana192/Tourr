@@ -166,8 +166,8 @@ export default function MonthlyPlan() {
           snowshoe: 0,
           dnr: 0,
           nlt: 0,
-          arrival: "",
-          departure: "",
+          arrival: 0,
+          departure: 0,
         };
 
         // Calculate total as sum of all activities
