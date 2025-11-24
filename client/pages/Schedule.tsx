@@ -275,7 +275,7 @@ export default function Schedule() {
             <div className="overflow-x-auto overflow-y-auto flex-1">
               <table className="border-collapse w-max min-w-full">
                 <thead>
-                  <tr className="bg-gray-100 border-b border-gray-300">
+                  <tr className="bg-gray-100 border-b border-gray-300 sticky top-0 z-30">
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-200 min-w-16 whitespace-nowrap">DATE</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-200 min-w-14 whitespace-nowrap">INV</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-200 min-w-12 whitespace-nowrap">LANG</th>
