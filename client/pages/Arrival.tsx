@@ -34,8 +34,10 @@ interface Tour {
 
 interface DayItinerary {
   day: string;
-  date: string;
-  activities: { time: string; activity: string }[];
+  arrivalInfo: string;
+  departureInfo: string;
+  hotelInfo: string;
+  paymentInfo: string;
 }
 
 export default function Arrival() {
