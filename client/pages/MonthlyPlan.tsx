@@ -462,6 +462,13 @@ export default function MonthlyPlan() {
               >
                 Reset
               </button>
+              <button
+                onClick={handlePrint}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+              >
+                <Printer className="w-4 h-4" />
+                Print
+              </button>
             </div>
           </div>
         </div>
