@@ -77,6 +77,12 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
   });
 
   const [agentType, setAgentType] = useState<"predefined" | "other">("predefined");
+  const [arrivalDate, setArrivalDate] = useState<string>("");
+  const [arrivalTime, setArrivalTime] = useState<string>("");
+  const [arrivalFlight, setArrivalFlight] = useState<string>("");
+  const [departureDate, setDepartureDate] = useState<string>("");
+  const [departureTime, setDepartureTime] = useState<string>("");
+  const [departureFlight, setDepartureFlight] = useState<string>("");
 
   useEffect(() => {
     if (tour) {
