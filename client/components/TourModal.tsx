@@ -355,31 +355,63 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
             </div>
 
             {/* ARRIVAL */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Arrival
+            <div className="md:col-span-3">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Arrival (Date | Time | Flight Number)
               </label>
-              <Input
-                type="text"
-                name="arrival"
-                value={formData.arrival}
-                onChange={handleChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
+              <div className="grid grid-cols-3 gap-2">
+                <Input
+                  type="date"
+                  value={arrivalDate}
+                  onChange={(e) => setArrivalDate(e.target.value)}
+                  placeholder="Date"
+                  className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                />
+                <Input
+                  type="time"
+                  value={arrivalTime}
+                  onChange={(e) => setArrivalTime(e.target.value)}
+                  placeholder="Time"
+                  className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                />
+                <Input
+                  type="text"
+                  value={arrivalFlight}
+                  onChange={(e) => setArrivalFlight(e.target.value)}
+                  placeholder="Flight #"
+                  className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                />
+              </div>
             </div>
 
             {/* DEPARTURE */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Departure
+            <div className="md:col-span-3">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Departure (Date | Time | Flight Number)
               </label>
-              <Input
-                type="text"
-                name="departure"
-                value={formData.departure}
-                onChange={handleChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
+              <div className="grid grid-cols-3 gap-2">
+                <Input
+                  type="date"
+                  value={departureDate}
+                  onChange={(e) => setDepartureDate(e.target.value)}
+                  placeholder="Date"
+                  className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                />
+                <Input
+                  type="time"
+                  value={departureTime}
+                  onChange={(e) => setDepartureTime(e.target.value)}
+                  placeholder="Time"
+                  className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                />
+                <Input
+                  type="text"
+                  value={departureFlight}
+                  onChange={(e) => setDepartureFlight(e.target.value)}
+                  placeholder="Flight #"
+                  className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                />
+              </div>
             </div>
 
             {/* ACCOMMODATION */}
