@@ -533,6 +533,50 @@ export default function Schedule() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Print Dialog Modal */}
+      <AlertDialog open={printDialogOpen} onOpenChange={setPrintDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-blue-600">
+              <Printer size={20} />
+              Print Tour Schedule
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-gray-600">
+              Select the date range for the tours you want to print.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">From Date</label>
+              <Input
+                type="date"
+                value={printDateFrom}
+                onChange={(e) => setPrintDateFrom(e.target.value)}
+                className="py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">To Date</label>
+              <Input
+                type="date"
+                value={printDateTo}
+                onChange={(e) => setPrintDateTo(e.target.value)}
+                className="py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelPrint}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmPrint}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              Print
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
