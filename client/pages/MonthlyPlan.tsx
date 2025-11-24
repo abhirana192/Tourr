@@ -350,6 +350,10 @@ export default function MonthlyPlan() {
     const agentsSummaryDiv = document.querySelector("[data-print='agents-summary']");
 
     if (printWindow && monthlyPlanDiv && agentsSummaryDiv) {
+      // Extract only the table from the agents summary (not the header with the h2)
+      const agentsTable = agentsSummaryDiv.querySelector('table');
+      const agentsTableHTML = agentsTable ? agentsTable.outerHTML : '';
+
       const htmlContent = `
         <html>
           <head>
@@ -399,7 +403,7 @@ export default function MonthlyPlan() {
             <div style="page-break-before: always;"></div>
 
             <h2>Agents Summary</h2>
-            ${agentsSummaryDiv.innerHTML}
+            ${agentsTableHTML}
           </body>
         </html>
       `;
