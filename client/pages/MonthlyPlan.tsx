@@ -581,7 +581,7 @@ export default function MonthlyPlan() {
 
         {/* Agents Summary Table */}
         {!loading && !error && (
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm mt-8">
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm mt-8" data-print="agents-summary">
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900">Agents Summary</h2>
               <p className="text-sm text-gray-600 mt-1">
