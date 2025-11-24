@@ -306,7 +306,7 @@ export default function Schedule() {
                 <tbody>
                   {(sortedTours || []).map((tour) => (
                     <tr key={tour.id} className="border-b border-gray-300 hover:bg-gray-100">
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-16 whitespace-nowrap sticky left-0 z-10 bg-inherit">{tour.start_date}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-16 whitespace-nowrap sticky left-0 z-20 bg-inherit">{tour.start_date}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.invoice}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.language}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 font-semibold min-w-20 whitespace-nowrap">{tour.name}</td>
