@@ -148,23 +148,26 @@ export default function MonthlyPlan() {
       let currentDateStr = rangeStartStr;
 
       while (currentDateStr <= rangeEndStr) {
-        allDates.push(
-          dateMap.get(currentDateStr) || {
-            date: currentDateStr,
-            count: 0,
-            hiking: 0,
-            fishing: 0,
-            dog_sledging: 0,
-            snowmobile_atv: 0,
-            aurora_village: 0,
-            city_tour: 0,
-            snowshoe: 0,
-            gears: 0,
-            dnr: 0,
-            td: 0,
-            nlt: 0,
-          }
-        );
+        const dayData = dateMap.get(currentDateStr) || {
+          date: currentDateStr,
+          count: 0,
+          hiking: 0,
+          fishing: 0,
+          dog_sledging: 0,
+          snowmobile_atv: 0,
+          aurora_village: 0,
+          city_tour: 0,
+          snowshoe: 0,
+          gears: 0,
+          dnr: 0,
+          td: 0,
+          nlt: 0,
+        };
+
+        // Calculate total as sum of all activities
+        dayData.count = dayData.hiking + dayData.fishing + dayData.dog_sledging + dayData.snowmobile_atv + dayData.aurora_village + dayData.city_tour + dayData.snowshoe + dayData.gears + dayData.dnr + dayData.td + dayData.nlt;
+
+        allDates.push(dayData);
 
         // Increment date by 1 day using Date object for calculation only
         const parts = currentDateStr.split('-');
