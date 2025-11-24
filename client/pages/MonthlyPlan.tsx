@@ -140,19 +140,31 @@ export default function MonthlyPlan() {
         if (isYes(tour.dnr)) dayData.dnr += 1;
         if (isYes(tour.nlt)) dayData.nlt += 1;
 
-        // Count arrivals and departures (only if they have actual data)
-        const hasActualData = (val: any) => {
-          if (!val) return false;
+        // Count arrivals and departures (only if date matches and has actual data)
+        const extractDateAndHasData = (val: any) => {
+          if (!val) return null;
           const str = String(val).trim();
-          // Remove all separators and spaces, check if anything remains
-          const cleaned = str.replace(/[\s\|]/g, "");
-          return cleaned.length > 0;
+          // Format is "YYYY-MM-DD | HH:MM | FlightNumber"
+          const parts = str.split('|').map(p => p.trim());
+          const dateStr = parts[0];
+
+          // Check if date and data exist
+          if (!dateStr || !dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return null;
+
+          // Check if there's actual data (at least date or time or flight number)
+          const hasData = parts.some((p, idx) => idx < 2 ? p.length > 0 : true);
+
+          return hasData ? dateStr : null;
         };
 
-        if (hasActualData(tour.arrival)) {
+        const arrivalDate = extractDateAndHasData(tour.arrival);
+        const departureDate = extractDateAndHasData(tour.departure);
+
+        // Only count if the extracted date matches the tour's start date
+        if (arrivalDate === tour.start_date) {
           dayData.arrival += 1;
         }
-        if (hasActualData(tour.departure)) {
+        if (departureDate === tour.start_date) {
           dayData.departure += 1;
         }
       });
