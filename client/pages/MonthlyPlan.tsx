@@ -255,15 +255,36 @@ export default function MonthlyPlan() {
 
       // Count tours by agent in the date range
       const agentMap = new Map<string, number>();
-      filteredTours.forEach((tour) => {
-        const agentName = tour.agent || "Others";
-        agentMap.set(agentName, (agentMap.get(agentName) || 0) + 1);
+
+      // Initialize all predefined agents with 0
+      PREDEFINED_AGENTS.forEach((agent) => {
+        agentMap.set(agent.code, 0);
       });
 
-      // Convert to sorted array
-      const agentCounts = Array.from(agentMap.entries())
-        .map(([agent, total]) => ({ agent, total }))
-        .sort((a, b) => b.total - a.total);
+      // Count tours for each agent
+      let othersCount = 0;
+      filteredTours.forEach((tour) => {
+        const agentCode = tour.agent?.trim();
+        if (agentCode && agentMap.has(agentCode)) {
+          agentMap.set(agentCode, (agentMap.get(agentCode) || 0) + 1);
+        } else if (agentCode) {
+          othersCount += 1;
+        }
+      });
+
+      // Build agent list with display names
+      const agentCounts: AgentCount[] = [];
+      PREDEFINED_AGENTS.forEach((agent) => {
+        const count = agentMap.get(agent.code) || 0;
+        if (count > 0) {
+          agentCounts.push({ agent: agent.name, total: count });
+        }
+      });
+
+      // Add Others if there are any unknown agents
+      if (othersCount > 0) {
+        agentCounts.push({ agent: "Others", total: othersCount });
+      }
 
       setActivities(allDates);
       setAgents(agentCounts);
