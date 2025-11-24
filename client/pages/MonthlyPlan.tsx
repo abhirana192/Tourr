@@ -189,18 +189,9 @@ export default function MonthlyPlan() {
   };
 
   const resetToCurrentMonth = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-
-    const lastDayOfMonth = new Date(year, month + 1, 0);
-    const daysInMonth = lastDayOfMonth.getDate();
-
-    const fromStr = `${year}-${String(month + 1).padStart(2, '0')}-01`;
-    const toStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
-
-    setDateFrom(fromStr);
-    setDateTo(toStr);
+    setSelectedMonth(new Date(currentYear, currentMonth, 1));
+    setDateFrom(defaultFromStr);
+    setDateTo(defaultToStr);
     setIsCustomRange(false);
   };
 
