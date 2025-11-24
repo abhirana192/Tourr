@@ -10,6 +10,7 @@ import Navigation from "./components/Navigation";
 import Index from "./pages/Index";
 import Schedule from "./pages/Schedule";
 import MonthlyPlan from "./pages/MonthlyPlan";
+import Arrival from "./pages/Arrival";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
