@@ -164,10 +164,10 @@ export default function MonthlyPlan() {
           aurora_village: 0,
           city_tour: 0,
           snowshoe: 0,
-          gears: 0,
           dnr: 0,
-          td: 0,
           nlt: 0,
+          arrival: "",
+          departure: "",
         };
 
         // Calculate total as sum of all activities
