@@ -50,10 +50,28 @@ export default function MonthlyPlan() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const [dateFrom, setDateFrom] = useState<string>("");
+  const [dateTo, setDateTo] = useState<string>("");
+  const [isCustomRange, setIsCustomRange] = useState(false);
+
+  // Initialize date range to current month
+  useEffect(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    const fromStr = firstDay.toISOString().split("T")[0];
+    const toStr = lastDay.toISOString().split("T")[0];
+
+    setDateFrom(fromStr);
+    setDateTo(toStr);
+  }, []);
 
   useEffect(() => {
     fetchActivities();
-  }, [selectedMonth]);
+  }, [selectedMonth, isCustomRange, dateFrom, dateTo]);
 
   const fetchActivities = async () => {
     try {
