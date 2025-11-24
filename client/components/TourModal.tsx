@@ -84,12 +84,37 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
   const [departureTime, setDepartureTime] = useState<string>("");
   const [departureFlight, setDepartureFlight] = useState<string>("");
 
+  const parseArrivalDeparture = (str: string) => {
+    if (!str) return { date: "", time: "", flight: "" };
+    const parts = str.split(" | ");
+    return {
+      date: parts[0] || "",
+      time: parts[1] || "",
+      flight: parts[2] || "",
+    };
+  };
+
+  const combineArrivalDeparture = (date: string, time: string, flight: string) => {
+    const parts = [date, time, flight].filter(p => p.trim());
+    return parts.length > 0 ? parts.join(" | ") : "";
+  };
+
   useEffect(() => {
     if (tour) {
       const { id, ...rest } = tour;
       setFormData(rest);
       const isPredefined = PREDEFINED_AGENTS.some(a => a.code === rest.agent);
       setAgentType(isPredefined ? "predefined" : "other");
+
+      const arrivalParsed = parseArrivalDeparture(rest.arrival);
+      setArrivalDate(arrivalParsed.date);
+      setArrivalTime(arrivalParsed.time);
+      setArrivalFlight(arrivalParsed.flight);
+
+      const departureParsed = parseArrivalDeparture(rest.departure);
+      setDepartureDate(departureParsed.date);
+      setDepartureTime(departureParsed.time);
+      setDepartureFlight(departureParsed.flight);
     } else {
       setFormData({
         start_date: "",
@@ -118,6 +143,12 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
         remarks: "",
       });
       setAgentType("predefined");
+      setArrivalDate("");
+      setArrivalTime("");
+      setArrivalFlight("");
+      setDepartureDate("");
+      setDepartureTime("");
+      setDepartureFlight("");
     }
   }, [tour, isOpen]);
 
