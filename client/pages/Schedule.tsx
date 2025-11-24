@@ -305,25 +305,25 @@ export default function Schedule() {
                 </thead>
                 <tbody>
                   {(sortedTours || []).map((tour) => (
-                    <tr key={tour.id} className="border-b border-gray-200 hover:bg-gray-100">
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-16 whitespace-nowrap sticky left-0 z-10 bg-inherit">{tour.start_date}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-14 whitespace-nowrap">{tour.invoice}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-12 whitespace-nowrap">{tour.language}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 font-semibold min-w-20 whitespace-nowrap">{tour.name}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-8 whitespace-nowrap">{tour.pax}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-12 whitespace-nowrap">{tour.group_id}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-10 whitespace-nowrap">{tour.dnr}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-10 whitespace-nowrap">{tour.td}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-14 whitespace-nowrap">{tour.agent}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-12 whitespace-nowrap">{tour.arrival}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-12 whitespace-nowrap">{tour.departure}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-14 whitespace-nowrap">{tour.accommodation}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-12 whitespace-nowrap">{tour.gears}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-10 whitespace-nowrap">{tour.snowshoe}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-10 whitespace-nowrap">{tour.nlt}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.city_tour}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-10 whitespace-nowrap">{tour.hiking}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-10 whitespace-nowrap">{tour.fishing}</td>
+                    <tr key={tour.id} className="border-b border-gray-300 hover:bg-gray-100">
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-16 whitespace-nowrap sticky left-0 z-10 bg-inherit">{tour.start_date}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.invoice}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.language}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 font-semibold min-w-20 whitespace-nowrap">{tour.name}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-8 whitespace-nowrap">{tour.pax}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.group_id}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-10 whitespace-nowrap">{tour.dnr}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-10 whitespace-nowrap">{tour.td}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.agent}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.arrival}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.departure}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.accommodation}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.gears}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-10 whitespace-nowrap">{tour.snowshoe}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-10 whitespace-nowrap">{tour.nlt}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-12 whitespace-nowrap">{tour.city_tour}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-10 whitespace-nowrap">{tour.hiking}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-10 whitespace-nowrap">{tour.fishing}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.dog_sledging}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.snowmobile_atv}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.aurora_village}</td>
