@@ -41,8 +41,8 @@ interface DailyActivityCount {
   snowshoe: number;
   dnr: number;
   nlt: number;
-  arrival: string;
-  departure: string;
+  arrival: number;
+  departure: number;
 }
 
 export default function MonthlyPlan() {
