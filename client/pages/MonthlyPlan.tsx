@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
 import { Calendar, AlertCircle } from "lucide-react";
 
+const PREDEFINED_AGENTS = [
+  { code: "OT", name: "Owen Travel" },
+  { code: "DP", name: "Dragon Palace" },
+  { code: "KK", name: "KKDay" },
+  { code: "Trip", name: "Tripadvior" },
+  { code: "T4F", name: "Tour 4 Fun" },
+  { code: "FE", name: "First Express Travel" },
+  { code: "IJ", name: "JiJiang" },
+];
+
 interface Tour {
   id: string;
   start_date: string;
