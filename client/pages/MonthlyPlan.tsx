@@ -149,13 +149,12 @@ export default function MonthlyPlan() {
 
       // Generate all dates for the range
       const allDates: DailyActivityCount[] = [];
-      const currentDate = new Date(rangeStart);
+      let currentDateStr = rangeStartStr;
 
-      while (currentDate <= rangeEnd) {
-        const dateStr = currentDate.toISOString().split("T")[0];
+      while (currentDateStr <= rangeEndStr) {
         allDates.push(
-          dateMap.get(dateStr) || {
-            date: dateStr,
+          dateMap.get(currentDateStr) || {
+            date: currentDateStr,
             count: 0,
             hiking: 0,
             fishing: 0,
@@ -170,7 +169,14 @@ export default function MonthlyPlan() {
             nlt: 0,
           }
         );
-        currentDate.setDate(currentDate.getDate() + 1);
+
+        // Increment date by 1 day using string manipulation
+        const [year, month, day] = currentDateStr.split('-').map(Number);
+        const nextDate = new Date(year, month - 1, day + 1);
+        const nextYear = nextDate.getFullYear();
+        const nextMonth = nextDate.getMonth() + 1;
+        const nextDay = nextDate.getDate();
+        currentDateStr = `${nextYear}-${String(nextMonth).padStart(2, '0')}-${String(nextDay).padStart(2, '0')}`;
       }
 
       setActivities(allDates);
