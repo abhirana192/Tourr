@@ -272,19 +272,15 @@ export default function MonthlyPlan() {
         }
       });
 
-      // Build agent list with display names
+      // Build agent list with all agents showing (even those with 0)
       const agentCounts: AgentCount[] = [];
       PREDEFINED_AGENTS.forEach((agent) => {
         const count = agentMap.get(agent.code) || 0;
-        if (count > 0) {
-          agentCounts.push({ agent: agent.name, total: count });
-        }
+        agentCounts.push({ agent: agent.name, total: count });
       });
 
-      // Add Others if there are any unknown agents
-      if (othersCount > 0) {
-        agentCounts.push({ agent: "Others", total: othersCount });
-      }
+      // Add Others at the end
+      agentCounts.push({ agent: "Others", total: othersCount });
 
       setActivities(allDates);
       setAgents(agentCounts);
