@@ -140,19 +140,19 @@ export default function MonthlyPlan() {
         if (isYes(tour.dnr)) dayData.dnr += 1;
         if (isYes(tour.nlt)) dayData.nlt += 1;
 
-        // Count arrivals and departures (only non-empty values, excluding just separators)
-        const isValidValue = (val: any) => {
+        // Count arrivals and departures (only if they have actual data)
+        const hasActualData = (val: any) => {
           if (!val) return false;
           const str = String(val).trim();
-          if (str.length === 0) return false;
-          // Ensure it's not just separators
-          return str.replace(/\s*\|\s*/g, "").length > 0;
+          // Remove all separators and spaces, check if anything remains
+          const cleaned = str.replace(/[\s\|]/g, "");
+          return cleaned.length > 0;
         };
 
-        if (isValidValue(tour.arrival)) {
+        if (hasActualData(tour.arrival)) {
           dayData.arrival += 1;
         }
-        if (isValidValue(tour.departure)) {
+        if (hasActualData(tour.departure)) {
           dayData.departure += 1;
         }
       });
