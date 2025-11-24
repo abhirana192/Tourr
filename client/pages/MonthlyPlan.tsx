@@ -329,19 +329,19 @@ export default function MonthlyPlan() {
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-gray-100 border-b border-gray-200 sticky top-0 z-30">
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 sticky left-0 top-0 z-20 bg-gray-100">Date</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 bg-blue-50">Total</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Hiking</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Fishing</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Dog Sledding</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Snowmobile/ATV</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Aurora Village</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">City Tour</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Snowshoe</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Gears</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">DNR</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">T/D</th>
+                <tr className="bg-gray-100 border-b border-gray-300 sticky top-0 z-30">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 sticky left-0 top-0 z-20 bg-gray-100 border-r border-gray-300">Date</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 bg-blue-50 border-r border-gray-300">Total</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Hiking</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Fishing</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Dog Sledding</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Snowmobile/ATV</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Aurora Village</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">City Tour</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Snowshoe</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Gears</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">DNR</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">T/D</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">NLT</th>
                 </tr>
               </thead>
