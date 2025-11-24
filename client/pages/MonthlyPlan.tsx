@@ -238,7 +238,7 @@ export default function MonthlyPlan() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 pt-20">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 pt-32 mt-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col gap-6 mb-6">
