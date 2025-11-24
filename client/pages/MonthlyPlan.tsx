@@ -95,10 +95,13 @@ export default function MonthlyPlan() {
         rangeStartStr = dateFrom;
         rangeEndStr = dateTo;
       } else {
-        // Default to current month
+        // Default to current month based on selectedMonth
         const year = selectedMonth.getFullYear();
         const month = selectedMonth.getMonth();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const lastDayOfMonth = new Date(year, month + 1, 0);
+        const daysInMonth = lastDayOfMonth.getDate();
+
         rangeStartStr = `${year}-${String(month + 1).padStart(2, '0')}-01`;
         rangeEndStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
       }
