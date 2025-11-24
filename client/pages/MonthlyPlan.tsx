@@ -402,16 +402,16 @@ export default function MonthlyPlan() {
                         {day.snowshoe}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
-                        {day.gears}
-                      </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.dnr}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
-                        {day.td}
+                        {day.nlt}
+                      </td>
+                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
+                        {day.arrival || "-"}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {day.nlt}
+                        {day.departure || "-"}
                       </td>
                     </tr>
                   ))
