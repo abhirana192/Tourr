@@ -103,9 +103,23 @@ export default function MonthlyPlan() {
         return tour.start_date >= rangeStartStr && tour.start_date <= rangeEndStr;
       });
 
+      // Helper to extract date from formatted string
+      const extractDateFromValue = (val: any) => {
+        if (!val) return null;
+        const str = String(val).trim();
+        // Format is "YYYY-MM-DD | HH:MM | FlightNumber"
+        const dateStr = str.split('|')[0]?.trim();
+
+        // Check if date exists and is valid
+        if (!dateStr || !dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return null;
+
+        return dateStr;
+      };
+
       // Group tours by date and count activities
       const dateMap = new Map<string, DailyActivityCount>();
 
+      // First pass: Initialize all days in range and count activities
       filteredTours.forEach((tour) => {
         if (!dateMap.has(tour.start_date)) {
           dateMap.set(tour.start_date, {
@@ -139,33 +153,55 @@ export default function MonthlyPlan() {
         if (isYes(tour.snowshoe)) dayData.snowshoe += 1;
         if (isYes(tour.dnr)) dayData.dnr += 1;
         if (isYes(tour.nlt)) dayData.nlt += 1;
+      });
 
-        // Count arrivals and departures (only if date matches and has actual data)
-        const extractDateAndHasData = (val: any) => {
-          if (!val) return null;
-          const str = String(val).trim();
-          // Format is "YYYY-MM-DD | HH:MM | FlightNumber"
-          const parts = str.split('|').map(p => p.trim());
-          const dateStr = parts[0];
+      // Second pass: Count arrivals and departures by their actual dates
+      tours.forEach((tour) => {
+        const arrivalDate = extractDateFromValue(tour.arrival);
+        const departureDate = extractDateFromValue(tour.departure);
 
-          // Check if date and data exist
-          if (!dateStr || !dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return null;
-
-          // Check if there's actual data (at least date or time or flight number)
-          const hasData = parts.some((p, idx) => idx < 2 ? p.length > 0 : true);
-
-          return hasData ? dateStr : null;
-        };
-
-        const arrivalDate = extractDateAndHasData(tour.arrival);
-        const departureDate = extractDateAndHasData(tour.departure);
-
-        // Only count if the extracted date matches the tour's start date
-        if (arrivalDate === tour.start_date) {
-          dayData.arrival += 1;
+        // Count arrival on its actual date
+        if (arrivalDate && arrivalDate >= rangeStartStr && arrivalDate <= rangeEndStr) {
+          if (!dateMap.has(arrivalDate)) {
+            dateMap.set(arrivalDate, {
+              date: arrivalDate,
+              count: 0,
+              hiking: 0,
+              fishing: 0,
+              dog_sledging: 0,
+              snowmobile_atv: 0,
+              aurora_village: 0,
+              city_tour: 0,
+              snowshoe: 0,
+              dnr: 0,
+              nlt: 0,
+              arrival: 0,
+              departure: 0,
+            });
+          }
+          dateMap.get(arrivalDate)!.arrival += 1;
         }
-        if (departureDate === tour.start_date) {
-          dayData.departure += 1;
+
+        // Count departure on its actual date
+        if (departureDate && departureDate >= rangeStartStr && departureDate <= rangeEndStr) {
+          if (!dateMap.has(departureDate)) {
+            dateMap.set(departureDate, {
+              date: departureDate,
+              count: 0,
+              hiking: 0,
+              fishing: 0,
+              dog_sledging: 0,
+              snowmobile_atv: 0,
+              aurora_village: 0,
+              city_tour: 0,
+              snowshoe: 0,
+              dnr: 0,
+              nlt: 0,
+              arrival: 0,
+              departure: 0,
+            });
+          }
+          dateMap.get(departureDate)!.departure += 1;
         }
       });
 
