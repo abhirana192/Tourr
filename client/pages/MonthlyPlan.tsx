@@ -384,6 +384,8 @@ export default function MonthlyPlan() {
             <h2>Daily Activities</h2>
             ${monthlyPlanDiv.innerHTML}
 
+            <div style="page-break-before: always;"></div>
+
             <h2>Agents Summary</h2>
             ${agentsSummaryDiv.innerHTML}
           </body>
