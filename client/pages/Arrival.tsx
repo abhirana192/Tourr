@@ -105,65 +105,67 @@ export default function Arrival() {
   };
 
   const generateDayItinerary = (tour: Tour): DayItinerary[] => {
-    const startDate = new Date(tour.start_date);
-    const dayCount = 3;
+    const arrival = extractDateAndTime(tour.arrival);
+    const departure = extractDateAndTime(tour.departure);
     const itinerary: DayItinerary[] = [];
 
-    const dayLabels = ["1STDAY", "2NDDAY", "3RDDAY", "4THDAY", "5THDAY"];
+    const getDayActivities = (dayIndex: number): string => {
+      const activities: string[] = [];
 
-    for (let i = 0; i < dayCount; i++) {
-      const currentDate = new Date(startDate);
-      currentDate.setDate(currentDate.getDate() + i);
-      const dateStr = currentDate.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      });
+      if (dayIndex === 0) {
+        if (tour.remarks) {
+          activities.push(tour.remarks);
+        } else {
+          activities.push("Welcome and airport pickup");
+        }
+      } else {
+        const dayActivities = [];
+        if (tour.hiking === "Yes") dayActivities.push("Hiking");
+        if (tour.fishing === "Yes") dayActivities.push("Fishing");
+        if (tour.dog_sledging === "Yes") dayActivities.push("Dog Sledding");
+        if (tour.snowmobile_atv === "Yes") dayActivities.push("Snowmobile/ATV");
+        if (tour.aurora_village === "Yes") dayActivities.push("Aurora Village");
+        if (tour.city_tour === "Yes") dayActivities.push("City Tour");
+        if (tour.snowshoe === "Yes") dayActivities.push("Snowshoe");
 
-      const activities: { time: string; activity: string }[] = [];
-
-      if (i === 0) {
-        const arrival = extractDateAndTime(tour.arrival);
-        if (arrival.time) {
-          activities.push({ time: arrival.time, activity: "Arrival" });
+        if (dayActivities.length === 0) {
+          activities.push("*Free activity");
+        } else {
+          activities.push(dayActivities.join(", "));
         }
       }
 
-      if (tour.hiking === "Yes") {
-        activities.push({ time: "Morning", activity: "Hiking" });
-      }
-      if (tour.fishing === "Yes") {
-        activities.push({ time: "Afternoon", activity: "Fishing" });
-      }
-      if (tour.dog_sledging === "Yes") {
-        activities.push({ time: "Afternoon", activity: "Dog Sledding" });
-      }
-      if (tour.snowmobile_atv === "Yes") {
-        activities.push({ time: "Afternoon", activity: "Snowmobile/ATV" });
-      }
-      if (tour.aurora_village === "Yes") {
-        activities.push({ time: "Evening", activity: "Aurora Village" });
-      }
-      if (tour.city_tour === "Yes") {
-        activities.push({ time: "Morning", activity: "City Tour" });
-      }
-      if (tour.snowshoe === "Yes") {
-        activities.push({ time: "Morning", activity: "Snowshoe" });
-      }
+      return activities.join(" ");
+    };
 
-      if (i === dayCount - 1) {
-        const departure = extractDateAndTime(tour.departure);
-        if (departure.time) {
-          activities.push({ time: departure.time, activity: "Departure" });
-        }
-      }
+    // Arrival Day
+    itinerary.push({
+      day: "Arrival Day",
+      arrivalInfo: arrival.date ? `${arrival.date} ${arrival.time}${arrival.flight ? ` ${arrival.flight}` : ""}` : "-",
+      departureInfo: "*Free activity",
+      hotelInfo: tour.accommodation ? `${tour.accommodation}` : "-",
+      paymentInfo: tour.pax ? `${tour.pax}` : "-",
+    });
 
+    // Day 1, 2, 3
+    for (let i = 1; i <= 3; i++) {
       itinerary.push({
-        day: dayLabels[i],
-        date: dateStr,
-        activities: activities.length > 0 ? activities : [{ time: "", activity: "Rest Day" }],
+        day: i === 1 ? "1st Day" : i === 2 ? "2nd Day" : "3rd Day",
+        arrivalInfo: "*Free activity",
+        departureInfo: i < 3 ? "*Free activity" : `${departure.date ? departure.date : "-"} ${departure.time ? departure.time : ""}`,
+        hotelInfo: tour.accommodation ? `Aurora Viewing 9:30PM - 1:30AM` : "*Free activity",
+        paymentInfo: i === 1 && tour.payment ? `*Optional (Self-pay) - ${tour.payment}` : "-",
       });
     }
+
+    // Departure Day (4th Day)
+    itinerary.push({
+      day: "4th Day",
+      arrivalInfo: "Shuttle service is scheduled 2 hours before the departure flight. Please wait in the lobby of your accommodation.",
+      departureInfo: `(Cold-weather gear will be collected at the end of the 3rd itinerary)`,
+      hotelInfo: tour.accommodation ? `${tour.accommodation}` : "-",
+      paymentInfo: "-",
+    });
 
     return itinerary;
   };
