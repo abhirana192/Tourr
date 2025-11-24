@@ -120,8 +120,8 @@ export default function MonthlyPlan() {
             snowshoe: 0,
             dnr: 0,
             nlt: 0,
-            arrival: "",
-            departure: "",
+            arrival: 0,
+            departure: 0,
           });
         }
 
@@ -140,12 +140,12 @@ export default function MonthlyPlan() {
         if (isYes(tour.dnr)) dayData.dnr += 1;
         if (isYes(tour.nlt)) dayData.nlt += 1;
 
-        // Store arrival and departure (take the first one for the day)
-        if (!dayData.arrival && tour.arrival) {
-          dayData.arrival = tour.arrival;
+        // Count arrivals and departures
+        if (tour.arrival && String(tour.arrival).trim() !== "") {
+          dayData.arrival += 1;
         }
-        if (!dayData.departure && tour.departure) {
-          dayData.departure = tour.departure;
+        if (tour.departure && String(tour.departure).trim() !== "") {
+          dayData.departure += 1;
         }
       });
 
