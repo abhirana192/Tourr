@@ -15,6 +15,7 @@ export default function Navigation() {
     { label: "Home", path: "/" },
     { label: "Schedule", path: "/schedule" },
     { label: "Monthly Plan", path: "/monthly-plan" },
+    { label: "Arrival", path: "/arrival" },
   ];
 
   return (
