@@ -82,6 +82,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
     if (tour) {
       const { id, ...rest } = tour;
       setFormData(rest);
+      const isPredefined = PREDEFINED_AGENTS.some(a => a.code === rest.agent);
+      setAgentType(isPredefined ? "predefined" : "other");
     } else {
       setFormData({
         start_date: "",
@@ -109,6 +111,7 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
         reservation_number: "",
         remarks: "",
       });
+      setAgentType("predefined");
     }
   }, [tour, isOpen]);
 
