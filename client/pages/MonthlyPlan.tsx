@@ -188,6 +188,32 @@ export default function MonthlyPlan() {
     setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1));
   };
 
+  const resetToCurrentMonth = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    const fromStr = firstDay.toISOString().split("T")[0];
+    const toStr = lastDay.toISOString().split("T")[0];
+
+    setDateFrom(fromStr);
+    setDateTo(toStr);
+    setIsCustomRange(false);
+  };
+
+  const handleApplyDateRange = () => {
+    if (dateFrom && dateTo) {
+      if (new Date(dateFrom) > new Date(dateTo)) {
+        setError("'From' date must be before 'To' date");
+        return;
+      }
+      setIsCustomRange(true);
+      setError("");
+    }
+  };
+
   const monthName = selectedMonth.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -197,29 +223,67 @@ export default function MonthlyPlan() {
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8 pt-20">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-8 h-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Monthly Plan</h1>
+        <div className="flex flex-col gap-6 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-8 h-8 text-blue-600" />
+              <h1 className="text-3xl font-bold text-gray-900">Monthly Plan</h1>
+            </div>
+
+            {/* Month Navigation */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={previousMonth}
+                className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                ← Previous
+              </button>
+              <span className="text-lg font-semibold text-gray-700 min-w-40 text-center">
+                {monthName}
+              </span>
+              <button
+                onClick={nextMonth}
+                className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Next →
+              </button>
+            </div>
           </div>
-          
-          {/* Month Navigation */}
-          <div className="flex items-center gap-4">
-            <button
-              onClick={previousMonth}
-              className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              ← Previous
-            </button>
-            <span className="text-lg font-semibold text-gray-700 min-w-40 text-center">
-              {monthName}
-            </span>
-            <button
-              onClick={nextMonth}
-              className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              Next →
-            </button>
+
+          {/* Date Range Selection */}
+          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex flex-col sm:flex-row gap-4 items-end">
+              <div className="flex flex-col">
+                <label className="text-sm font-medium text-gray-700 mb-1">From Date</label>
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium text-gray-700 mb-1">To Date</label>
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <button
+                onClick={handleApplyDateRange}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Apply
+              </button>
+              <button
+                onClick={resetToCurrentMonth}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+              >
+                Reset
+              </button>
+            </div>
           </div>
         </div>
 
