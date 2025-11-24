@@ -324,12 +324,12 @@ export default function Schedule() {
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-12 whitespace-nowrap">{tour.city_tour}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-10 whitespace-nowrap">{tour.hiking}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-10 whitespace-nowrap">{tour.fishing}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.dog_sledging}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.snowmobile_atv}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 text-center min-w-12 whitespace-nowrap">{tour.aurora_village}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-12 whitespace-nowrap">{tour.payment}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-14 whitespace-nowrap">{tour.reservation_number}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-200 min-w-14 whitespace-nowrap">{tour.remarks}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-12 whitespace-nowrap">{tour.dog_sledging}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-12 whitespace-nowrap">{tour.snowmobile_atv}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-12 whitespace-nowrap">{tour.aurora_village}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.payment}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.reservation_number}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.remarks}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 flex gap-1 min-w-12">
                         <button onClick={() => handleEditClick(tour)} className="text-blue-600 hover:text-blue-800 p-0.5">
                           <Edit2 size={12} />
