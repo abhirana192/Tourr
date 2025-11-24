@@ -78,17 +78,38 @@ export default function MonthlyPlan() {
       setLoading(true);
       setError("");
       const response = await fetch("/api/tours");
-      
+
       if (!response.ok) {
         throw new Error("Failed to fetch tours");
       }
-      
+
       const tours: Tour[] = await response.json();
-      
+
+      // Determine the date range to display
+      let rangeStart: Date;
+      let rangeEnd: Date;
+
+      if (isCustomRange && dateFrom && dateTo) {
+        rangeStart = new Date(dateFrom);
+        rangeEnd = new Date(dateTo);
+      } else {
+        // Default to current month
+        const year = selectedMonth.getFullYear();
+        const month = selectedMonth.getMonth();
+        rangeStart = new Date(year, month, 1);
+        rangeEnd = new Date(year, month + 1, 0);
+      }
+
+      // Filter tours within the date range
+      const filteredTours = tours.filter((tour) => {
+        const tourDate = new Date(tour.start_date);
+        return tourDate >= rangeStart && tourDate <= rangeEnd;
+      });
+
       // Group tours by date and count activities
       const dateMap = new Map<string, DailyActivityCount>();
-      
-      tours.forEach((tour) => {
+
+      filteredTours.forEach((tour) => {
         if (!dateMap.has(tour.start_date)) {
           dateMap.set(tour.start_date, {
             date: tour.start_date,
@@ -106,10 +127,10 @@ export default function MonthlyPlan() {
             nlt: 0,
           });
         }
-        
+
         const dayData = dateMap.get(tour.start_date)!;
         dayData.count += 1;
-        
+
         // Count activities (Yes values)
         if (tour.hiking && tour.hiking.toLowerCase() === "yes") dayData.hiking += 1;
         if (tour.fishing && tour.fishing.toLowerCase() === "yes") dayData.fishing += 1;
@@ -123,15 +144,13 @@ export default function MonthlyPlan() {
         if (tour.td && tour.td.toLowerCase() === "yes") dayData.td += 1;
         if (tour.nlt && tour.nlt.toLowerCase() === "yes") dayData.nlt += 1;
       });
-      
-      // Generate all dates for the selected month
-      const year = selectedMonth.getFullYear();
-      const month = selectedMonth.getMonth();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+      // Generate all dates for the range
       const allDates: DailyActivityCount[] = [];
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = new Date(year, month, day).toISOString().split("T")[0];
+      const currentDate = new Date(rangeStart);
+
+      while (currentDate <= rangeEnd) {
+        const dateStr = currentDate.toISOString().split("T")[0];
         allDates.push(
           dateMap.get(dateStr) || {
             date: dateStr,
@@ -149,6 +168,7 @@ export default function MonthlyPlan() {
             nlt: 0,
           }
         );
+        currentDate.setDate(currentDate.getDate() + 1);
       }
 
       setActivities(allDates);
