@@ -54,6 +54,9 @@ export default function Schedule() {
   const [loading, setLoading] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [tourToDelete, setTourToDelete] = useState<string | null>(null);
+  const [printDialogOpen, setPrintDialogOpen] = useState(false);
+  const [printDateFrom, setPrintDateFrom] = useState("");
+  const [printDateTo, setPrintDateTo] = useState("");
 
   // Ensure tours is always an array
   const safeTours = Array.isArray(tours) ? tours : [];
