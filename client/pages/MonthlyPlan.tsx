@@ -326,7 +326,7 @@ export default function MonthlyPlan() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-100 border-b border-gray-200 sticky top-0 z-10">
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 sticky left-0 bg-gray-100">Date</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 sticky left-0 top-0 z-20 bg-gray-100">Date</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 bg-blue-50">Total</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Hiking</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Fishing</th>
