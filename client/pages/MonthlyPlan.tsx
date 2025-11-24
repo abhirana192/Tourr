@@ -495,6 +495,40 @@ export default function MonthlyPlan() {
             </table>
           </div>
         )}
+
+        {/* Agents Summary Table */}
+        {!loading && !error && agents.length > 0 && (
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm mt-8">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Agents Summary</h2>
+            </div>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-100 border-b border-gray-300">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-300">Agent</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Total Tours</th>
+                </tr>
+              </thead>
+              <tbody>
+                {agents.map((item, idx) => (
+                  <tr
+                    key={item.agent}
+                    className={`border-b border-gray-300 ${
+                      idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    }`}
+                  >
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 border-r border-gray-300">
+                      {item.agent}
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm font-bold text-blue-600 bg-blue-50">
+                      {item.total}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
