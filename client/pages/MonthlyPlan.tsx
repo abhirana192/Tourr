@@ -171,7 +171,7 @@ export default function MonthlyPlan() {
         };
 
         // Calculate total as sum of all activities
-        dayData.count = dayData.hiking + dayData.fishing + dayData.dog_sledging + dayData.snowmobile_atv + dayData.aurora_village + dayData.city_tour + dayData.snowshoe + dayData.gears + dayData.dnr + dayData.td + dayData.nlt;
+        dayData.count = dayData.hiking + dayData.fishing + dayData.dog_sledging + dayData.snowmobile_atv + dayData.aurora_village + dayData.city_tour + dayData.snowshoe + dayData.dnr + dayData.nlt;
 
         allDates.push(dayData);
 
