@@ -276,7 +276,7 @@ export default function MonthlyPlan() {
       const agentCounts: AgentCount[] = [];
       PREDEFINED_AGENTS.forEach((agent) => {
         const count = agentMap.get(agent.code) || 0;
-        agentCounts.push({ agent: agent.name, total: count });
+        agentCounts.push({ agent: `${agent.code} | ${agent.name}`, total: count });
       });
 
       // Add Others at the end
