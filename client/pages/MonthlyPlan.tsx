@@ -356,11 +356,11 @@ export default function MonthlyPlan() {
                   activities.map((day, idx) => (
                     <tr
                       key={day.date}
-                      className={`border-b border-gray-200 hover:bg-blue-50 transition-colors ${
+                      className={`border-b border-gray-300 hover:bg-blue-50 transition-colors ${
                         idx % 2 === 0 ? "bg-white" : "bg-gray-50"
                       }`}
                     >
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900 sticky left-0 z-10 bg-inherit">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900 sticky left-0 z-10 bg-inherit border-r border-gray-300">
                         {(() => {
                           const [year, month, dayNum] = day.date.split('-').map(Number);
                           const dateObj = new Date(year, month - 1, dayNum);
@@ -371,37 +371,37 @@ export default function MonthlyPlan() {
                           });
                         })()}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm font-bold text-blue-600 bg-blue-50">
+                      <td className="px-4 py-3 text-center text-sm font-bold text-blue-600 bg-blue-50 border-r border-gray-300">
                         {day.count}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">
+                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.hiking}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">
+                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.fishing}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">
+                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.dog_sledging}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">
+                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.snowmobile_atv}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">
+                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.aurora_village}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">
+                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.city_tour}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">
+                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.snowshoe}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">
+                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.gears}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">
+                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.dnr}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">
+                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.td}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
