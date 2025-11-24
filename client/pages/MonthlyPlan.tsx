@@ -356,6 +356,7 @@ export default function MonthlyPlan() {
             <title>Monthly Plan Report</title>
             <style>
               @page { size: landscape; margin: 10mm; }
+              html { zoom: 67%; }
               body { font-family: Arial, sans-serif; margin: 20px; }
               h1 { font-size: 24px; margin-bottom: 10px; }
               h2 { margin-top: 30px; margin-bottom: 10px; font-size: 18px; }
@@ -366,7 +367,7 @@ export default function MonthlyPlan() {
               tr:nth-child(even) { background-color: #f9f9f9; }
               .text-center { text-align: center; }
               .total-row { background-color: #e0e0e0; font-weight: bold; }
-              @media print { body { margin: 0; padding: 10mm; } }
+              @media print { body { margin: 0; padding: 10mm; } html { zoom: 67%; } }
             </style>
           </head>
           <body>
