@@ -59,9 +59,10 @@ export default function Navigation() {
 
       {/* Sidebar */}
       <div
-        className={`fixed left-0 top-0 h-full w-64 bg-white dark:bg-slate-900 shadow-xl z-40 transition-transform duration-300 ease-in-out ${
+        className={`fixed left-0 top-0 h-full w-64 bg-white dark:bg-slate-900 shadow-xl transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
+        style={{ zIndex: 40 }}
       >
         <div className="pt-20 px-6 space-y-2">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8">
