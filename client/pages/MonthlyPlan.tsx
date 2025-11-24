@@ -85,25 +85,28 @@ export default function MonthlyPlan() {
       const tours: Tour[] = await response.json();
 
       // Determine the date range to display
-      let rangeStart: Date;
-      let rangeEnd: Date;
+      let rangeStartStr: string;
+      let rangeEndStr: string;
 
       if (isCustomRange && dateFrom && dateTo) {
-        rangeStart = new Date(dateFrom);
-        rangeEnd = new Date(dateTo);
+        rangeStartStr = dateFrom;
+        rangeEndStr = dateTo;
       } else {
         // Default to current month
         const year = selectedMonth.getFullYear();
         const month = selectedMonth.getMonth();
-        rangeStart = new Date(year, month, 1);
-        rangeEnd = new Date(year, month + 1, 0);
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        rangeStartStr = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+        rangeEndStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
       }
 
       // Filter tours within the date range
       const filteredTours = tours.filter((tour) => {
-        const tourDate = new Date(tour.start_date);
-        return tourDate >= rangeStart && tourDate <= rangeEnd;
+        return tour.start_date >= rangeStartStr && tour.start_date <= rangeEndStr;
       });
+
+      const rangeStart = new Date(rangeStartStr);
+      const rangeEnd = new Date(rangeEndStr);
 
       // Group tours by date and count activities
       const dateMap = new Map<string, DailyActivityCount>();
