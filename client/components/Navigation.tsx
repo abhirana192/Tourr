@@ -53,6 +53,7 @@ export default function Navigation() {
         <div
           className="fixed inset-0 bg-black/50 z-30"
           onClick={() => setIsOpen(false)}
+          style={{ userSelect: "none" }}
         />
       )}
 
