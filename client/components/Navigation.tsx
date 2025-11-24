@@ -51,9 +51,9 @@ export default function Navigation() {
       {/* Sidebar Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-35"
+          className="fixed inset-0 bg-black/50"
           onClick={() => setIsOpen(false)}
-          style={{ userSelect: "none" }}
+          style={{ userSelect: "none", zIndex: 35 }}
         />
       )}
 
