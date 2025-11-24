@@ -357,17 +357,28 @@ export default function MonthlyPlan() {
             <style>
               @page { size: landscape; margin: 10mm; }
               html { zoom: 67%; }
-              body { font-family: Arial, sans-serif; margin: 20px; }
-              h1 { font-size: 24px; margin-bottom: 10px; }
-              h2 { margin-top: 30px; margin-bottom: 10px; font-size: 18px; }
-              .date-range { color: #666; font-size: 14px; margin-bottom: 20px; }
-              table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 11px; }
-              th, td { border: 1px solid #999; padding: 6px; text-align: left; }
-              th { background-color: #f0f0f0; font-weight: bold; }
-              tr:nth-child(even) { background-color: #f9f9f9; }
+              body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: white; }
+              h1 { font-size: 24px; margin-bottom: 10px; color: #1e40af; text-align: center; font-weight: bold; }
+              h2 { margin-top: 30px; margin-bottom: 15px; font-size: 16px; color: #1e40af; border-bottom: 3px solid #3b82f6; padding-bottom: 8px; }
+              .date-range { color: #666; font-size: 13px; margin-bottom: 20px; text-align: center; font-style: italic; }
+              table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+              th { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; font-weight: bold; padding: 8px 6px; text-align: center; border: 1px solid #1e40af; }
+              td { border: 1px solid #d1d5db; padding: 6px; }
+              tr:nth-child(even) { background-color: #f0f9ff; }
+              tr:nth-child(odd) { background-color: #ffffff; }
+              tr:hover { background-color: #e0f2fe; }
               .text-center { text-align: center; }
-              .total-row { background-color: #e0e0e0; font-weight: bold; }
-              @media print { body { margin: 0; padding: 10mm; } html { zoom: 67%; } }
+              .total-row { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; font-weight: bold; }
+              .total-row td { border: 2px solid #047857; }
+              td:first-child { background-color: #dbeafe; font-weight: 500; }
+              tr:nth-child(even) td:first-child { background-color: #bfdbfe; }
+              @media print {
+                body { margin: 0; padding: 10mm; }
+                html { zoom: 67%; }
+                th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .total-row { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                tr:nth-child(even) { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+              }
             </style>
           </head>
           <body>
