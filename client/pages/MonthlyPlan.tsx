@@ -181,11 +181,37 @@ export default function MonthlyPlan() {
   };
 
   const previousMonth = () => {
-    setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1));
+    const newMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1);
+    setSelectedMonth(newMonth);
+
+    const year = newMonth.getFullYear();
+    const month = newMonth.getMonth();
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+
+    const fromStr = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+    const toStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+
+    setDateFrom(fromStr);
+    setDateTo(toStr);
+    setIsCustomRange(false);
   };
 
   const nextMonth = () => {
-    setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1));
+    const newMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1);
+    setSelectedMonth(newMonth);
+
+    const year = newMonth.getFullYear();
+    const month = newMonth.getMonth();
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+
+    const fromStr = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+    const toStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+
+    setDateFrom(fromStr);
+    setDateTo(toStr);
+    setIsCustomRange(false);
   };
 
   const resetToCurrentMonth = () => {
