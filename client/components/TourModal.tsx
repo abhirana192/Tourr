@@ -272,13 +272,64 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Agent
               </label>
-              <Input
-                type="text"
-                name="agent"
-                value={formData.agent}
-                onChange={handleChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
+              <div className="space-y-2">
+                <div className="flex gap-4 mb-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="agentType"
+                      value="predefined"
+                      checked={agentType === "predefined"}
+                      onChange={(e) => {
+                        setAgentType("predefined");
+                        if (formData.agent && !PREDEFINED_AGENTS.some(a => a.code === formData.agent)) {
+                          setFormData(prev => ({ ...prev, agent: "" }));
+                        }
+                      }}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm text-gray-700">Select from list</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="agentType"
+                      value="other"
+                      checked={agentType === "other"}
+                      onChange={(e) => setAgentType("other")}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm text-gray-700">Other</span>
+                  </label>
+                </div>
+
+                {agentType === "predefined" ? (
+                  <select
+                    name="agent"
+                    value={formData.agent}
+                    onChange={handleChange}
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                    required
+                  >
+                    <option value="">-- Select Agent --</option>
+                    {PREDEFINED_AGENTS.map((agent) => (
+                      <option key={agent.code} value={agent.code}>
+                        {agent.code} - {agent.name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <Input
+                    type="text"
+                    name="agent"
+                    placeholder="Enter agent name"
+                    value={formData.agent}
+                    onChange={handleChange}
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                    required
+                  />
+                )}
+              </div>
             </div>
 
             {/* ARRIVAL */}
