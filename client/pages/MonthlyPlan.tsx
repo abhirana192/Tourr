@@ -226,8 +226,8 @@ export default function MonthlyPlan() {
           departure: 0,
         };
 
-        // Calculate total as sum of all activities
-        dayData.count = dayData.hiking + dayData.fishing + dayData.dog_sledging + dayData.snowmobile_atv + dayData.aurora_village + dayData.city_tour + dayData.snowshoe + dayData.dnr + dayData.nlt;
+        // Calculate total as sum of all activities including arrival and departure
+        dayData.count = dayData.hiking + dayData.fishing + dayData.dog_sledging + dayData.snowmobile_atv + dayData.aurora_village + dayData.city_tour + dayData.snowshoe + dayData.dnr + dayData.nlt + dayData.arrival + dayData.departure;
 
         allDates.push(dayData);
 
