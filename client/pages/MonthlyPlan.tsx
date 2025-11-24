@@ -39,10 +39,10 @@ interface DailyActivityCount {
   aurora_village: number;
   city_tour: number;
   snowshoe: number;
-  gears: number;
   dnr: number;
-  td: number;
   nlt: number;
+  arrival: string;
+  departure: string;
 }
 
 export default function MonthlyPlan() {
