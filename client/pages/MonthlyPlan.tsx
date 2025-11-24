@@ -140,11 +140,14 @@ export default function MonthlyPlan() {
         if (isYes(tour.dnr)) dayData.dnr += 1;
         if (isYes(tour.nlt)) dayData.nlt += 1;
 
-        // Count arrivals and departures
-        if (tour.arrival && String(tour.arrival).trim() !== "") {
+        // Count arrivals and departures (only non-empty values)
+        const hasArrival = tour.arrival && String(tour.arrival).trim().length > 0;
+        const hasDeparture = tour.departure && String(tour.departure).trim().length > 0;
+
+        if (hasArrival) {
           dayData.arrival += 1;
         }
-        if (tour.departure && String(tour.departure).trim() !== "") {
+        if (hasDeparture) {
           dayData.departure += 1;
         }
       });
