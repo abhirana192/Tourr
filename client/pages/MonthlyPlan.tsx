@@ -530,8 +530,13 @@ export default function MonthlyPlan() {
               <h2 className="text-lg font-semibold text-gray-900">Agents Summary</h2>
               <p className="text-sm text-gray-600 mt-1">
                 {(() => {
-                  const fromDate = new Date(dateFrom);
-                  const toDate = new Date(dateTo);
+                  // Parse dates without timezone conversion
+                  const [fromYear, fromMonth, fromDay] = dateFrom.split('-');
+                  const [toYear, toMonth, toDay] = dateTo.split('-');
+
+                  const fromDate = new Date(parseInt(fromYear), parseInt(fromMonth) - 1, parseInt(fromDay));
+                  const toDate = new Date(parseInt(toYear), parseInt(toMonth) - 1, parseInt(toDay));
+
                   const fromStr = fromDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
                   const toStr = toDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
                   return `From: ${fromStr} To: ${toStr}`;
