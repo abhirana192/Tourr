@@ -490,7 +490,7 @@ export default function MonthlyPlan() {
 
         {/* Table */}
         {!loading && !error && (
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm" data-print="monthly-plan">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-100 border-b border-gray-300 sticky top-0 z-30">
