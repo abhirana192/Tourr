@@ -373,37 +373,37 @@ export default function MonthlyPlan() {
                         {day.count}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {day.hiking > 0 ? day.hiking : "-"}
+                        {day.hiking}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {day.fishing > 0 ? day.fishing : "-"}
+                        {day.fishing}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {day.dog_sledging > 0 ? day.dog_sledging : "-"}
+                        {day.dog_sledging}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {day.snowmobile_atv > 0 ? day.snowmobile_atv : "-"}
+                        {day.snowmobile_atv}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {day.aurora_village > 0 ? day.aurora_village : "-"}
+                        {day.aurora_village}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {day.city_tour > 0 ? day.city_tour : "-"}
+                        {day.city_tour}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {day.snowshoe > 0 ? day.snowshoe : "-"}
+                        {day.snowshoe}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {day.gears > 0 ? day.gears : "-"}
+                        {day.gears}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {day.dnr > 0 ? day.dnr : "-"}
+                        {day.dnr}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {day.td > 0 ? day.td : "-"}
+                        {day.td}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {day.nlt > 0 ? day.nlt : "-"}
+                        {day.nlt}
                       </td>
                     </tr>
                   ))
