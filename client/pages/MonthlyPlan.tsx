@@ -556,6 +556,15 @@ export default function MonthlyPlan() {
                     </td>
                   </tr>
                 ))}
+                {/* Total Row */}
+                <tr className="border-b border-gray-300 bg-gray-100 font-bold">
+                  <td className="px-4 py-3 text-sm font-semibold text-gray-900 border-r border-gray-300">
+                    Total
+                  </td>
+                  <td className="px-4 py-3 text-center text-sm font-bold text-gray-900 bg-gray-200">
+                    {agents.reduce((sum, item) => sum + item.total, 0)}
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
