@@ -331,11 +331,15 @@ export default function MonthlyPlan() {
                       }`}
                     >
                       <td className="px-4 py-3 text-sm font-medium text-gray-900 sticky left-0 z-10 bg-inherit">
-                        {new Date(day.date).toLocaleDateString("en-US", {
-                          weekday: "short",
-                          month: "short",
-                          day: "numeric",
-                        })}
+                        {(() => {
+                          const [year, month, dayNum] = day.date.split('-').map(Number);
+                          const dateObj = new Date(year, month - 1, dayNum);
+                          return dateObj.toLocaleDateString("en-US", {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                          });
+                        })()}
                       </td>
                       <td className="px-4 py-3 text-center text-sm font-bold text-blue-600 bg-blue-50">
                         {day.count}
