@@ -126,7 +126,6 @@ export default function MonthlyPlan() {
         }
 
         const dayData = dateMap.get(tour.start_date)!;
-        dayData.count += 1;
 
         // Count activities (Yes values) - treat empty/null fields as 0
         const isYes = (val: any) => val && String(val).toLowerCase().trim() === "yes";
