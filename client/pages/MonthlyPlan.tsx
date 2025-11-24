@@ -61,6 +61,7 @@ export default function MonthlyPlan() {
   const defaultToStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
 
   const [activities, setActivities] = useState<DailyActivityCount[]>([]);
+  const [agents, setAgents] = useState<AgentCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(new Date(currentYear, currentMonth, 1));
