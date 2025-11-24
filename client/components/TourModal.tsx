@@ -164,7 +164,13 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    const combinedArrival = combineArrivalDeparture(arrivalDate, arrivalTime, arrivalFlight);
+    const combinedDeparture = combineArrivalDeparture(departureDate, departureTime, departureFlight);
+    onSubmit({
+      ...formData,
+      arrival: combinedArrival,
+      departure: combinedDeparture,
+    });
   };
 
   if (!isOpen) return null;
