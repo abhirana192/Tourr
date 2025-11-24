@@ -284,84 +284,37 @@ export default function Arrival() {
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-yellow-100 border-b border-gray-300">
-                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 border-r border-gray-300 min-w-24">BASIC INFO</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 border-r border-gray-300 min-w-32">ARRIVAL (AFR)</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 border-r border-gray-300 min-w-32">DEPARTURE (DEP)</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 border-r border-gray-300 min-w-40">HOTEL (ACCOMMODATION)</th>
-                    <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 min-w-16">PAX</th>
+                  <tr className="bg-gray-800 text-white border-b border-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-bold border-r border-gray-400 min-w-24">Basic Info</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold border-r border-gray-400 min-w-40">Arrival Date ARR.</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold border-r border-gray-400 min-w-40">Departure Date DEP.</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold border-r border-gray-400 min-w-56">Hotel Stay HOTEL</th>
+                    <th className="px-4 py-3 text-center text-xs font-bold min-w-20">People pax</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {dayItinerary.map((day, idx) => {
-                    const arrival = extractDateAndTime(selectedTour.arrival);
-                    const departure = extractDateAndTime(selectedTour.departure);
-
-                    return (
-                      <tr key={`${day.day}-${idx}`} className={`border-b border-gray-300 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
-                        <td className="px-4 py-3 text-xs text-gray-900 border-r border-gray-300 font-semibold">
-                          <div>{day.day}</div>
-                          <div className="text-gray-600">{day.date}</div>
-                        </td>
-                        <td className="px-4 py-3 text-xs text-gray-900 border-r border-gray-300">
-                          {idx === 0 && arrival.date ? (
-                            <div>
-                              <div className="font-semibold">{arrival.date}</div>
-                              <div className="text-gray-600">{arrival.time}</div>
-                              {arrival.flight && <div className="text-gray-500">{arrival.flight}</div>}
-                            </div>
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-xs text-gray-900 border-r border-gray-300">
-                          {idx === dayItinerary.length - 1 && departure.date ? (
-                            <div>
-                              <div className="font-semibold">{departure.date}</div>
-                              <div className="text-gray-600">{departure.time}</div>
-                              {departure.flight && <div className="text-gray-500">{departure.flight}</div>}
-                            </div>
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-xs text-gray-900 border-r border-gray-300">
-                          {selectedTour.accommodation ? (
-                            <div>{selectedTour.accommodation}</div>
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-center text-xs font-semibold text-gray-900">
-                          {selectedTour.pax}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {dayItinerary.map((day, idx) => (
+                    <tr key={`${day.day}-${idx}`} className={`border-b border-gray-400 ${idx % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
+                      <td className="px-4 py-3 text-xs text-gray-900 border-r border-gray-400 font-semibold align-top">
+                        <div className="whitespace-normal">{day.day}</div>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
+                        <div className="whitespace-normal text-justify leading-relaxed">{day.arrivalInfo}</div>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
+                        <div className="whitespace-normal text-justify leading-relaxed">{day.departureInfo}</div>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
+                        <div className="whitespace-normal text-justify leading-relaxed">{day.hotelInfo}</div>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-900 text-center align-top font-semibold">
+                        <div className="whitespace-normal">{day.paymentInfo}</div>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
-
-            {/* Activities Section */}
-            {dayItinerary.some((day) => day.activities.length > 0) && (
-              <div className="p-4 border-t border-gray-200 bg-gray-50">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Planned Activities</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {dayItinerary.map((day) => (
-                    <div key={day.day} className="bg-white p-3 rounded border border-gray-200">
-                      <div className="font-semibold text-xs text-gray-700 mb-2">{day.day}</div>
-                      <div className="space-y-1 text-xs">
-                        {day.activities.map((activity, idx) => (
-                          <div key={idx} className="text-gray-600">
-                            {activity.time && <span className="font-semibold">{activity.time}:</span>} {activity.activity}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>
