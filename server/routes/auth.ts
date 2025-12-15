@@ -49,18 +49,18 @@ async function getStaffByName(name: string) {
 
 export const login: RequestHandler = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { name, password } = req.body;
 
-    if (!email || !password) {
-      res.status(400).json({ error: "Email and password are required" });
+    if (!name || !password) {
+      res.status(400).json({ error: "Name and password are required" });
       return;
     }
 
     // Get staff user from database using REST API
-    const staffData = await getStaffByEmail(email);
+    const staffData = await getStaffByName(name);
 
     if (!staffData) {
-      res.status(401).json({ error: "Invalid email or password" });
+      res.status(401).json({ error: "Invalid name or password" });
       return;
     }
 
