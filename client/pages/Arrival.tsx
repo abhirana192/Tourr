@@ -976,7 +976,9 @@ export default function Arrival() {
                         {idx === 0 ? (
                           <div className="whitespace-normal text-justify leading-relaxed">{day.hotelInfo}</div>
                         ) : (
-                          <div className="text-gray-400 italic">—</div>
+                          <div className="whitespace-normal text-gray-500 italic">
+                            *Free activity
+                          </div>
                         )}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-900 align-top">
