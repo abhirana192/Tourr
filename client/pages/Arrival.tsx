@@ -427,6 +427,10 @@ export default function Arrival() {
     toast.success("Changes saved and schedule locked");
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   const dayItinerary = selectedTour ? generateDayItinerary(selectedTour) : [];
 
   return (
