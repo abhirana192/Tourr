@@ -113,13 +113,14 @@ export default function StaffManagement() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: formData.name,
+            email: formData.email,
             role: formData.role,
             ...(formData.password && { password: formData.password }),
           }),
         });
 
         if (!response.ok) throw new Error("Failed to update staff");
-        
+
         const updated = await response.json();
         setStaff(staff.map((s) => (s.id === editingId ? { ...s, ...updated.data } : s)));
         toast.success("Staff member updated successfully");
