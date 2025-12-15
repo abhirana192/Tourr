@@ -276,34 +276,44 @@ export async function sendNotificationEmail(
   }
 }
 
-async function sendViaResend(
+async function sendViaNodemailer(
   to: string[],
   subject: string,
   html: string,
-  apiKey: string,
-  senderEmail: string,
+  text: string,
+  gmailUser: string,
+  gmailPassword: string,
+  replyToEmail: string,
   senderName: string
 ): Promise<void> {
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
+  // Create a Nodemailer transporter using Gmail
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: gmailUser,
+      pass: gmailPassword,
     },
-    body: JSON.stringify({
-      from: `${senderName} <${process.env.RESEND_FROM_EMAIL || "onboard@resend.dev"}>`,
-      reply_to: senderEmail,
-      to: to,
-      subject: subject,
-      html: html,
-    }),
   });
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Resend API error: ${response.status} ${error}`);
-  }
+  // Send emails to each recipient one by one
+  for (const recipient of to) {
+    try {
+      const mailOptions = {
+        from: `${senderName} <${gmailUser}>`,
+        to: recipient,
+        replyTo: replyToEmail,
+        subject: subject,
+        html: html,
+        text: text,
+      };
 
-  const result = await response.json();
-  console.log(`Email sent successfully. Message ID: ${result.id}`);
+      const info = await transporter.sendMail(mailOptions);
+      console.log(`Email sent to ${recipient}. Message ID: ${info.messageId}`);
+    } catch (error) {
+      console.error(`Failed to send email to ${recipient}:`, error);
+      // Continue sending to other recipients even if one fails
+    }
+  }
 }
