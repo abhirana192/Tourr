@@ -662,6 +662,33 @@ export default function Arrival() {
           availableActivityKeys={selectedTour ? getAvailableActivities(selectedTour) : []}
           onSelectActivity={handleSelectActivity}
         />
+
+        {/* Edit Confirmation Dialog */}
+        <Dialog open={showEditConfirmation} onOpenChange={setShowEditConfirmation}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Change Schedule</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-sm text-gray-700">Are you sure you want to make changes to the schedule?</p>
+            </div>
+            <DialogFooter>
+              <Button
+                onClick={() => setShowEditConfirmation(false)}
+                variant="outline"
+                className="text-xs"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmEdit}
+                className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
+              >
+                Confirm
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
