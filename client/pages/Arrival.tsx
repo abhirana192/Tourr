@@ -532,15 +532,16 @@ export default function Arrival() {
                 </div>
                 <div className="flex gap-2">
                   <Button
-                    onClick={handleResetSchedule}
-                    className="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-3 rounded-lg"
+                    onClick={handleEditSchedule}
+                    disabled={isEditMode}
+                    className="bg-amber-600 hover:bg-amber-700 text-white text-xs py-1.5 px-3 rounded-lg flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    Reset Schedule
+                    <Edit2 size={14} /> Change Schedule
                   </Button>
                   <Button
                     onClick={handleSaveSchedule}
-                    disabled={isSaving}
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs py-1.5 px-3 rounded-lg"
+                    disabled={isSaving || !isEditMode}
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs py-1.5 px-3 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {isSaving ? "Saving..." : "Save Schedule"}
                   </Button>
