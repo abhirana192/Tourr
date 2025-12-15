@@ -253,7 +253,7 @@ export default function StaffManagement() {
 
           {editingId && (
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
-              <strong>Current Password:</strong> password (demo app - all users use this password)
+              <strong>Note:</strong> Leave password empty to keep current password, or enter a new password to change it.
             </div>
           )}
 
