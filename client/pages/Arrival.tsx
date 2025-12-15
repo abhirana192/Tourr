@@ -94,6 +94,27 @@ export default function Arrival() {
     fetchTours();
   }, []);
 
+  useEffect(() => {
+    if (!selectedTour) return;
+
+    const arrival = extractDateAndTime(selectedTour.arrival);
+    const departure = extractDateAndTime(selectedTour.departure);
+
+    if (!arrival.date || !departure.date) return;
+
+    if (!schedules[selectedTour.id]) {
+      const arrivalDate = new Date(arrival.date);
+      const departureDate = new Date(departure.date);
+      const timeDiff = departureDate.getTime() - arrivalDate.getTime();
+      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+
+      setSchedules((prev) => ({
+        ...prev,
+        [selectedTour.id]: generateRandomSchedule(selectedTour, daysDiff),
+      }));
+    }
+  }, [selectedTour?.id]);
+
   const fetchTours = async (dateFrom = "", dateTo = "") => {
     try {
       setLoading(true);
