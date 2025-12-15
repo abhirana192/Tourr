@@ -277,7 +277,7 @@ export default function StaffManagement() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="john@example.com"
-                disabled={editingId ? true : isLoading}
+                disabled={isLoading}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:opacity-50"
               />
             </div>
