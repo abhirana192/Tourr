@@ -63,10 +63,12 @@ export const login: RequestHandler = async (req, res) => {
     const sessionToken = generateSessionToken();
     const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
 
+    const fullName = staffData.last_name ? `${staffData.first_name} ${staffData.last_name}` : staffData.first_name;
+
     sessions.set(sessionToken, {
       userId: staffData.id,
       email: staffData.email,
-      name: `${staffData.first_name} ${staffData.last_name}`,
+      name: fullName,
       role: staffData.role,
       expiresAt,
     });
@@ -76,7 +78,7 @@ export const login: RequestHandler = async (req, res) => {
       user: {
         id: staffData.id,
         email: staffData.email,
-        name: `${staffData.first_name} ${staffData.last_name}`,
+        name: fullName,
         role: staffData.role,
       },
       sessionToken,
