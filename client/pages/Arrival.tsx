@@ -434,6 +434,11 @@ export default function Arrival() {
       return;
     }
 
+    if (!selectedTour) {
+      toast.error("Guest information not found");
+      return;
+    }
+
     const printWindow = window.open("", "", "width=900,height=600");
     if (!printWindow) {
       toast.error("Failed to open print window");
@@ -450,6 +455,34 @@ export default function Arrival() {
               font-family: Arial, sans-serif;
               margin: 20px;
               background-color: white;
+            }
+            .guest-header {
+              margin-bottom: 30px;
+              border-bottom: 2px solid #333;
+              padding-bottom: 15px;
+            }
+            .guest-title {
+              font-size: 18px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+            .guest-info {
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 15px;
+              font-size: 13px;
+            }
+            .info-item {
+              display: flex;
+              flex-direction: column;
+            }
+            .info-label {
+              font-weight: bold;
+              color: #555;
+              margin-bottom: 3px;
+            }
+            .info-value {
+              color: #000;
             }
             table {
               width: 100%;
@@ -470,24 +503,30 @@ export default function Arrival() {
             tr:nth-child(even) {
               background-color: #f5f5f5;
             }
-            .activity-box {
-              background-color: #e3f2fd;
-              border: 1px solid #1976d2;
-              padding: 6px;
-              margin: 4px 0;
-              border-radius: 4px;
-            }
-            .activity-name {
-              font-weight: bold;
-              color: #000;
-            }
-            .activity-timing {
-              color: #555;
-              font-size: 11px;
-            }
           </style>
         </head>
         <body>
+          <div class="guest-header">
+            <div class="guest-title">${selectedTour.name}</div>
+            <div class="guest-info">
+              <div class="info-item">
+                <div class="info-label">Invoice</div>
+                <div class="info-value">${selectedTour.invoice}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Pax</div>
+                <div class="info-value">${selectedTour.pax}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Language</div>
+                <div class="info-value">${selectedTour.language}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Group</div>
+                <div class="info-value">${selectedTour.group_id}</div>
+              </div>
+            </div>
+          </div>
           ${tableElement.outerHTML}
         </body>
       </html>
