@@ -39,6 +39,7 @@ export function createServer() {
 
   // Setup/initialization routes
   app.post("/api/setup/initialize-demo", initializeDemo);
+  app.post("/api/setup/initialize-passwords", initializePasswords);
 
   // Tour API routes
   app.get("/api/tours", getTours);
