@@ -196,12 +196,42 @@ export default function Arrival() {
     fetchTours();
   }, []);
 
+  const migrateScheduleToNewFormat = (schedule: any): ActivitySchedule => {
+    const migrated: ActivitySchedule = {};
+
+    for (const [dayIndex, dayData] of Object.entries(schedule)) {
+      const dayNum = parseInt(dayIndex);
+      const day = dayData as any;
+
+      // If it already has the new structure, use it as is
+      if (day.plannedActivities || day.arrivalActivities || day.hotelActivities) {
+        migrated[dayNum] = {
+          plannedActivities: day.plannedActivities || [],
+          arrivalActivities: day.arrivalActivities || [],
+          hotelActivities: day.hotelActivities || [],
+          note: day.note || "",
+        };
+      } else {
+        // Migrate old structure (activities array) to new structure
+        migrated[dayNum] = {
+          plannedActivities: day.activities || [],
+          arrivalActivities: [],
+          hotelActivities: [],
+          note: day.note || "",
+        };
+      }
+    }
+
+    return migrated;
+  };
+
   const fetchSavedSchedule = async (tourId: string): Promise<ActivitySchedule | null> => {
     try {
       const response = await fetch(`/api/tours/${tourId}/schedule`);
       if (!response.ok) return null;
       const data = await response.json();
-      return data.schedule || null;
+      if (!data.schedule) return null;
+      return migrateScheduleToNewFormat(data.schedule);
     } catch {
       return null;
     }
