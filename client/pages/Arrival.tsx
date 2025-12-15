@@ -409,8 +409,14 @@ export default function Arrival() {
     }
   };
 
-  const handleResetSchedule = () => {
-    window.location.reload();
+  const handleEditSchedule = () => {
+    setShowEditConfirmation(true);
+  };
+
+  const handleConfirmEdit = () => {
+    setIsEditMode(true);
+    setShowEditConfirmation(false);
+    toast.success("Schedule is now editable");
   };
 
   const dayItinerary = selectedTour ? generateDayItinerary(selectedTour) : [];
