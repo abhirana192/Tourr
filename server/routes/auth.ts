@@ -68,7 +68,10 @@ export const login: RequestHandler = async (req, res) => {
 
 export const logout: RequestHandler = async (req, res) => {
   try {
-    await supabase.auth.signOut();
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    if (token) {
+      sessions.delete(token);
+    }
     res.json({ success: true });
   } catch (error) {
     console.error("Logout error:", error);
@@ -78,30 +81,34 @@ export const logout: RequestHandler = async (req, res) => {
 
 export const getSession: RequestHandler = async (req, res) => {
   try {
-    const { data } = await supabase.auth.getSession();
-
-    if (data.session?.user) {
-      const { data: staffData, error } = await supabase
-        .from("staff")
-        .select("id, email, first_name, last_name, role")
-        .eq("auth_user_id", data.session.user.id)
-        .single();
-
-      if (error) throw error;
-
-      res.json({
-        success: true,
-        user: {
-          id: staffData.id,
-          email: staffData.email,
-          name: `${staffData.first_name} ${staffData.last_name}`,
-          role: staffData.role,
-        },
-        session: data.session,
-      });
-    } else {
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    if (!token) {
       res.json({ success: true, user: null, session: null });
+      return;
     }
+
+    const session = sessions.get(token);
+    if (!session) {
+      res.json({ success: true, user: null, session: null });
+      return;
+    }
+
+    // Check if session is expired
+    if (session.expiresAt < Date.now()) {
+      sessions.delete(token);
+      res.json({ success: true, user: null, session: null });
+      return;
+    }
+
+    res.json({
+      success: true,
+      user: {
+        id: session.userId,
+        email: session.email,
+        name: session.name,
+        role: session.role,
+      },
+    });
   } catch (error) {
     console.error("Session error:", error);
     res.json({ success: true, user: null, session: null });
