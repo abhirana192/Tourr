@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertCircle, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
+import { ActivityPickerModal } from "./ActivityPickerModal";
 
 interface Tour {
   id: string;
@@ -575,35 +575,14 @@ export default function Arrival() {
           </div>
         )}
 
-        {/* Activity Picker Dialog */}
-        <Dialog open={activityPickerOpen} onOpenChange={setActivityPickerOpen}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Select an Activity</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {selectedTour && getAvailableActivities(selectedTour).map((activityKey) => {
-                const activityData = ACTIVITY_TIMINGS[activityKey];
-                if (!activityData) return null;
-
-                return (
-                  <button
-                    key={activityKey}
-                    onClick={() => handleSelectActivity(activityKey)}
-                    className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-colors"
-                  >
-                    <div className="font-semibold text-gray-900">{activityData.name}</div>
-                    <div className="text-xs text-gray-600 mt-1">
-                      {activityData.timings.map((timing, idx) => (
-                        <div key={idx}>{timing}</div>
-                      ))}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </DialogContent>
-        </Dialog>
+        {/* Activity Picker Modal */}
+        <ActivityPickerModal
+          open={activityPickerOpen}
+          onOpenChange={setActivityPickerOpen}
+          activities={ACTIVITY_TIMINGS}
+          availableActivityKeys={selectedTour ? getAvailableActivities(selectedTour) : []}
+          onSelectActivity={handleSelectActivity}
+        />
       </div>
     </div>
   );
