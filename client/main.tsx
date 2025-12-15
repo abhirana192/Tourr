@@ -11,7 +11,6 @@ import { AuthProvider } from "@/hooks/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Navigation from "./components/Navigation";
 import Login from "./pages/Login";
-import Index from "./pages/Index";
 import Schedule from "./pages/Schedule";
 import MonthlyPlan from "./pages/MonthlyPlan";
 import Arrival from "./pages/Arrival";
