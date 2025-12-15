@@ -5,6 +5,7 @@ import { getSessionFromRequest } from "./auth";
 
 export const getTours: RequestHandler = (req, res) => {
   try {
+    console.log("[getTours] Request received with query:", req.query);
     const dateFrom = (req.query.dateFrom as string) || "";
     const dateTo = (req.query.dateTo as string) || "";
     const invoice = (req.query.invoice as string) || "";
@@ -17,6 +18,7 @@ export const getTours: RequestHandler = (req, res) => {
       name || undefined
     );
 
+    console.log(`[getTours] Returning ${tours.length} tours`);
     res.json(tours);
   } catch (error) {
     console.error("Error fetching tours:", error);
