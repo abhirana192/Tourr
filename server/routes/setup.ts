@@ -1,5 +1,9 @@
 import { RequestHandler } from "express";
-import { supabase } from "../supabase";
+import crypto from "crypto";
+
+function hashPassword(password: string): string {
+  return crypto.createHash("sha256").update(password + "salt").digest("hex");
+}
 
 const DEMO_EMAIL = "admin@example.com";
 const DEMO_PASSWORD = "password";
