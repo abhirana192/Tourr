@@ -209,6 +209,7 @@ export const updateStaff: RequestHandler = async (req, res) => {
     const staff = updatedData[0];
 
     // Send notification email if user is authenticated and there are changes
+    let emailResult = null;
     if (currentUser && Object.keys(changes).length > 0) {
       const notification: EmailNotification = {
         action: "update",
@@ -223,7 +224,7 @@ export const updateStaff: RequestHandler = async (req, res) => {
         recordName: oldFullName,
         timestamp: new Date().toISOString(),
       };
-      await sendNotificationEmail(notification);
+      emailResult = await sendNotificationEmail(notification);
     }
 
     res.json({
@@ -234,7 +235,8 @@ export const updateStaff: RequestHandler = async (req, res) => {
         name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
         role: staff.role,
         created_at: staff.created_at,
-      }
+      },
+      emailSent: emailResult,
     });
   } catch (error) {
     console.error("Error updating staff:", error);
