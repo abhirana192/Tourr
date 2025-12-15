@@ -455,63 +455,153 @@ export default function Arrival() {
               size: landscape;
               margin: 10mm;
             }
-            body {
-              font-family: Arial, sans-serif;
-              margin: 20px;
-              background-color: white;
+            * {
+              margin: 0;
+              padding: 0;
             }
-            .guest-header {
-              margin-bottom: 30px;
-              border-bottom: 2px solid #333;
-              padding-bottom: 15px;
+            body {
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+              background-color: #f0f9f7;
+            }
+            .welcome-header {
+              background: linear-gradient(135deg, #1b7a5c 0%, #2da578 50%, #3ec4a0 100%);
+              color: white;
+              padding: 30px;
+              margin-bottom: 20px;
+              border-radius: 10px;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+              position: relative;
+              overflow: hidden;
+            }
+            .welcome-header::before {
+              content: '';
+              position: absolute;
+              top: -50%;
+              right: -10%;
+              width: 400px;
+              height: 400px;
+              background: radial-gradient(circle, rgba(62, 196, 160, 0.2) 0%, transparent 70%);
+              border-radius: 50%;
+            }
+            .header-content {
+              position: relative;
+              z-index: 1;
+            }
+            .welcome-text {
+              font-size: 14px;
+              opacity: 0.95;
+              margin-bottom: 10px;
+              letter-spacing: 1px;
             }
             .guest-title {
-              font-size: 18px;
-              font-weight: bold;
-              margin-bottom: 10px;
+              font-size: 32px;
+              font-weight: 700;
+              margin-bottom: 20px;
+              text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
             }
             .guest-info {
               display: grid;
               grid-template-columns: repeat(4, 1fr);
-              gap: 15px;
-              font-size: 13px;
+              gap: 20px;
+              margin-top: 15px;
             }
             .info-item {
-              display: flex;
-              flex-direction: column;
+              background: rgba(255, 255, 255, 0.15);
+              padding: 12px;
+              border-radius: 6px;
+              backdrop-filter: blur(10px);
             }
             .info-label {
-              font-weight: bold;
-              color: #555;
-              margin-bottom: 3px;
+              font-weight: 600;
+              font-size: 11px;
+              color: rgba(255, 255, 255, 0.85);
+              margin-bottom: 5px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
             }
             .info-value {
-              color: #000;
+              font-size: 16px;
+              font-weight: 700;
+              color: white;
+            }
+            .schedule-section {
+              margin: 30px;
+              margin-top: 0;
+            }
+            .section-title {
+              font-size: 18px;
+              font-weight: 700;
+              color: #1b7a5c;
+              margin-bottom: 15px;
+              padding-bottom: 10px;
+              border-bottom: 3px solid #3ec4a0;
+              display: inline-block;
             }
             table {
               width: 100%;
               border-collapse: collapse;
-              margin-bottom: 20px;
-            }
-            th, td {
-              border: 1px solid #333;
-              padding: 10px;
-              text-align: left;
-              font-size: 12px;
+              margin-top: 15px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             }
             th {
-              background-color: #333;
+              background: linear-gradient(135deg, #1b7a5c 0%, #2da578 100%);
               color: white;
-              font-weight: bold;
+              padding: 14px;
+              text-align: left;
+              font-weight: 700;
+              font-size: 12px;
+              letter-spacing: 0.5px;
+              border: none;
             }
-            tr:nth-child(even) {
-              background-color: #f5f5f5;
+            td {
+              padding: 12px 14px;
+              border-bottom: 1px solid #d0e8e5;
+              font-size: 12px;
+              color: #333;
+            }
+            tbody tr:nth-child(odd) {
+              background-color: #e8f5f2;
+            }
+            tbody tr:nth-child(even) {
+              background-color: #f5faf9;
+            }
+            tbody tr:hover {
+              background-color: #d0e8e5;
+            }
+            .activity-box {
+              background: linear-gradient(135deg, rgba(27, 122, 92, 0.1) 0%, rgba(62, 196, 160, 0.1) 100%);
+              border-left: 4px solid #2da578;
+              padding: 8px;
+              margin: 4px 0;
+              border-radius: 4px;
+            }
+            .activity-name {
+              font-weight: 700;
+              color: #1b7a5c;
+              margin-bottom: 3px;
+            }
+            .activity-timing {
+              color: #555;
+              font-size: 11px;
+            }
+            .footer {
+              margin-top: 40px;
+              text-align: center;
+              padding: 20px;
+              background: linear-gradient(135deg, rgba(27, 122, 92, 0.05) 0%, rgba(62, 196, 160, 0.05) 100%);
+              border-radius: 8px;
+              border-top: 2px solid #3ec4a0;
+              color: #1b7a5c;
+              font-size: 12px;
+              font-style: italic;
             }
           </style>
         </head>
         <body>
-          <div class="guest-header">
-            <div class="guest-title">${selectedTour.name}</div>
+          <div class="welcome-header">
+            <div class="header-content">
+              <div class="welcome-text">WELCOME TO YOUR ARCTIC ADVENTURE</div>
+              <div class="guest-title">${selectedTour.name}</div>
             <div class="guest-info">
               <div class="info-item">
                 <div class="info-label">Invoice</div>
