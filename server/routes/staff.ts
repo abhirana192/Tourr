@@ -1,5 +1,7 @@
 import { RequestHandler } from "express";
 import crypto from "crypto";
+import { sendNotificationEmail, EmailNotification } from "../email";
+import { getSessionFromRequest } from "./auth";
 
 // Simple password hashing using crypto (alternative to bcrypt)
 function hashPassword(password: string): string {
