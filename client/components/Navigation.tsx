@@ -77,12 +77,12 @@ export default function Navigation() {
 
       {/* Sidebar */}
       <div
-        className={`fixed left-0 top-0 h-full w-64 bg-white dark:bg-slate-900 shadow-xl transition-transform duration-300 ease-in-out ${
+        className={`fixed left-0 top-0 h-full w-64 bg-white dark:bg-slate-900 shadow-xl transition-transform duration-300 ease-in-out flex flex-col ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{ zIndex: 40 }}
       >
-        <div className="pt-20 px-6 space-y-2">
+        <div className="pt-20 px-6 space-y-2 flex-1">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8">
             Tour Manager
           </h2>
@@ -103,6 +103,30 @@ export default function Navigation() {
             ))}
           </nav>
         </div>
+
+        {/* User Info and Logout */}
+        {user && (
+          <div className="p-6 border-t border-slate-200 dark:border-slate-700 space-y-4">
+            <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+              <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Logged in as</p>
+              <p className="font-semibold text-slate-900 dark:text-white text-sm">{user.name}</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400">{user.email}</p>
+              <span className={`inline-block mt-2 px-2 py-1 rounded text-xs font-semibold ${
+                user.role === "admin"
+                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+              }`}>
+                {user.role}
+              </span>
+            </div>
+            <Button
+              onClick={handleLogout}
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg flex items-center justify-center gap-2"
+            >
+              <LogOut size={18} /> Logout
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );
