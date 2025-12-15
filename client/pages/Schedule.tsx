@@ -141,6 +141,13 @@ export default function Schedule() {
       setTours([...tours, newTour]);
       setIsModalOpen(false);
       setEditingTour(null);
+
+      if (newTour.emailSent) {
+        const emailTime = new Date(newTour.emailSent.timestamp).toLocaleTimeString();
+        toast.success(`Email sent to ${newTour.emailSent.recipientCount} staff members at ${emailTime}`, {
+          description: `From: ${newTour.emailSent.senderName} - Tour created`,
+        });
+      }
     } catch (error) {
       console.error("Error adding tour:", error);
     }
