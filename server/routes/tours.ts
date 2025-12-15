@@ -34,6 +34,7 @@ export const createTour: RequestHandler = async (req, res) => {
     });
 
     // Send notification email if user is authenticated
+    let emailResult = null;
     if (currentUser) {
       const changes: any = {};
       Object.entries(tour).forEach(([key, value]) => {
@@ -53,10 +54,10 @@ export const createTour: RequestHandler = async (req, res) => {
         recordName: tour.name || tour.invoice,
         timestamp: new Date().toISOString(),
       };
-      await sendNotificationEmail(notification);
+      emailResult = await sendNotificationEmail(notification);
     }
 
-    res.status(201).json(newTour);
+    res.status(201).json({ ...newTour, emailSent: emailResult });
   } catch (error) {
     console.error("Error creating tour:", error);
     res.status(500).json({ error: "Failed to create tour" });
