@@ -428,7 +428,74 @@ export default function Arrival() {
   };
 
   const handlePrint = () => {
-    window.print();
+    const tableElement = document.querySelector("table");
+    if (!tableElement) {
+      toast.error("Table not found");
+      return;
+    }
+
+    const printWindow = window.open("", "", "width=900,height=600");
+    if (!printWindow) {
+      toast.error("Failed to open print window");
+      return;
+    }
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Guest Arrival Schedule</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 20px;
+              background-color: white;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 20px;
+            }
+            th, td {
+              border: 1px solid #333;
+              padding: 10px;
+              text-align: left;
+              font-size: 12px;
+            }
+            th {
+              background-color: #333;
+              color: white;
+              font-weight: bold;
+            }
+            tr:nth-child(even) {
+              background-color: #f5f5f5;
+            }
+            .activity-box {
+              background-color: #e3f2fd;
+              border: 1px solid #1976d2;
+              padding: 6px;
+              margin: 4px 0;
+              border-radius: 4px;
+            }
+            .activity-name {
+              font-weight: bold;
+              color: #000;
+            }
+            .activity-timing {
+              color: #555;
+              font-size: 11px;
+            }
+          </style>
+        </head>
+        <body>
+          ${tableElement.outerHTML}
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.print();
   };
 
   const dayItinerary = selectedTour ? generateDayItinerary(selectedTour) : [];
