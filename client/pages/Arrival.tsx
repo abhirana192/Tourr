@@ -691,7 +691,7 @@ export default function Arrival() {
           </div>
           <div class="schedule-section">
             <div class="section-title">Your Itinerary</div>
-            ${tableElement.outerHTML}
+            ${tableClone.outerHTML}
           </div>
           <div class="footer">
             Welcome to the Arctic! We look forward to making your stay unforgettable with authentic experiences and warm hospitality.
