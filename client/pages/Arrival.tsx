@@ -376,13 +376,15 @@ export default function Arrival() {
     return itinerary;
   };
 
-  const handleActivityChange = (dayIndex: number, activityIndex: number, newActivity: Activity | null) => {
+  const handleActivityChange = (dayIndex: number, activityIndex: number, newActivity: Activity | null, column: "planned" | "arrival" | "hotel" = "planned") => {
     if (!selectedTour) return;
 
     setSchedules((prev) => {
       const tourSchedule = { ...prev[selectedTour.id] };
-      const dayData = tourSchedule[dayIndex] || { activities: [], note: "" };
-      const dayActivities = [...dayData.activities];
+      const dayData = tourSchedule[dayIndex] || { plannedActivities: [], arrivalActivities: [], hotelActivities: [], note: "" };
+
+      const columnKey = column === "planned" ? "plannedActivities" : column === "arrival" ? "arrivalActivities" : "hotelActivities";
+      const dayActivities = [...(dayData[columnKey] || [])];
 
       if (newActivity) {
         dayActivities[activityIndex] = newActivity;
@@ -390,7 +392,10 @@ export default function Arrival() {
         dayActivities.splice(activityIndex, 1);
       }
 
-      tourSchedule[dayIndex] = { activities: dayActivities, note: dayData.note };
+      tourSchedule[dayIndex] = {
+        ...dayData,
+        [columnKey]: dayActivities,
+      };
       return {
         ...prev,
         [selectedTour.id]: tourSchedule,
