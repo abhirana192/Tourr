@@ -73,6 +73,9 @@ export const createStaff: RequestHandler = async (req, res) => {
       return;
     }
 
+    // Get current user from session
+    const currentUser = getSessionFromRequest(req);
+
     // Split name into first and last name
     const nameParts = name.trim().split(/\s+/);
     const firstName = nameParts[0];
@@ -92,6 +95,28 @@ export const createStaff: RequestHandler = async (req, res) => {
     });
 
     const createdStaff = staffData[0];
+
+    // Send notification email if user is authenticated
+    if (currentUser) {
+      const notification: EmailNotification = {
+        action: "create",
+        type: "staff",
+        changes: {
+          email: { new: email },
+          name: { new: name },
+          role: { new: role },
+        },
+        changedBy: {
+          id: currentUser.userId,
+          name: currentUser.name,
+          email: currentUser.email,
+        },
+        recordId: createdStaff.id,
+        recordName: name,
+        timestamp: new Date().toISOString(),
+      };
+      await sendNotificationEmail(notification);
+    }
 
     res.status(201).json({
       success: true,
