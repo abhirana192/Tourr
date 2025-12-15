@@ -598,27 +598,31 @@ export default function Arrival() {
                       <td className="px-4 py-3 text-xs text-gray-900 align-top">
                         <div className="space-y-2">
                           <div className="text-center font-semibold">{day.paymentInfo}</div>
-                          {notesEditingDay === idx ? (
-                            <textarea
-                              value={day.note}
-                              onChange={(e) => handleNoteChange(idx, e.target.value)}
-                              onBlur={() => setNotesEditingDay(null)}
-                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                              rows={2}
-                              placeholder="Add a note..."
-                              autoFocus
-                            />
-                          ) : (
-                            <div
-                              onClick={() => setNotesEditingDay(idx)}
-                              className="p-1.5 rounded border border-dashed border-gray-300 cursor-pointer hover:bg-blue-50 transition-colors min-h-8 flex items-center justify-center"
-                            >
-                              {day.note ? (
-                                <div className="whitespace-pre-wrap text-gray-700 text-xs text-center">{day.note}</div>
+                          {idx !== 0 && (
+                            <>
+                              {notesEditingDay === idx ? (
+                                <textarea
+                                  value={day.note}
+                                  onChange={(e) => handleNoteChange(idx, e.target.value)}
+                                  onBlur={() => setNotesEditingDay(null)}
+                                  className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                  rows={2}
+                                  placeholder="Add a note..."
+                                  autoFocus
+                                />
                               ) : (
-                                <div className="text-gray-400 italic text-xs">+ Note</div>
+                                <div
+                                  onClick={() => setNotesEditingDay(idx)}
+                                  className="p-1.5 rounded border border-dashed border-gray-300 cursor-pointer hover:bg-blue-50 transition-colors min-h-8 flex items-center justify-center"
+                                >
+                                  {day.note ? (
+                                    <div className="whitespace-pre-wrap text-gray-700 text-xs text-center">{day.note}</div>
+                                  ) : (
+                                    <div className="text-gray-400 italic text-xs">+ Note</div>
+                                  )}
+                                </div>
                               )}
-                            </div>
+                            </>
                           )}
                         </div>
                       </td>
