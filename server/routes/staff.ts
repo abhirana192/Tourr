@@ -90,7 +90,7 @@ export const createStaff: RequestHandler = async (req, res) => {
 export const updateStaff: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, role, password } = req.body;
+    const { name, email, role, password } = req.body;
 
     if (!id) {
       res.status(400).json({ error: "Missing staff ID" });
@@ -103,6 +103,7 @@ export const updateStaff: RequestHandler = async (req, res) => {
       updates.first_name = nameParts[0];
       updates.last_name = nameParts.slice(1).join(" ") || nameParts[0];
     }
+    if (email) updates.email = email;
     if (role) updates.role = role;
 
     // Update staff record
