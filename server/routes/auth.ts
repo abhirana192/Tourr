@@ -27,7 +27,7 @@ async function getStaffByEmail(email: string) {
     throw new Error("Missing Supabase credentials");
   }
 
-  const response = await fetch(`${supabaseUrl}/rest/v1/staff?email=eq.${encodeURIComponent(email)}&select=id,email,first_name,last_name,role`, {
+  const response = await fetch(`${supabaseUrl}/rest/v1/staff?email=eq.${encodeURIComponent(email)}&select=id,email,first_name,last_name,role,password_hash`, {
     headers: {
       "Authorization": `Bearer ${anonKey}`,
       "apikey": anonKey,
