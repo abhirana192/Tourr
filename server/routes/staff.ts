@@ -40,7 +40,7 @@ export const getAllStaff: RequestHandler = async (req, res) => {
     const transformedData = data.map((staff: any) => ({
       id: staff.id,
       email: staff.email,
-      name: `${staff.first_name} ${staff.last_name}`,
+      name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
       role: staff.role,
       created_at: staff.created_at,
     }));
