@@ -98,6 +98,8 @@ export default function Arrival() {
   const [activityPickerOpen, setActivityPickerOpen] = useState(false);
   const [selectedDayForActivity, setSelectedDayForActivity] = useState<number | null>(null);
   const [notesEditingDay, setNotesEditingDay] = useState<number | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [showEditConfirmation, setShowEditConfirmation] = useState(false);
 
   const extractDateAndTime = (value: any) => {
     if (!value) return { date: "", time: "" };
