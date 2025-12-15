@@ -422,6 +422,11 @@ export default function Arrival() {
     toast.success("Schedule is now editable");
   };
 
+  const handleDoneEditing = () => {
+    setIsEditMode(false);
+    toast.success("Changes saved and schedule locked");
+  };
+
   const dayItinerary = selectedTour ? generateDayItinerary(selectedTour) : [];
 
   return (
