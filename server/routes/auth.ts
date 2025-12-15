@@ -10,12 +10,22 @@ export const login: RequestHandler = async (req, res) => {
       return;
     }
 
+    // Check if service key is available
+    if (!process.env.SUPABASE_SERVICE_KEY) {
+      console.error("SUPABASE_SERVICE_KEY is not set");
+      res.status(500).json({ error: "Server configuration error: missing service key" });
+      return;
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase auth error:", error);
+      throw error;
+    }
 
     if (data.user) {
       const { data: staffData, error: staffError } = await supabase
