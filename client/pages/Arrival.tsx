@@ -104,11 +104,25 @@ export default function Arrival() {
   const extractDateAndTime = (value: any) => {
     if (!value) return { date: "", time: "" };
     const str = String(value).trim();
-    const parts = str.split("|");
-    const date = parts[0]?.trim() || "";
-    const time = parts[1]?.trim() || "";
-    const flight = parts[2]?.trim() || "";
-    return { date, time, flight };
+
+    // Handle pipe-separated format (date|time|flight)
+    if (str.includes("|")) {
+      const parts = str.split("|");
+      const date = parts[0]?.trim() || "";
+      const time = parts[1]?.trim() || "";
+      const flight = parts[2]?.trim() || "";
+      return { date, time, flight };
+    }
+
+    // Handle simple date format (YYYY-MM-DD)
+    if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+      const date = str.substring(0, 10);
+      const time = str.substring(11).trim() || "";
+      return { date, time, flight: "" };
+    }
+
+    // Fallback
+    return { date: str, time: "", flight: "" };
   };
 
   const getAvailableActivities = (tour: Tour): string[] => {
