@@ -127,13 +127,28 @@ export default function Arrival() {
 
   const getAvailableActivities = (tour: Tour): string[] => {
     const available: string[] = [];
-    if (tour.city_tour === "Yes") available.push("city_tour");
-    if (tour.fishing === "Yes") available.push("fishing");
-    if (tour.dog_sledging === "Yes") available.push("dog_sledging");
-    if (tour.snowmobile_atv === "Yes") available.push("snowmobile_atv");
-    if (tour.hiking === "Yes") available.push("hiking");
-    if (tour.aurora_village === "Yes") available.push("aurora_village");
-    if (tour.nlt === "Yes") available.push("nlt");
+
+    // Check if any activities are explicitly marked as "Yes"
+    const hasExplicitActivities =
+      tour.city_tour === "Yes" ||
+      tour.fishing === "Yes" ||
+      tour.dog_sledging === "Yes" ||
+      tour.snowmobile_atv === "Yes" ||
+      tour.hiking === "Yes" ||
+      tour.aurora_village === "Yes" ||
+      tour.nlt === "Yes";
+
+    // If no activities are explicitly marked, include all by default
+    const includeAll = !hasExplicitActivities;
+
+    if (tour.city_tour === "Yes" || includeAll) available.push("city_tour");
+    if (tour.fishing === "Yes" || includeAll) available.push("fishing");
+    if (tour.dog_sledging === "Yes" || includeAll) available.push("dog_sledging");
+    if (tour.snowmobile_atv === "Yes" || includeAll) available.push("snowmobile_atv");
+    if (tour.hiking === "Yes" || includeAll) available.push("hiking");
+    if (tour.aurora_village === "Yes" || includeAll) available.push("aurora_village");
+    if (tour.nlt === "Yes" || includeAll) available.push("nlt");
+
     return available;
   };
 
