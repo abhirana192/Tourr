@@ -159,6 +159,17 @@ export default function Arrival() {
     fetchTours();
   }, []);
 
+  const fetchSavedSchedule = async (tourId: string): Promise<ActivitySchedule | null> => {
+    try {
+      const response = await fetch(`/api/tours/${tourId}/schedule`);
+      if (!response.ok) return null;
+      const data = await response.json();
+      return data.schedule || null;
+    } catch {
+      return null;
+    }
+  };
+
   useEffect(() => {
     if (!selectedTour) return;
 
@@ -173,10 +184,21 @@ export default function Arrival() {
       const timeDiff = departureDate.getTime() - arrivalDate.getTime();
       const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
 
-      setSchedules((prev) => ({
-        ...prev,
-        [selectedTour.id]: generateRandomSchedule(selectedTour, daysDiff),
-      }));
+      // Try to load saved schedule first
+      fetchSavedSchedule(selectedTour.id).then((savedSchedule) => {
+        if (savedSchedule) {
+          setSchedules((prev) => ({
+            ...prev,
+            [selectedTour.id]: savedSchedule,
+          }));
+        } else {
+          // If no saved schedule, generate random one
+          setSchedules((prev) => ({
+            ...prev,
+            [selectedTour.id]: generateRandomSchedule(selectedTour, daysDiff),
+          }));
+        }
+      });
     }
   }, [selectedTour?.id]);
 
