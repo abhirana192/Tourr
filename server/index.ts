@@ -21,7 +21,7 @@ export function createServer() {
   app.use(express.urlencoded({ extended: true }));
 
   // Serve static files from the client build directory
-  const clientBuildPath = path.join(__dirname, "../dist/spa");
+  const clientBuildPath = path.join(__dirname, "../spa");
   app.use(express.static(clientBuildPath));
 
   // Example API routes
