@@ -1,11 +1,34 @@
 import { RequestHandler } from "express";
-import { supabase } from "../supabase";
 
 // Simple in-memory session storage (replace with database in production)
 const sessions = new Map<string, { userId: string; email: string; name: string; role: string; expiresAt: number }>();
 
 function generateSessionToken(): string {
   return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
+async function getStaffByEmail(email: string) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Missing Supabase credentials");
+  }
+
+  const response = await fetch(`${supabaseUrl}/rest/v1/staff?email=eq.${encodeURIComponent(email)}&select=id,email,first_name,last_name,role`, {
+    headers: {
+      "Authorization": `Bearer ${supabaseKey}`,
+      "apikey": supabaseKey,
+    },
+  });
+
+  if (!response.ok) {
+    console.error(`Supabase REST API error: ${response.status} ${response.statusText}`);
+    throw new Error("Database query failed");
+  }
+
+  const data = await response.json();
+  return data.length > 0 ? data[0] : null;
 }
 
 export const login: RequestHandler = async (req, res) => {
@@ -24,14 +47,10 @@ export const login: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Get staff user from database
-    const { data: staffData, error: staffError } = await supabase
-      .from("staff")
-      .select("id, email, first_name, last_name, role")
-      .eq("email", email)
-      .single();
+    // Get staff user from database using REST API
+    const staffData = await getStaffByEmail(email);
 
-    if (staffError || !staffData) {
+    if (!staffData) {
       res.status(401).json({ error: "User not found" });
       return;
     }
