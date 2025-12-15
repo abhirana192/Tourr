@@ -232,16 +232,19 @@ export async function sendNotificationEmail(
       return null;
     }
 
-    // Check if Resend API is configured
-    const resendApiKey = process.env.RESEND_API_KEY;
+    // Check if Gmail credentials are configured
+    const gmailUser = process.env.GMAIL_USER;
+    const gmailPassword = process.env.GMAIL_PASSWORD;
 
-    if (resendApiKey) {
-      // Send via Resend from the staff member's email
-      await sendViaResend(
+    if (gmailUser && gmailPassword) {
+      // Send via Gmail using Nodemailer
+      await sendViaNodemailer(
         recipientEmails,
         emailContent.subject,
         emailContent.html,
-        resendApiKey,
+        emailContent.text,
+        gmailUser,
+        gmailPassword,
         notification.changedBy.email,
         notification.changedBy.name
       );
