@@ -32,13 +32,53 @@ interface Tour {
   remarks: string;
 }
 
+interface Activity {
+  name: string;
+  timings: string[];
+}
+
 interface DayItinerary {
   day: string;
   arrivalInfo: string;
-  departureInfo: string;
+  activities: Activity[];
   hotelInfo: string;
   paymentInfo: string;
 }
+
+interface ActivitySchedule {
+  [dayIndex: number]: Activity[];
+}
+
+const ACTIVITY_TIMINGS: { [key: string]: Activity } = {
+  city_tour: {
+    name: "City Tour",
+    timings: ["10:00~10:15 AM - 12:00 PM", "3:00 PM - 4:30 PM"],
+  },
+  fishing: {
+    name: "Ice Fishing",
+    timings: ["10:30~10:50 AM - 1:45 PM", "9:30~9:50 AM - 12:45 PM"],
+  },
+  dog_sledging: {
+    name: "Dog Sledging",
+    timings: ["1:30~1:45 PM - 3:30 PM"],
+  },
+  snowmobile_atv: {
+    name: "Snowmobile",
+    timings: ["10:00~10:15 AM - 11:30 AM", "1:30~1:45 PM - 3:00 PM"],
+  },
+  hiking: {
+    name: "Cameron Fall Hiking",
+    timings: ["1:00~1:15 PM - 3:00 PM", "1:30~1:45 PM - 5:00 PM"],
+  },
+  aurora_village: {
+    name: "Ice Lake Tour",
+    timings: ["11:00 AM - 12:00 PM", "2:00~2:15 PM - 3:30 PM"],
+  },
+  nlt: {
+    name: "Aurora Viewing",
+    timings: ["9:30~9:50 PM - 1:30 AM", "10:00~10:15 PM - 2:00 AM"],
+  },
+};
 
 export default function Arrival() {
   const [tours, setTours] = useState<Tour[]>([]);
@@ -47,6 +87,8 @@ export default function Arrival() {
   const [searchDateTo, setSearchDateTo] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [schedules, setSchedules] = useState<{ [tourId: string]: ActivitySchedule }>({});
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     fetchTours();
@@ -104,6 +146,48 @@ export default function Arrival() {
     return { date, time, flight };
   };
 
+  const getAvailableActivities = (tour: Tour): string[] => {
+    const available: string[] = [];
+    if (tour.city_tour === "Yes") available.push("city_tour");
+    if (tour.fishing === "Yes") available.push("fishing");
+    if (tour.dog_sledging === "Yes") available.push("dog_sledging");
+    if (tour.snowmobile_atv === "Yes") available.push("snowmobile_atv");
+    if (tour.hiking === "Yes") available.push("hiking");
+    if (tour.aurora_village === "Yes") available.push("aurora_village");
+    if (tour.nlt === "Yes") available.push("nlt");
+    return available;
+  };
+
+  const generateRandomSchedule = (tour: Tour, dayCount: number): ActivitySchedule => {
+    const available = getAvailableActivities(tour);
+    const schedule: ActivitySchedule = {};
+
+    // For middle days (excluding arrival day 0 and departure day dayCount-1)
+    for (let i = 1; i < dayCount - 1; i++) {
+      const activities: Activity[] = [];
+
+      // Randomly select 1-2 activities for each day
+      const activitiesToAdd = Math.random() > 0.5 ? 1 : 2;
+      const shuffled = [...available].sort(() => Math.random() - 0.5);
+
+      for (let j = 0; j < Math.min(activitiesToAdd, shuffled.length); j++) {
+        const activityKey = shuffled[j];
+        const activityData = ACTIVITY_TIMINGS[activityKey];
+        if (activityData) {
+          const timing = activityData.timings[Math.floor(Math.random() * activityData.timings.length)];
+          activities.push({
+            name: activityData.name,
+            timings: [timing],
+          });
+        }
+      }
+
+      schedule[i] = activities;
+    }
+
+    return schedule;
+  };
+
   const generateDayItinerary = (tour: Tour): DayItinerary[] => {
     const arrival = extractDateAndTime(tour.arrival);
     const departure = extractDateAndTime(tour.departure);
@@ -121,6 +205,14 @@ export default function Arrival() {
     const timeDiff = departureDate.getTime() - arrivalDate.getTime();
     const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
 
+    // Initialize schedule if not exists
+    if (!schedules[tour.id]) {
+      setSchedules((prev) => ({
+        ...prev,
+        [tour.id]: generateRandomSchedule(tour, daysDiff),
+      }));
+    }
+
     const dayLabels = ["Arrival Day"];
     for (let i = 1; i < daysDiff; i++) {
       if (i === 1) dayLabels.push("1st Day");
@@ -129,6 +221,8 @@ export default function Arrival() {
       else dayLabels.push(`${i}th Day`);
     }
 
+    const tourSchedule = schedules[tour.id] || {};
+
     // Generate itinerary for each day
     for (let i = 0; i < daysDiff; i++) {
       if (i === 0) {
@@ -136,7 +230,7 @@ export default function Arrival() {
         itinerary.push({
           day: dayLabels[i],
           arrivalInfo: arrival.date ? `${arrival.date} ${arrival.time}${arrival.flight ? ` ${arrival.flight}` : ""}` : "-",
-          departureInfo: tour.remarks ? tour.remarks : "*Free activity",
+          activities: [],
           hotelInfo: tour.accommodation ? `${tour.accommodation}` : "-",
           paymentInfo: tour.pax ? `${tour.pax}` : "-",
         });
@@ -145,34 +239,117 @@ export default function Arrival() {
         itinerary.push({
           day: dayLabels[i],
           arrivalInfo: "Shuttle service is scheduled 2 hours before the departure flight. Please wait in the lobby of your accommodation.",
-          departureInfo: `${departure.date ? departure.date : "-"} ${departure.time ? departure.time : ""}${departure.flight ? ` ${departure.flight}` : ""}\n(Cold-weather gear will be collected)`,
-          hotelInfo: tour.accommodation ? `${tour.accommodation}` : "-",
+          activities: [],
+          hotelInfo: `${departure.date ? departure.date : "-"} ${departure.time ? departure.time : ""}${departure.flight ? ` ${departure.flight}` : ""}\n(Cold-weather gear will be collected)`,
           paymentInfo: "-",
         });
       } else {
         // Middle days
-        const dayActivities = [];
-        if (tour.hiking === "Yes") dayActivities.push("Hiking");
-        if (tour.fishing === "Yes") dayActivities.push("Fishing");
-        if (tour.dog_sledging === "Yes") dayActivities.push("Dog Sledding");
-        if (tour.snowmobile_atv === "Yes") dayActivities.push("Snowmobile/ATV");
-        if (tour.aurora_village === "Yes") dayActivities.push("Aurora Village");
-        if (tour.city_tour === "Yes") dayActivities.push("City Tour");
-        if (tour.snowshoe === "Yes") dayActivities.push("Snowshoe");
-
-        const activities = dayActivities.length > 0 ? dayActivities.join(", ") : "*Free activity";
+        const dayActivities = tourSchedule[i] || [];
 
         itinerary.push({
           day: dayLabels[i],
           arrivalInfo: "*Free activity",
-          departureInfo: activities,
-          hotelInfo: tour.accommodation ? `Aurora Viewing 9:30PM - 1:30AM` : "*Free activity",
+          activities: dayActivities,
+          hotelInfo: tour.accommodation ? `${tour.accommodation}` : "-",
           paymentInfo: i === 1 && tour.payment ? `*Optional (Self-pay) - ${tour.payment}` : "-",
         });
       }
     }
 
     return itinerary;
+  };
+
+  const handleActivityChange = (dayIndex: number, activityIndex: number, newActivity: Activity | null) => {
+    if (!selectedTour) return;
+
+    setSchedules((prev) => {
+      const tourSchedule = { ...prev[selectedTour.id] };
+      const dayActivities = [...(tourSchedule[dayIndex] || [])];
+
+      if (newActivity) {
+        dayActivities[activityIndex] = newActivity;
+      } else {
+        dayActivities.splice(activityIndex, 1);
+      }
+
+      tourSchedule[dayIndex] = dayActivities;
+      return {
+        ...prev,
+        [selectedTour.id]: tourSchedule,
+      };
+    });
+  };
+
+  const handleAddActivity = (dayIndex: number) => {
+    if (!selectedTour) return;
+    const available = getAvailableActivities(selectedTour);
+    if (available.length === 0) return;
+
+    const activityKey = available[0];
+    const activityData = ACTIVITY_TIMINGS[activityKey];
+    if (!activityData) return;
+
+    const newActivity: Activity = {
+      name: activityData.name,
+      timings: [activityData.timings[0]],
+    };
+
+    setSchedules((prev) => {
+      const tourSchedule = { ...prev[selectedTour.id] };
+      const dayActivities = [...(tourSchedule[dayIndex] || [])];
+      dayActivities.push(newActivity);
+      tourSchedule[dayIndex] = dayActivities;
+      return {
+        ...prev,
+        [selectedTour.id]: tourSchedule,
+      };
+    });
+  };
+
+  const handleSaveSchedule = async () => {
+    if (!selectedTour) return;
+
+    setIsSaving(true);
+    try {
+      const scheduleData = schedules[selectedTour.id];
+      const response = await fetch(`/api/tours/${selectedTour.id}/schedule`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(scheduleData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save schedule");
+      }
+
+      toast.success("Schedule saved successfully!");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to save schedule";
+      toast.error(errorMessage);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleResetSchedule = () => {
+    if (!selectedTour) return;
+    const arrival = extractDateAndTime(selectedTour.arrival);
+    const departure = extractDateAndTime(selectedTour.departure);
+
+    if (!arrival.date || !departure.date) return;
+
+    const arrivalDate = new Date(arrival.date);
+    const departureDate = new Date(departure.date);
+    const timeDiff = departureDate.getTime() - arrivalDate.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+
+    setSchedules((prev) => ({
+      ...prev,
+      [selectedTour.id]: generateRandomSchedule(selectedTour, daysDiff),
+    }));
+
+    toast.success("Schedule reset to random assignment");
   };
 
   const dayItinerary = selectedTour ? generateDayItinerary(selectedTour) : [];
@@ -261,39 +438,58 @@ export default function Arrival() {
 
         {/* Arrival Information Table */}
         {!loading && selectedTour && (
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col">
             {/* Guest Header */}
             <div className="p-4 border-b border-gray-200 bg-gray-50">
-              <h2 className="text-lg font-semibold text-gray-900">{selectedTour.name}</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-3 text-sm">
+              <div className="flex justify-between items-start">
                 <div>
-                  <span className="text-gray-600">Invoice:</span>
-                  <p className="font-semibold text-gray-900">{selectedTour.invoice}</p>
+                  <h2 className="text-lg font-semibold text-gray-900">{selectedTour.name}</h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-3 text-sm">
+                    <div>
+                      <span className="text-gray-600">Invoice:</span>
+                      <p className="font-semibold text-gray-900">{selectedTour.invoice}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Pax:</span>
+                      <p className="font-semibold text-gray-900">{selectedTour.pax}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Language:</span>
+                      <p className="font-semibold text-gray-900">{selectedTour.language}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Group:</span>
+                      <p className="font-semibold text-gray-900">{selectedTour.group_id}</p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-gray-600">Pax:</span>
-                  <p className="font-semibold text-gray-900">{selectedTour.pax}</p>
-                </div>
-                <div>
-                  <span className="text-gray-600">Language:</span>
-                  <p className="font-semibold text-gray-900">{selectedTour.language}</p>
-                </div>
-                <div>
-                  <span className="text-gray-600">Group:</span>
-                  <p className="font-semibold text-gray-900">{selectedTour.group_id}</p>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleResetSchedule}
+                    className="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-3 rounded-lg"
+                  >
+                    Reset Schedule
+                  </Button>
+                  <Button
+                    onClick={handleSaveSchedule}
+                    disabled={isSaving}
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs py-1.5 px-3 rounded-lg"
+                  >
+                    {isSaving ? "Saving..." : "Save Schedule"}
+                  </Button>
                 </div>
               </div>
             </div>
 
             {/* Itinerary Table */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto flex-1">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-gray-800 text-white border-b border-gray-400">
+                  <tr className="bg-gray-800 text-white border-b border-gray-400 sticky top-0">
                     <th className="px-4 py-3 text-left text-xs font-bold border-r border-gray-400 min-w-24">Basic Info</th>
                     <th className="px-4 py-3 text-left text-xs font-bold border-r border-gray-400 min-w-40">Arrival Date ARR.</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold border-r border-gray-400 min-w-40">Departure Date DEP.</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold border-r border-gray-400 min-w-56">Hotel Stay HOTEL</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold border-r border-gray-400 min-w-56">Planned Activities</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold border-r border-gray-400 min-w-40">Hotel Stay HOTEL</th>
                     <th className="px-4 py-3 text-center text-xs font-bold min-w-20">People pax</th>
                   </tr>
                 </thead>
@@ -307,7 +503,42 @@ export default function Arrival() {
                         <div className="whitespace-normal text-justify leading-relaxed">{day.arrivalInfo}</div>
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
-                        <div className="whitespace-normal text-justify leading-relaxed">{day.departureInfo}</div>
+                        {day.activities.length === 0 ? (
+                          <div className="whitespace-normal text-gray-500 italic">*Free activity</div>
+                        ) : (
+                          <div className="space-y-2">
+                            {day.activities.map((activity, actIdx) => (
+                              <div key={actIdx} className="flex items-start justify-between gap-2 p-2 bg-blue-50 rounded border border-blue-200">
+                                <div className="flex-1">
+                                  <div className="font-semibold text-gray-900">{activity.name}</div>
+                                  <div className="text-xs text-gray-600">{activity.timings[0]}</div>
+                                </div>
+                                <button
+                                  onClick={() => handleActivityChange(idx, actIdx, null)}
+                                  className="text-red-500 hover:text-red-700 font-bold text-sm"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            ))}
+                            {idx > 0 && idx < dayItinerary.length - 1 && (
+                              <button
+                                onClick={() => handleAddActivity(idx)}
+                                className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-gray-100 text-gray-600"
+                              >
+                                + Add Activity
+                              </button>
+                            )}
+                          </div>
+                        )}
+                        {idx > 0 && idx < dayItinerary.length - 1 && day.activities.length === 0 && (
+                          <button
+                            onClick={() => handleAddActivity(idx)}
+                            className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-gray-100 text-gray-600"
+                          >
+                            + Add Activity
+                          </button>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
                         <div className="whitespace-normal text-justify leading-relaxed">{day.hotelInfo}</div>
