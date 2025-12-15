@@ -1020,7 +1020,7 @@ export default function Arrival() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
-                        {day.plannedActivities.length === 0 ? (
+                        {(day.plannedActivities?.length ?? 0) === 0 ? (
                           <div className="whitespace-normal text-gray-500 italic">*Free activity</div>
                         ) : (
                           <div className="space-y-2">
