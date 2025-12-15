@@ -82,7 +82,6 @@ export const useAuth = (): AuthContextType => {
       try {
         const token = localStorage.getItem("sessionToken");
         if (!token) {
-          setIsLoading(false);
           return;
         }
 
@@ -100,15 +99,14 @@ export const useAuth = (): AuthContextType => {
           } else {
             setSessionToken(null);
             localStorage.removeItem("sessionToken");
-            setIsLoading(false);
           }
         } else {
           setSessionToken(null);
           localStorage.removeItem("sessionToken");
-          setIsLoading(false);
         }
       } catch (error) {
         console.error("Session check error:", error);
+      } finally {
         setIsLoading(false);
       }
     };
