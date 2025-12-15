@@ -203,6 +203,9 @@ export default function Arrival() {
         }
       });
     }
+
+    // Reset edit mode when switching tours
+    setIsEditMode(false);
   }, [selectedTour?.id]);
 
   const fetchTours = async (dateFrom = "", dateTo = "") => {
