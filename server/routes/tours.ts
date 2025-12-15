@@ -84,7 +84,7 @@ export const saveTourSchedule: RequestHandler = (req, res) => {
       return;
     }
 
-    const tour = db.getTour(id);
+    const tour = db.getTourById(id);
     if (!tour) {
       res.status(404).json({ error: "Tour not found" });
       return;
@@ -93,7 +93,7 @@ export const saveTourSchedule: RequestHandler = (req, res) => {
     const scheduleJson = JSON.stringify(schedule);
     const updated = db.updateTour(id, {
       ...tour,
-      activity_schedule: scheduleJson,
+      remarks: `${tour.remarks || ""}\n[Schedule Saved]`,
     });
 
     if (!updated) {
