@@ -581,15 +581,17 @@ export default function Arrival() {
                                   <div className="font-semibold text-gray-900">{activity.name}</div>
                                   <div className="text-xs text-gray-600">{activity.timings[0]}</div>
                                 </div>
-                                <button
-                                  onClick={() => handleActivityChange(idx, actIdx, null)}
-                                  className="text-red-500 hover:text-red-700 font-bold text-sm"
-                                >
-                                  ✕
-                                </button>
+                                {isEditMode && (
+                                  <button
+                                    onClick={() => handleActivityChange(idx, actIdx, null)}
+                                    className="text-red-500 hover:text-red-700 font-bold text-sm"
+                                  >
+                                    ✕
+                                  </button>
+                                )}
                               </div>
                             ))}
-                            {idx > 0 && idx < dayItinerary.length - 1 && (
+                            {idx > 0 && idx < dayItinerary.length - 1 && isEditMode && (
                               <button
                                 onClick={() => handleAddActivity(idx)}
                                 className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-gray-100 text-gray-600"
@@ -599,7 +601,7 @@ export default function Arrival() {
                             )}
                           </div>
                         )}
-                        {idx > 0 && idx < dayItinerary.length - 1 && day.activities.length === 0 && (
+                        {idx > 0 && idx < dayItinerary.length - 1 && day.activities.length === 0 && isEditMode && (
                           <button
                             onClick={() => handleAddActivity(idx)}
                             className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-gray-100 text-gray-600"
