@@ -1,13 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.SUPABASE_URL || "";
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY || "";
+function getSupabaseClient() {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error("Missing Supabase credentials");
+  if (!supabaseUrl) {
+    console.error("SUPABASE_URL is not set");
+  }
+
+  if (!supabaseKey) {
+    console.error("SUPABASE_SERVICE_KEY is not set. Available env vars:", Object.keys(process.env).filter(k => k.includes('SUPABASE')));
+  }
+
+  return createClient(supabaseUrl || "", supabaseKey || "");
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = getSupabaseClient();
 
 export interface Tour {
   id: string;
