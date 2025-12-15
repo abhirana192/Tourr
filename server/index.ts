@@ -28,6 +28,9 @@ export function createServer() {
   app.post("/api/auth/logout", logout);
   app.get("/api/auth/session", getSession);
 
+  // Setup/initialization routes
+  app.post("/api/setup/initialize-demo", initializeDemo);
+
   // Tour API routes
   app.get("/api/tours", getTours);
   app.get("/api/tours/:id/schedule", getTourSchedule);
