@@ -66,7 +66,7 @@ export const login: RequestHandler = async (req, res) => {
 
     // Verify password against hashed password
     if (!staffData.password_hash || !verifyPassword(password, staffData.password_hash)) {
-      res.status(401).json({ error: "Invalid email or password" });
+      res.status(401).json({ error: "Invalid name or password" });
       return;
     }
 
