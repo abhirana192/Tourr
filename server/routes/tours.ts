@@ -206,6 +206,7 @@ export const saveTourSchedule: RequestHandler = async (req, res) => {
     }
 
     // Send notification email if user is authenticated
+    let emailResult = null;
     if (currentUser && oldSchedule !== scheduleJson) {
       const notification: EmailNotification = {
         action: "update",
@@ -225,10 +226,10 @@ export const saveTourSchedule: RequestHandler = async (req, res) => {
         recordName: `${tour.name} (Schedule Update)`,
         timestamp: new Date().toISOString(),
       };
-      await sendNotificationEmail(notification);
+      emailResult = await sendNotificationEmail(notification);
     }
 
-    res.json({ success: true, data: updated });
+    res.json({ success: true, data: updated, emailSent: emailResult });
   } catch (error) {
     console.error("Error saving tour schedule:", error);
     res.status(500).json({ error: "Failed to save schedule" });
