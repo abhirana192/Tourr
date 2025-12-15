@@ -64,7 +64,7 @@ export const createStaff: RequestHandler = async (req, res) => {
     // Split name into first and last name
     const nameParts = name.trim().split(/\s+/);
     const firstName = nameParts[0];
-    const lastName = nameParts.slice(1).join(" ") || firstName;
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
 
     // Insert into staff table
     const staffData = await makeSupabaseRequest("POST", "/staff", {
