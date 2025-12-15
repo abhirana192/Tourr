@@ -144,6 +144,13 @@ export default function StaffManagement() {
         const updated = await response.json();
         setStaff(staff.map((s) => (s.id === editingId ? { ...s, ...updated.data } : s)));
 
+        if (updated.emailSent) {
+          const emailTime = new Date(updated.emailSent.timestamp).toLocaleTimeString();
+          toast.success(`Email sent to ${updated.emailSent.recipientCount} staff members at ${emailTime}`, {
+            description: `From: ${updated.emailSent.senderName}`,
+          });
+        }
+
         if (formData.password) {
           setPasswordStatus({
             staffId: editingId,
@@ -151,7 +158,9 @@ export default function StaffManagement() {
             tempPassword: formData.password,
           });
         } else {
-          toast.success("Staff member updated successfully");
+          if (!updated.emailSent) {
+            toast.success("Staff member updated successfully");
+          }
         }
       } else {
         const response = await fetch("/api/staff", {
