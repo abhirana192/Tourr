@@ -44,10 +44,14 @@ interface DayItinerary {
   activities: Activity[];
   hotelInfo: string;
   paymentInfo: string;
+  note: string;
 }
 
 interface ActivitySchedule {
-  [dayIndex: number]: Activity[];
+  [dayIndex: number]: {
+    activities: Activity[];
+    note: string;
+  };
 }
 
 const ACTIVITY_TIMINGS: { [key: string]: Activity } = {
@@ -92,6 +96,7 @@ export default function Arrival() {
   const [isSaving, setIsSaving] = useState(false);
   const [activityPickerOpen, setActivityPickerOpen] = useState(false);
   const [selectedDayForActivity, setSelectedDayForActivity] = useState<number | null>(null);
+  const [notesEditingDay, setNotesEditingDay] = useState<number | null>(null);
 
   const extractDateAndTime = (value: any) => {
     if (!value) return { date: "", time: "" };
