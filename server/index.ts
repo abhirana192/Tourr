@@ -65,5 +65,11 @@ export function createServer() {
   app.put("/api/staff/:id", updateStaff);
   app.delete("/api/staff/:id", deleteStaff);
 
+  // SPA Fallback - serve index.html for all non-API routes
+  // This allows client-side routing to work properly
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(clientBuildPath, "index.html"));
+  });
+
   return app;
 }
