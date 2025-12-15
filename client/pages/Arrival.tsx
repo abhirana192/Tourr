@@ -551,6 +551,9 @@ export default function Arrival() {
               border-collapse: collapse;
               margin-top: 15px;
               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
             th {
               background: linear-gradient(135deg, #1b7a5c 0%, #2da578 100%);
@@ -561,21 +564,36 @@ export default function Arrival() {
               font-size: 12px;
               letter-spacing: 0.5px;
               border: none;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
             td {
               padding: 12px 14px;
               border-bottom: 1px solid #d0e8e5;
               font-size: 12px;
               color: #333;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
             tbody tr:nth-child(odd) {
               background-color: #e8f5f2;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
             tbody tr:nth-child(even) {
               background-color: #f5faf9;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
             tbody tr:hover {
               background-color: #d0e8e5;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
             .activity-box {
               background: linear-gradient(135deg, rgba(27, 122, 92, 0.1) 0%, rgba(62, 196, 160, 0.1) 100%);
