@@ -567,6 +567,12 @@ export default function Arrival() {
                       {isSaving ? "Saving..." : "Save Changes"}
                     </Button>
                   )}
+                  <Button
+                    onClick={handlePrint}
+                    className="bg-green-600 hover:bg-green-700 text-white text-xs py-1.5 px-3 rounded-lg flex items-center gap-1.5"
+                  >
+                    <Printer size={14} /> Print
+                  </Button>
                 </div>
               </div>
             </div>
