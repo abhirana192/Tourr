@@ -52,9 +52,10 @@ export const login: RequestHandler = async (req, res) => {
       return;
     }
 
-    // For demo purposes: accept any password for valid users
-    // In production, use bcrypt or similar for password hashing
-    if (!password) {
+    // For demo purposes: use "password" as the demo password for all users
+    // In production, use bcrypt or similar for password hashing and storage
+    const DEMO_PASSWORD = "password";
+    if (password !== DEMO_PASSWORD) {
       res.status(401).json({ error: "Invalid email or password" });
       return;
     }
