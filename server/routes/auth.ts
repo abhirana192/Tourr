@@ -44,18 +44,18 @@ export const login: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Simple password validation (in production, use bcrypt or similar)
-    // For demo purposes: email=admin@example.com, password=password
-    if (email !== "admin@example.com" || password !== "password") {
-      res.status(401).json({ error: "Invalid email or password" });
-      return;
-    }
-
     // Get staff user from database using REST API
     const staffData = await getStaffByEmail(email);
 
     if (!staffData) {
-      res.status(401).json({ error: "User not found" });
+      res.status(401).json({ error: "Invalid email or password" });
+      return;
+    }
+
+    // For demo purposes: accept any password for valid users
+    // In production, use bcrypt or similar for password hashing
+    if (!password) {
+      res.status(401).json({ error: "Invalid email or password" });
       return;
     }
 
