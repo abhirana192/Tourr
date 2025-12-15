@@ -124,6 +124,11 @@ export default function Arrival() {
     const available = getAvailableActivities(tour);
     const schedule: ActivitySchedule = {};
 
+    // Initialize all days including arrival and departure
+    for (let i = 0; i < dayCount; i++) {
+      schedule[i] = { activities: [], note: "" };
+    }
+
     // For middle days (excluding arrival day 0 and departure day dayCount-1)
     for (let i = 1; i < dayCount - 1; i++) {
       const activities: Activity[] = [];
@@ -144,7 +149,7 @@ export default function Arrival() {
         }
       }
 
-      schedule[i] = activities;
+      schedule[i] = { activities, note: "" };
     }
 
     return schedule;
@@ -246,6 +251,8 @@ export default function Arrival() {
 
     // Generate itinerary for each day
     for (let i = 0; i < daysDiff; i++) {
+      const daySchedule = tourSchedule[i] || { activities: [], note: "" };
+
       if (i === 0) {
         // Arrival Day
         itinerary.push({
@@ -254,6 +261,7 @@ export default function Arrival() {
           activities: [],
           hotelInfo: tour.accommodation ? `${tour.accommodation}` : "-",
           paymentInfo: tour.pax ? `${tour.pax}` : "-",
+          note: daySchedule.note || "",
         });
       } else if (i === daysDiff - 1) {
         // Departure Day
@@ -263,10 +271,11 @@ export default function Arrival() {
           activities: [],
           hotelInfo: `${departure.date ? departure.date : "-"} ${departure.time ? departure.time : ""}${departure.flight ? ` ${departure.flight}` : ""}\n(Cold-weather gear will be collected)`,
           paymentInfo: "-",
+          note: daySchedule.note || "",
         });
       } else {
         // Middle days
-        const dayActivities = tourSchedule[i] || [];
+        const dayActivities = daySchedule.activities || [];
 
         itinerary.push({
           day: dayLabels[i],
@@ -274,6 +283,7 @@ export default function Arrival() {
           activities: dayActivities,
           hotelInfo: tour.accommodation ? `${tour.accommodation}` : "-",
           paymentInfo: i === 1 && tour.payment ? `*Optional (Self-pay) - ${tour.payment}` : "-",
+          note: daySchedule.note || "",
         });
       }
     }
