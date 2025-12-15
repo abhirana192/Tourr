@@ -445,6 +445,16 @@ export default function Arrival() {
       return;
     }
 
+    // Clone and clean up the table for printing
+    const tableClone = tableElement.cloneNode(true) as HTMLTableElement;
+    const noteCells = tableClone.querySelectorAll("td");
+    noteCells.forEach((cell) => {
+      const noteElement = cell.querySelector("div");
+      if (noteElement && noteElement.textContent?.includes("+ Note") && !noteElement.querySelector(".whitespace-pre-wrap")) {
+        cell.innerHTML = "";
+      }
+    });
+
     const htmlContent = `
       <!DOCTYPE html>
       <html>
