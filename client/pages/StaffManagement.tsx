@@ -97,8 +97,17 @@ export default function StaffManagement() {
 
       if (!response.ok) throw new Error("Failed to delete staff");
 
+      const result = await response.json();
       setStaff(staff.filter((s) => s.id !== id));
-      toast.success("Staff member deleted successfully");
+
+      if (result.emailSent) {
+        const emailTime = new Date(result.emailSent.timestamp).toLocaleTimeString();
+        toast.success(`Email sent to ${result.emailSent.recipientCount} staff members at ${emailTime}`, {
+          description: `From: ${result.emailSent.senderName} - Staff member deleted`,
+        });
+      } else {
+        toast.success("Staff member deleted successfully");
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to delete staff";
       toast.error(errorMessage);
