@@ -987,11 +987,11 @@ export default function Arrival() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
-                        {day.activities.length === 0 ? (
+                        {day.plannedActivities.length === 0 ? (
                           <div className="whitespace-normal text-gray-500 italic">*Free activity</div>
                         ) : (
                           <div className="space-y-2">
-                            {day.activities.map((activity, actIdx) => (
+                            {day.plannedActivities.map((activity, actIdx) => (
                               <div key={actIdx} className="flex items-start justify-between gap-2 p-2 bg-blue-50 rounded border border-blue-200">
                                 <div className="flex-1">
                                   <div className="font-semibold text-gray-900">{activity.name}</div>
@@ -999,7 +999,7 @@ export default function Arrival() {
                                 </div>
                                 {isEditMode && (
                                   <button
-                                    onClick={() => handleActivityChange(idx, actIdx, null)}
+                                    onClick={() => handleActivityChange(idx, actIdx, null, "planned")}
                                     className="text-red-500 hover:text-red-700 font-bold text-sm"
                                   >
                                     ✕
@@ -1009,7 +1009,7 @@ export default function Arrival() {
                             ))}
                             {idx > 0 && idx < dayItinerary.length - 1 && isEditMode && (
                               <button
-                                onClick={() => handleAddActivity(idx)}
+                                onClick={() => handleAddActivity(idx, "planned")}
                                 className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-gray-100 text-gray-600"
                               >
                                 + Add Activity
@@ -1017,9 +1017,9 @@ export default function Arrival() {
                             )}
                           </div>
                         )}
-                        {idx > 0 && idx < dayItinerary.length - 1 && day.activities.length === 0 && isEditMode && (
+                        {idx > 0 && idx < dayItinerary.length - 1 && day.plannedActivities.length === 0 && isEditMode && (
                           <button
-                            onClick={() => handleAddActivity(idx)}
+                            onClick={() => handleAddActivity(idx, "planned")}
                             className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-gray-100 text-gray-600"
                           >
                             + Add Activity
