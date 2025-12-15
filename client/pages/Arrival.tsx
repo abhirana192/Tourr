@@ -658,7 +658,7 @@ export default function Arrival() {
           <div class="welcome-header">
             <div class="header-content">
               <div class="welcome-text">WELCOME TO YOUR ARCTIC ADVENTURE</div>
-              <div class="guest-title">${selectedTour.name}</div>
+              <div class="guest-title">${selectedTour.name.replace(/\s*\(\d+\)\s*$/, '')}</div>
               <div class="guest-info">
                 <div class="info-item">
                   <div class="info-label">Invoice</div>
