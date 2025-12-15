@@ -403,13 +403,14 @@ export default function Arrival() {
     });
   };
 
-  const handleAddActivity = (dayIndex: number) => {
+  const handleAddActivity = (dayIndex: number, column: "planned" | "arrival" | "hotel" = "planned") => {
     setSelectedDayForActivity(dayIndex);
+    setSelectedColumnForActivity(column);
     setActivityPickerOpen(true);
   };
 
   const handleSelectActivity = (activityKey: string) => {
-    if (!selectedTour || selectedDayForActivity === null) return;
+    if (!selectedTour || selectedDayForActivity === null || !selectedColumnForActivity) return;
 
     const activityData = ACTIVITY_TIMINGS[activityKey];
     if (!activityData) return;
@@ -421,10 +422,16 @@ export default function Arrival() {
 
     setSchedules((prev) => {
       const tourSchedule = { ...prev[selectedTour.id] };
-      const dayData = tourSchedule[selectedDayForActivity] || { activities: [], note: "" };
-      const dayActivities = [...dayData.activities];
+      const dayData = tourSchedule[selectedDayForActivity] || { plannedActivities: [], arrivalActivities: [], hotelActivities: [], note: "" };
+
+      const columnKey = selectedColumnForActivity === "planned" ? "plannedActivities" : selectedColumnForActivity === "arrival" ? "arrivalActivities" : "hotelActivities";
+      const dayActivities = [...(dayData[columnKey] || [])];
       dayActivities.push(newActivity);
-      tourSchedule[selectedDayForActivity] = { activities: dayActivities, note: dayData.note };
+
+      tourSchedule[selectedDayForActivity] = {
+        ...dayData,
+        [columnKey]: dayActivities,
+      };
       return {
         ...prev,
         [selectedTour.id]: tourSchedule,
@@ -433,6 +440,7 @@ export default function Arrival() {
 
     setActivityPickerOpen(false);
     setSelectedDayForActivity(null);
+    setSelectedColumnForActivity(null);
   };
 
   const handleNoteChange = (dayIndex: number, noteText: string) => {
