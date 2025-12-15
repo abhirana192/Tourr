@@ -143,6 +143,7 @@ export const deleteTour: RequestHandler = async (req, res) => {
     }
 
     // Send notification email if user is authenticated
+    let emailResult = null;
     if (currentUser) {
       const changes: any = {};
       Object.entries(tour).forEach(([key, value]) => {
@@ -164,10 +165,10 @@ export const deleteTour: RequestHandler = async (req, res) => {
         recordName: tour.name || tour.invoice,
         timestamp: new Date().toISOString(),
       };
-      await sendNotificationEmail(notification);
+      emailResult = await sendNotificationEmail(notification);
     }
 
-    res.json({ success: true });
+    res.json({ success: true, emailSent: emailResult });
   } catch (error) {
     console.error("Error deleting tour:", error);
     res.status(500).json({ error: "Failed to delete tour" });
