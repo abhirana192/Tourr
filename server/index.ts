@@ -67,7 +67,7 @@ export function createServer() {
 
   // SPA Fallback - serve index.html for all non-API routes
   // This allows client-side routing to work properly
-  app.get("*", (_req, res) => {
+  app.use((_req, res) => {
     res.sendFile(path.join(clientBuildPath, "index.html"));
   });
 
