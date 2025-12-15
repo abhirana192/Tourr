@@ -393,9 +393,16 @@ export default function Arrival() {
     setIsSaving(true);
     try {
       const scheduleData = schedules[selectedTour.id];
+      const sessionToken = localStorage.getItem("sessionToken");
+
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (sessionToken) {
+        headers["Authorization"] = `Bearer ${sessionToken}`;
+      }
+
       const response = await fetch(`/api/tours/${selectedTour.id}/schedule`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(scheduleData),
       });
 
