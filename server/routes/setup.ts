@@ -21,6 +21,22 @@ export const initializeDemo: RequestHandler = async (req, res) => {
       return;
     }
 
+    // Create auth user
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      email: DEMO_EMAIL,
+      password: DEMO_PASSWORD,
+      email_confirm: true,
+    });
+
+    if (authError) {
+      // If user already exists in auth, that's okay
+      if (!authError.message.includes("already registered")) {
+        throw authError;
+      }
+    }
+
+    const userId = authData?.user?.id;
+
     // Create staff record with proper schema
     const { error: staffError } = await supabase.from("staff").insert([
       {
@@ -30,6 +46,7 @@ export const initializeDemo: RequestHandler = async (req, res) => {
         role: "admin",
         phone: null,
         availability_status: "available",
+        auth_user_id: userId,
       },
     ]);
 
