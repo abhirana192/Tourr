@@ -930,7 +930,15 @@ export default function Arrival() {
                         <div className="whitespace-normal">{day.day}</div>
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
-                        <div className="whitespace-normal text-justify leading-relaxed">{day.arrivalInfo}</div>
+                        <div className="whitespace-normal text-justify leading-relaxed mb-2">{day.arrivalInfo}</div>
+                        {idx > 0 && idx < dayItinerary.length - 1 && isEditMode && (
+                          <button
+                            onClick={() => handleAddActivity(idx)}
+                            className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-blue-50 text-gray-600 font-medium"
+                          >
+                            + Add Activity
+                          </button>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
                         {day.activities.length === 0 ? (
