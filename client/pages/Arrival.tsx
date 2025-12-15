@@ -205,46 +205,51 @@ export default function Arrival() {
   useEffect(() => {
     if (!selectedTour) return;
 
-    const arrival = extractDateAndTime(selectedTour.arrival);
-    const departure = extractDateAndTime(selectedTour.departure);
+    const initializeSchedule = async () => {
+      const arrival = extractDateAndTime(selectedTour.arrival);
+      const departure = extractDateAndTime(selectedTour.departure);
 
-    if (!arrival.date || !departure.date) {
-      // If dates couldn't be parsed, generate a default 3-day schedule
-      if (!schedules[selectedTour.id]) {
+      let daysDiff = 3; // Default to 3 days
+
+      if (arrival.date && departure.date) {
+        try {
+          const arrivalDate = new Date(arrival.date);
+          const departureDate = new Date(departure.date);
+          const timeDiff = departureDate.getTime() - arrivalDate.getTime();
+          daysDiff = Math.max(1, Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1);
+        } catch (e) {
+          console.warn("Failed to calculate day difference, using default 3 days");
+        }
+      }
+
+      // Check if we already have a schedule for this tour
+      if (schedules[selectedTour.id]) {
+        setIsEditMode(false);
+        return;
+      }
+
+      // Try to load saved schedule from server
+      const savedSchedule = await fetchSavedSchedule(selectedTour.id);
+
+      if (savedSchedule) {
+        // Use saved schedule
         setSchedules((prev) => ({
           ...prev,
-          [selectedTour.id]: generateRandomSchedule(selectedTour, 3),
+          [selectedTour.id]: savedSchedule,
+        }));
+      } else {
+        // Generate random schedule for new tours
+        const randomSchedule = generateRandomSchedule(selectedTour, daysDiff);
+        setSchedules((prev) => ({
+          ...prev,
+          [selectedTour.id]: randomSchedule,
         }));
       }
+
       setIsEditMode(false);
-      return;
-    }
+    };
 
-    if (!schedules[selectedTour.id]) {
-      const arrivalDate = new Date(arrival.date);
-      const departureDate = new Date(departure.date);
-      const timeDiff = departureDate.getTime() - arrivalDate.getTime();
-      const daysDiff = Math.max(1, Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1);
-
-      // Try to load saved schedule first
-      fetchSavedSchedule(selectedTour.id).then((savedSchedule) => {
-        if (savedSchedule) {
-          setSchedules((prev) => ({
-            ...prev,
-            [selectedTour.id]: savedSchedule,
-          }));
-        } else {
-          // If no saved schedule, generate random one
-          setSchedules((prev) => ({
-            ...prev,
-            [selectedTour.id]: generateRandomSchedule(selectedTour, daysDiff),
-          }));
-        }
-      });
-    }
-
-    // Reset edit mode when switching tours
-    setIsEditMode(false);
+    initializeSchedule();
   }, [selectedTour?.id]);
 
   const fetchTours = async (dateFrom = "", dateTo = "") => {
