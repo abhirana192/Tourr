@@ -49,7 +49,12 @@ export const useAuth = (): AuthContextType => {
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      await supabase.auth.signOut();
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       setUser(null);
     } catch (error) {
       console.error("Logout error:", error);
