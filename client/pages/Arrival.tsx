@@ -539,20 +539,30 @@ export default function Arrival() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    onClick={handleEditSchedule}
-                    disabled={isEditMode}
-                    className="bg-amber-600 hover:bg-amber-700 text-white text-xs py-1.5 px-3 rounded-lg flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    <Edit2 size={14} /> Change Schedule
-                  </Button>
-                  <Button
-                    onClick={handleSaveSchedule}
-                    disabled={isSaving || !isEditMode}
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs py-1.5 px-3 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    {isSaving ? "Saving..." : "Save Schedule"}
-                  </Button>
+                  {!isEditMode ? (
+                    <Button
+                      onClick={handleEditSchedule}
+                      className="bg-amber-600 hover:bg-amber-700 text-white text-xs py-1.5 px-3 rounded-lg flex items-center gap-1.5"
+                    >
+                      <Edit2 size={14} /> Change Schedule
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleDoneEditing}
+                      className="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-3 rounded-lg"
+                    >
+                      Done Editing
+                    </Button>
+                  )}
+                  {isEditMode && (
+                    <Button
+                      onClick={handleSaveSchedule}
+                      disabled={isSaving}
+                      className="bg-blue-600 hover:bg-blue-700 text-white text-xs py-1.5 px-3 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {isSaving ? "Saving..." : "Save Changes"}
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
