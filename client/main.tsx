@@ -72,22 +72,8 @@ const App = () => (
   </QueryClientProvider>
 );
 
-let root: Root | null = null;
-
-function render() {
-  const container = document.getElementById("root");
-  if (!container) return;
-
-  if (!root) {
-    root = createRoot(container);
-  }
+const container = document.getElementById("root");
+if (container) {
+  const root = createRoot(container);
   root.render(<App />);
-}
-
-render();
-
-if (import.meta.hot) {
-  import.meta.hot.accept(() => {
-    render();
-  });
 }
