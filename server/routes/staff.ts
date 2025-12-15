@@ -1,11 +1,45 @@
 import { RequestHandler } from "express";
-import { supabase } from "../supabase";
+
+async function makeSupabaseRequest(method: string, path: string, body?: any) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !anonKey) {
+    throw new Error("Missing Supabase credentials");
+  }
+
+  const response = await fetch(`${supabaseUrl}/rest/v1${path}`, {
+    method,
+    headers: {
+      "Authorization": `Bearer ${anonKey}`,
+      "apikey": anonKey,
+      "Content-Type": "application/json",
+    },
+    ...(body && { body: JSON.stringify(body) }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Supabase API error: ${response.status} ${error}`);
+  }
+
+  return response.json();
+}
 
 export const getAllStaff: RequestHandler = async (req, res) => {
   try {
-    const { data, error } = await supabase.from("staff").select("id, email, name, role, created_at");
-    if (error) throw error;
-    res.json(data || []);
+    const data = await makeSupabaseRequest("GET", "/staff?select=id,email,first_name,last_name,role,created_at");
+
+    // Transform the response to match the expected format
+    const transformedData = data.map((staff: any) => ({
+      id: staff.id,
+      email: staff.email,
+      name: `${staff.first_name} ${staff.last_name}`,
+      role: staff.role,
+      created_at: staff.created_at,
+    }));
+
+    res.json(transformedData);
   } catch (error) {
     console.error("Error fetching staff:", error);
     res.status(500).json({ error: "Failed to fetch staff" });
