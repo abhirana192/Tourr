@@ -992,7 +992,7 @@ export default function Arrival() {
                         <div className="whitespace-normal text-justify leading-relaxed mb-2">{day.arrivalInfo}</div>
                         {(day.arrivalActivities?.length ?? 0) > 0 && (
                           <div className="space-y-2 mb-2">
-                            {day.arrivalActivities.map((activity, actIdx) => (
+                            {(day.arrivalActivities || []).map((activity, actIdx) => (
                               <div key={actIdx} className="flex items-start justify-between gap-2 p-2 bg-green-50 rounded border border-green-200">
                                 <div className="flex-1">
                                   <div className="font-semibold text-gray-900">{activity.name}</div>
@@ -1024,7 +1024,7 @@ export default function Arrival() {
                           <div className="whitespace-normal text-gray-500 italic">*Free activity</div>
                         ) : (
                           <div className="space-y-2">
-                            {day.plannedActivities.map((activity, actIdx) => (
+                            {(day.plannedActivities || []).map((activity, actIdx) => (
                               <div key={actIdx} className="flex items-start justify-between gap-2 p-2 bg-blue-50 rounded border border-blue-200">
                                 <div className="flex-1">
                                   <div className="font-semibold text-gray-900">{activity.name}</div>
@@ -1050,7 +1050,7 @@ export default function Arrival() {
                             )}
                           </div>
                         )}
-                        {idx > 0 && idx < dayItinerary.length - 1 && day.plannedActivities.length === 0 && isEditMode && (
+                        {idx > 0 && idx < dayItinerary.length - 1 && (day.plannedActivities?.length ?? 0) === 0 && isEditMode && (
                           <button
                             onClick={() => handleAddActivity(idx, "planned")}
                             className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-gray-100 text-gray-600"
@@ -1064,9 +1064,9 @@ export default function Arrival() {
                           <div className="whitespace-normal text-justify leading-relaxed">{day.hotelInfo}</div>
                         ) : (
                           <div className="space-y-2">
-                            {day.hotelActivities.length > 0 ? (
+                            {(day.hotelActivities?.length ?? 0) > 0 ? (
                               <>
-                                {day.hotelActivities.map((activity, actIdx) => (
+                                {(day.hotelActivities || []).map((activity, actIdx) => (
                                   <div key={actIdx} className="flex items-start justify-between gap-2 p-2 bg-purple-50 rounded border border-purple-200">
                                     <div className="flex-1">
                                       <div className="font-semibold text-gray-900">{activity.name}</div>
