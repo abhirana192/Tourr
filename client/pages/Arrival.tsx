@@ -50,7 +50,9 @@ interface DayItinerary {
 
 interface ActivitySchedule {
   [dayIndex: number]: {
-    activities: Activity[];
+    plannedActivities: Activity[];
+    arrivalActivities: Activity[];
+    hotelActivities: Activity[];
     note: string;
   };
 }
