@@ -121,14 +121,48 @@ export const updateTour: RequestHandler = async (req, res) => {
   }
 };
 
-export const deleteTour: RequestHandler = (req, res) => {
+export const deleteTour: RequestHandler = async (req, res) => {
   try {
+    const currentUser = getSessionFromRequest(req);
     const { id } = req.params;
+
+    // Get the tour data before deletion
+    const tour = db.getTourById(id);
+    if (!tour) {
+      res.status(404).json({ error: "Tour not found" });
+      return;
+    }
+
     const success = db.deleteTour(id);
 
     if (!success) {
       res.status(404).json({ error: "Tour not found" });
       return;
+    }
+
+    // Send notification email if user is authenticated
+    if (currentUser) {
+      const changes: any = {};
+      Object.entries(tour).forEach(([key, value]) => {
+        if (key !== "id" && key !== "activity_schedule") {
+          changes[key] = { old: value };
+        }
+      });
+
+      const notification: EmailNotification = {
+        action: "delete",
+        type: "tour",
+        changes,
+        changedBy: {
+          id: currentUser.userId,
+          name: currentUser.name,
+          email: currentUser.email,
+        },
+        recordId: tour.id,
+        recordName: tour.name || tour.invoice,
+        timestamp: new Date().toISOString(),
+      };
+      await sendNotificationEmail(notification);
     }
 
     res.json({ success: true });
