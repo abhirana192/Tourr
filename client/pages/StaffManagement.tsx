@@ -251,6 +251,12 @@ export default function StaffManagement() {
             <DialogTitle>{editingId ? "Edit Staff Member" : "Add New Staff Member"}</DialogTitle>
           </DialogHeader>
 
+          {editingId && (
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
+              <strong>Current Password:</strong> password (demo app - all users use this password)
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
             <div>
