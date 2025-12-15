@@ -226,14 +226,6 @@ export default function Arrival() {
     const timeDiff = departureDate.getTime() - arrivalDate.getTime();
     const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
 
-    // Initialize schedule if not exists
-    if (!schedules[tour.id]) {
-      setSchedules((prev) => ({
-        ...prev,
-        [tour.id]: generateRandomSchedule(tour, daysDiff),
-      }));
-    }
-
     const dayLabels = ["Arrival Day"];
     for (let i = 1; i < daysDiff; i++) {
       if (i === 1) dayLabels.push("1st Day");
