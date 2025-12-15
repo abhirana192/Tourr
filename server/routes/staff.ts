@@ -82,7 +82,7 @@ export const createStaff: RequestHandler = async (req, res) => {
       data: {
         id: createdStaff.id,
         email: createdStaff.email,
-        name: `${createdStaff.first_name} ${createdStaff.last_name}`,
+        name: createdStaff.last_name ? `${createdStaff.first_name} ${createdStaff.last_name}` : createdStaff.first_name,
         role: createdStaff.role,
         created_at: createdStaff.created_at,
       }
