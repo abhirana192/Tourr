@@ -296,17 +296,23 @@ export default function Arrival() {
       if (dateTo) params.append("dateTo", dateTo);
 
       const url = `/api/tours${params.toString() ? `?${params.toString()}` : ""}`;
+      console.log(`[Arrival] Fetching tours from: ${url}`);
+
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error("Failed to fetch tours");
+        const errorData = await response.text();
+        console.error(`[Arrival] Server error ${response.status}:`, errorData);
+        throw new Error(`Server error: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log(`[Arrival] Fetched ${Array.isArray(data) ? data.length : 0} tours`);
       setTours(Array.isArray(data) ? data : []);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to load tours";
-      setError(errorMessage);
+      console.error(`[Arrival] Fetch error:`, err);
+      setError(`Unable to connect to server. ${errorMessage}`);
     } finally {
       setLoading(false);
     }
