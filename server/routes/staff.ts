@@ -97,6 +97,7 @@ export const createStaff: RequestHandler = async (req, res) => {
     const createdStaff = staffData[0];
 
     // Send notification email if user is authenticated
+    let emailResult = null;
     if (currentUser) {
       const notification: EmailNotification = {
         action: "create",
@@ -115,7 +116,7 @@ export const createStaff: RequestHandler = async (req, res) => {
         recordName: name,
         timestamp: new Date().toISOString(),
       };
-      await sendNotificationEmail(notification);
+      emailResult = await sendNotificationEmail(notification);
     }
 
     res.status(201).json({
@@ -126,7 +127,8 @@ export const createStaff: RequestHandler = async (req, res) => {
         name: createdStaff.last_name ? `${createdStaff.first_name} ${createdStaff.last_name}` : createdStaff.first_name,
         role: createdStaff.role,
         created_at: createdStaff.created_at,
-      }
+      },
+      emailSent: emailResult,
     });
   } catch (error) {
     console.error("Error creating staff:", error);
