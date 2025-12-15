@@ -454,6 +454,24 @@ export default function Arrival() {
             @page {
               size: landscape;
               margin: 10mm;
+              @top-left {
+                content: '';
+              }
+              @top-center {
+                content: '';
+              }
+              @top-right {
+                content: '';
+              }
+              @bottom-left {
+                content: '';
+              }
+              @bottom-center {
+                content: '';
+              }
+              @bottom-right {
+                content: '';
+              }
             }
             * {
               margin: 0;
