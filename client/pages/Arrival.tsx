@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertCircle, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 
@@ -89,6 +90,8 @@ export default function Arrival() {
   const [error, setError] = useState("");
   const [schedules, setSchedules] = useState<{ [tourId: string]: ActivitySchedule }>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [activityPickerOpen, setActivityPickerOpen] = useState(false);
+  const [selectedDayForActivity, setSelectedDayForActivity] = useState<number | null>(null);
 
   const extractDateAndTime = (value: any) => {
     if (!value) return { date: "", time: "" };
@@ -295,11 +298,13 @@ export default function Arrival() {
   };
 
   const handleAddActivity = (dayIndex: number) => {
-    if (!selectedTour) return;
-    const available = getAvailableActivities(selectedTour);
-    if (available.length === 0) return;
+    setSelectedDayForActivity(dayIndex);
+    setActivityPickerOpen(true);
+  };
 
-    const activityKey = available[0];
+  const handleSelectActivity = (activityKey: string) => {
+    if (!selectedTour || selectedDayForActivity === null) return;
+
     const activityData = ACTIVITY_TIMINGS[activityKey];
     if (!activityData) return;
 
@@ -310,14 +315,17 @@ export default function Arrival() {
 
     setSchedules((prev) => {
       const tourSchedule = { ...prev[selectedTour.id] };
-      const dayActivities = [...(tourSchedule[dayIndex] || [])];
+      const dayActivities = [...(tourSchedule[selectedDayForActivity] || [])];
       dayActivities.push(newActivity);
-      tourSchedule[dayIndex] = dayActivities;
+      tourSchedule[selectedDayForActivity] = dayActivities;
       return {
         ...prev,
         [selectedTour.id]: tourSchedule,
       };
     });
+
+    setActivityPickerOpen(false);
+    setSelectedDayForActivity(null);
   };
 
   const handleSaveSchedule = async () => {
