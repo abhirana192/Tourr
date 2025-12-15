@@ -62,8 +62,8 @@ export const getSession: RequestHandler = async (req, res) => {
     if (data.session?.user) {
       const { data: staffData, error } = await supabase
         .from("staff")
-        .select("id, email, name, role")
-        .eq("id", data.session.user.id)
+        .select("id, email, first_name, last_name, role")
+        .eq("auth_user_id", data.session.user.id)
         .single();
 
       if (error) throw error;
@@ -71,9 +71,9 @@ export const getSession: RequestHandler = async (req, res) => {
       res.json({
         success: true,
         user: {
-          id: data.session.user.id,
+          id: staffData.id,
           email: staffData.email,
-          name: staffData.name,
+          name: `${staffData.first_name} ${staffData.last_name}`,
           role: staffData.role,
         },
         session: data.session,
