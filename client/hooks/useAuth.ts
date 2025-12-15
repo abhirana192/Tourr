@@ -86,12 +86,6 @@ export const useAuth = (): AuthContextType => {
           return;
         }
 
-        // Only check session if we don't already have a user set
-        if (user) {
-          setIsLoading(false);
-          return;
-        }
-
         const response = await fetch("/api/auth/session", {
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -106,14 +100,15 @@ export const useAuth = (): AuthContextType => {
           } else {
             setSessionToken(null);
             localStorage.removeItem("sessionToken");
+            setIsLoading(false);
           }
         } else {
           setSessionToken(null);
           localStorage.removeItem("sessionToken");
+          setIsLoading(false);
         }
       } catch (error) {
         console.error("Session check error:", error);
-      } finally {
         setIsLoading(false);
       }
     };
