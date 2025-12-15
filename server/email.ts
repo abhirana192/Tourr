@@ -257,7 +257,9 @@ async function sendViaResend(
   to: string[],
   subject: string,
   html: string,
-  apiKey: string
+  apiKey: string,
+  senderEmail: string,
+  senderName: string
 ): Promise<void> {
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -266,7 +268,8 @@ async function sendViaResend(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: process.env.RESEND_FROM_EMAIL || "notifications@example.com",
+      from: `${senderName} <${process.env.RESEND_FROM_EMAIL || "onboard@resend.dev"}>`,
+      reply_to: senderEmail,
       to: to,
       subject: subject,
       html: html,
@@ -277,4 +280,7 @@ async function sendViaResend(
     const error = await response.text();
     throw new Error(`Resend API error: ${response.status} ${error}`);
   }
+
+  const result = await response.json();
+  console.log(`Email sent successfully. Message ID: ${result.id}`);
 }
