@@ -5,7 +5,7 @@ import { handleDemo } from "./routes/demo";
 import { getTours, createTour, updateTour, deleteTour, saveTourSchedule, getTourSchedule } from "./routes/tours";
 import { getAllStaff, createStaff, updateStaff, deleteStaff } from "./routes/staff";
 import { login, logout, getSession } from "./routes/auth";
-import { initializeDemo } from "./routes/setup";
+import { initializeDemo, initializePasswords } from "./routes/setup";
 
 export function createServer() {
   const app = express();
