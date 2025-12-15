@@ -624,6 +624,9 @@ export default function Arrival() {
               color: #1b7a5c;
               font-size: 12px;
               font-style: italic;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
           </style>
         </head>
