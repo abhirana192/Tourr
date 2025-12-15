@@ -130,7 +130,16 @@ export default function StaffManagement() {
 
         const updated = await response.json();
         setStaff(staff.map((s) => (s.id === editingId ? { ...s, ...updated.data } : s)));
-        toast.success("Staff member updated successfully");
+
+        if (formData.password) {
+          setPasswordStatus({
+            staffId: editingId,
+            email: formData.email,
+            tempPassword: formData.password,
+          });
+        } else {
+          toast.success("Staff member updated successfully");
+        }
       } else {
         const response = await fetch("/api/staff", {
           method: "POST",
@@ -139,10 +148,15 @@ export default function StaffManagement() {
         });
 
         if (!response.ok) throw new Error("Failed to create staff");
-        
+
         const newStaff = await response.json();
         setStaff([...staff, newStaff.data]);
-        toast.success("Staff member created successfully");
+
+        setPasswordStatus({
+          staffId: newStaff.data.id,
+          email: newStaff.data.email,
+          tempPassword: formData.password,
+        });
       }
 
       setIsDialogOpen(false);
