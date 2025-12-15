@@ -370,6 +370,60 @@ export default function StaffManagement() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Password Confirmation Dialog */}
+      <Dialog open={!!passwordStatus} onOpenChange={(open) => !open && setPasswordStatus(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-green-600">
+              ✓ Password Changed
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm text-gray-700 mb-2">
+                <strong>Staff:</strong> {passwordStatus?.email}
+              </p>
+              <p className="text-sm text-gray-700">
+                <strong>New Password:</strong>
+              </p>
+              <div className="flex gap-2 mt-1">
+                <input
+                  type="text"
+                  value={passwordStatus?.tempPassword || ""}
+                  readOnly
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm"
+                />
+                <Button
+                  onClick={() => {
+                    if (passwordStatus) {
+                      navigator.clipboard.writeText(passwordStatus.tempPassword);
+                      toast.success("Password copied to clipboard");
+                    }
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4"
+                >
+                  Copy
+                </Button>
+              </div>
+            </div>
+
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+              <strong>⚠️ Important:</strong> Save this password in a secure location. You won't see it again.
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              onClick={() => setPasswordStatus(null)}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              Done
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
