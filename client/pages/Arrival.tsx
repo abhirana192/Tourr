@@ -618,7 +618,7 @@ export default function Arrival() {
                           <div className="text-center font-semibold">{day.paymentInfo}</div>
                           {idx !== 0 && (
                             <>
-                              {notesEditingDay === idx ? (
+                              {isEditMode && notesEditingDay === idx ? (
                                 <textarea
                                   value={day.note}
                                   onChange={(e) => handleNoteChange(idx, e.target.value)}
@@ -630,13 +630,15 @@ export default function Arrival() {
                                 />
                               ) : (
                                 <div
-                                  onClick={() => setNotesEditingDay(idx)}
-                                  className="p-1.5 rounded border border-dashed border-gray-300 cursor-pointer hover:bg-blue-50 transition-colors min-h-8 flex items-center justify-center"
+                                  onClick={() => isEditMode && setNotesEditingDay(idx)}
+                                  className={`p-1.5 rounded border border-dashed border-gray-300 transition-colors min-h-8 flex items-center justify-center ${
+                                    isEditMode ? "cursor-pointer hover:bg-blue-50" : "cursor-default"
+                                  }`}
                                 >
                                   {day.note ? (
                                     <div className="whitespace-pre-wrap text-gray-700 text-xs text-center">{day.note}</div>
                                   ) : (
-                                    <div className="text-gray-400 italic text-xs">+ Note</div>
+                                    <div className={`italic text-xs ${isEditMode ? "text-gray-400" : "text-gray-300"}`}>+ Note</div>
                                   )}
                                 </div>
                               )}
