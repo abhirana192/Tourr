@@ -1,4 +1,14 @@
 import { RequestHandler } from "express";
+import crypto from "crypto";
+
+// Simple password hashing using crypto (alternative to bcrypt)
+function hashPassword(password: string): string {
+  return crypto.createHash("sha256").update(password + "salt").digest("hex");
+}
+
+function verifyPassword(password: string, hash: string): boolean {
+  return hashPassword(password) === hash;
+}
 
 async function makeSupabaseRequest(method: string, path: string, body?: any) {
   const supabaseUrl = process.env.SUPABASE_URL;
