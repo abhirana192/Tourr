@@ -957,10 +957,30 @@ export default function Arrival() {
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
                         <div className="whitespace-normal text-justify leading-relaxed mb-2">{day.arrivalInfo}</div>
+                        {day.arrivalActivities.length > 0 && (
+                          <div className="space-y-2 mb-2">
+                            {day.arrivalActivities.map((activity, actIdx) => (
+                              <div key={actIdx} className="flex items-start justify-between gap-2 p-2 bg-green-50 rounded border border-green-200">
+                                <div className="flex-1">
+                                  <div className="font-semibold text-gray-900">{activity.name}</div>
+                                  <div className="text-xs text-gray-600">{activity.timings[0]}</div>
+                                </div>
+                                {isEditMode && (
+                                  <button
+                                    onClick={() => handleActivityChange(idx, actIdx, null, "arrival")}
+                                    className="text-red-500 hover:text-red-700 font-bold text-sm"
+                                  >
+                                    ✕
+                                  </button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                         {idx > 0 && idx < dayItinerary.length - 1 && isEditMode && (
                           <button
-                            onClick={() => handleAddActivity(idx)}
-                            className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-blue-50 text-gray-600 font-medium"
+                            onClick={() => handleAddActivity(idx, "arrival")}
+                            className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-green-50 text-gray-600 font-medium"
                           >
                             + Add Activity
                           </button>
