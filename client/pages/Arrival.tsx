@@ -1066,7 +1066,7 @@ export default function Arrival() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
-                        {idx === 0 ? (
+                        {idx === 0 || idx === dayItinerary.length - 1 ? (
                           <div className="whitespace-normal text-justify leading-relaxed">{day.hotelInfo}</div>
                         ) : (
                           <div className="space-y-2">
