@@ -161,7 +161,7 @@ export default function Arrival() {
 
     // Initialize all days including arrival and departure
     for (let i = 0; i < dayCount; i++) {
-      schedule[i] = { activities: [], note: "" };
+      schedule[i] = { plannedActivities: [], arrivalActivities: [], hotelActivities: [], note: "" };
     }
 
     // For middle days (excluding arrival day 0 and departure day dayCount-1)
@@ -184,7 +184,7 @@ export default function Arrival() {
         }
       }
 
-      schedule[i] = { activities, note: "" };
+      schedule[i] = { plannedActivities: activities, arrivalActivities: [], hotelActivities: [], note: "" };
     }
 
     return schedule;
