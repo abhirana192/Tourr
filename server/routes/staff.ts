@@ -107,7 +107,7 @@ export const updateStaff: RequestHandler = async (req, res) => {
     if (name) {
       const nameParts = name.trim().split(/\s+/);
       updates.first_name = nameParts[0];
-      updates.last_name = nameParts.slice(1).join(" ") || nameParts[0];
+      updates.last_name = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
     }
     if (email) updates.email = email;
     if (role) updates.role = role;
