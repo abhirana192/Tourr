@@ -25,6 +25,7 @@ export interface Tour {
   payment: string;
   reservation_number: string;
   remarks: string;
+  activity_schedule?: string;
 }
 
 let tours: Tour[] = [
@@ -54,6 +55,7 @@ let tours: Tour[] = [
     payment: "Paid",
     reservation_number: "RES001",
     remarks: "VIP Group",
+    activity_schedule: undefined,
   },
 ];
 
