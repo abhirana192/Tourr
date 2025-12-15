@@ -93,7 +93,7 @@ export const saveTourSchedule: RequestHandler = (req, res) => {
     const scheduleJson = JSON.stringify(schedule);
     const updated = db.updateTour(id, {
       ...tour,
-      remarks: `${tour.remarks || ""}\n[Schedule Saved]`,
+      activity_schedule: scheduleJson,
     });
 
     if (!updated) {
@@ -105,5 +105,37 @@ export const saveTourSchedule: RequestHandler = (req, res) => {
   } catch (error) {
     console.error("Error saving tour schedule:", error);
     res.status(500).json({ error: "Failed to save schedule" });
+  }
+};
+
+export const getTourSchedule: RequestHandler = (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(400).json({ error: "Missing tour ID" });
+      return;
+    }
+
+    const tour = db.getTourById(id);
+    if (!tour) {
+      res.status(404).json({ error: "Tour not found" });
+      return;
+    }
+
+    if (!tour.activity_schedule) {
+      res.status(404).json({ error: "No schedule found" });
+      return;
+    }
+
+    try {
+      const schedule = JSON.parse(tour.activity_schedule);
+      res.json({ schedule });
+    } catch {
+      res.status(400).json({ error: "Invalid schedule data" });
+    }
+  } catch (error) {
+    console.error("Error fetching tour schedule:", error);
+    res.status(500).json({ error: "Failed to fetch schedule" });
   }
 };
