@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkSession();
   }, [sessionToken]);
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (name: string, password: string) => {
     setIsLoading(true);
     try {
       const response = await fetch("/api/auth/login", {
@@ -79,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, password }),
       });
 
       if (!response.ok) {
