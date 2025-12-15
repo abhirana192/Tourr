@@ -105,7 +105,7 @@ export default function Login() {
         {/* Footer Info */}
         <div className="mt-8 p-4 bg-blue-50 rounded-lg text-center text-sm text-gray-600">
           <p className="font-semibold text-gray-700 mb-2">Demo Credentials:</p>
-          <p>Email: <span className="font-mono">admin@example.com</span></p>
+          <p>Name: <span className="font-mono">abhi</span></p>
           <p>Password: <span className="font-mono">password</span></p>
         </div>
       </div>
