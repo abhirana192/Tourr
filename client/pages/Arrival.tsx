@@ -1031,13 +1031,34 @@ export default function Arrival() {
                           <div className="whitespace-normal text-justify leading-relaxed">{day.hotelInfo}</div>
                         ) : (
                           <div className="space-y-2">
-                            <div className="whitespace-normal text-gray-500 italic">
-                              *Free activity
-                            </div>
+                            {day.hotelActivities.length > 0 ? (
+                              <>
+                                {day.hotelActivities.map((activity, actIdx) => (
+                                  <div key={actIdx} className="flex items-start justify-between gap-2 p-2 bg-purple-50 rounded border border-purple-200">
+                                    <div className="flex-1">
+                                      <div className="font-semibold text-gray-900">{activity.name}</div>
+                                      <div className="text-xs text-gray-600">{activity.timings[0]}</div>
+                                    </div>
+                                    {isEditMode && (
+                                      <button
+                                        onClick={() => handleActivityChange(idx, actIdx, null, "hotel")}
+                                        className="text-red-500 hover:text-red-700 font-bold text-sm"
+                                      >
+                                        ✕
+                                      </button>
+                                    )}
+                                  </div>
+                                ))}
+                              </>
+                            ) : (
+                              <div className="whitespace-normal text-gray-500 italic">
+                                *Free activity
+                              </div>
+                            )}
                             {isEditMode && (
                               <button
-                                onClick={() => handleAddActivity(idx)}
-                                className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-blue-50 text-gray-600 font-medium"
+                                onClick={() => handleAddActivity(idx, "hotel")}
+                                className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-purple-50 text-gray-600 font-medium"
                               >
                                 + Add Activity
                               </button>
