@@ -197,9 +197,18 @@ This is an automated notification from the staff management system.
   return { subject, html, text };
 }
 
+export interface EmailSendResult {
+  success: boolean;
+  recipientCount: number;
+  recipients: string[];
+  timestamp: string;
+  senderName: string;
+  senderEmail: string;
+}
+
 export async function sendNotificationEmail(
   notification: EmailNotification
-): Promise<void> {
+): Promise<EmailSendResult | null> {
   try {
     // Fetch all staff members except the one who made the change
     const staffList = await makeSupabaseRequest(
@@ -209,7 +218,7 @@ export async function sendNotificationEmail(
 
     if (!staffList || staffList.length === 0) {
       console.log("No other staff members to notify");
-      return;
+      return null;
     }
 
     const emailContent = generateEmailContent(notification);
@@ -219,7 +228,7 @@ export async function sendNotificationEmail(
 
     if (recipientEmails.length === 0) {
       console.log("No email addresses found for staff members");
-      return;
+      return null;
     }
 
     // Check if Resend API is configured
@@ -247,9 +256,19 @@ export async function sendNotificationEmail(
       console.log(emailContent.text);
       console.log("========================\n");
     }
+
+    return {
+      success: true,
+      recipientCount: recipientEmails.length,
+      recipients: recipientEmails,
+      timestamp: new Date().toISOString(),
+      senderName: notification.changedBy.name,
+      senderEmail: notification.changedBy.email,
+    };
   } catch (error) {
     console.error("Error sending notification email:", error);
     // Don't throw - we don't want email failures to block the main operation
+    return null;
   }
 }
 
