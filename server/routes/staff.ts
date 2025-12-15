@@ -55,26 +55,32 @@ export const createStaff: RequestHandler = async (req, res) => {
       return;
     }
 
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    // Split name into first and last name
+    const nameParts = name.trim().split(/\s+/);
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(" ") || firstName;
+
+    // Insert into staff table
+    const staffData = await makeSupabaseRequest("POST", "/staff", {
       email,
-      password,
-      email_confirm: true,
+      first_name: firstName,
+      last_name: lastName,
+      role,
+      availability_status: "available",
     });
 
-    if (authError) throw authError;
+    const createdStaff = staffData[0];
 
-    const { data, error } = await supabase.from("staff").insert([
-      {
-        id: authData.user.id,
-        email,
-        name,
-        role,
-      },
-    ]);
-
-    if (error) throw error;
-
-    res.status(201).json({ success: true, data: data?.[0] });
+    res.status(201).json({
+      success: true,
+      data: {
+        id: createdStaff.id,
+        email: createdStaff.email,
+        name: `${createdStaff.first_name} ${createdStaff.last_name}`,
+        role: createdStaff.role,
+        created_at: createdStaff.created_at,
+      }
+    });
   } catch (error) {
     console.error("Error creating staff:", error);
     res.status(500).json({ error: "Failed to create staff" });
