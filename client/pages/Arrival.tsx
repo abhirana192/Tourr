@@ -97,6 +97,7 @@ export default function Arrival() {
   const [isSaving, setIsSaving] = useState(false);
   const [activityPickerOpen, setActivityPickerOpen] = useState(false);
   const [selectedDayForActivity, setSelectedDayForActivity] = useState<number | null>(null);
+  const [selectedColumnForActivity, setSelectedColumnForActivity] = useState<"planned" | "arrival" | "hotel" | null>(null);
   const [notesEditingDay, setNotesEditingDay] = useState<number | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [showEditConfirmation, setShowEditConfirmation] = useState(false);
