@@ -144,16 +144,56 @@ export const updateStaff: RequestHandler = async (req, res) => {
       return;
     }
 
+    // Get current user from session
+    const currentUser = getSessionFromRequest(req);
+
+    // Fetch the old staff data
+    const oldStaffData = await makeSupabaseRequest("GET", `/staff?id=eq.${id}&select=id,email,first_name,last_name,role,created_at`);
+    if (!oldStaffData || oldStaffData.length === 0) {
+      res.status(404).json({ error: "Staff member not found" });
+      return;
+    }
+
+    const oldStaff = oldStaffData[0];
+    const oldFullName = oldStaff.last_name ? `${oldStaff.first_name} ${oldStaff.last_name}` : oldStaff.first_name;
+
     const updates: any = {};
+    const changes: any = {};
+
     if (name) {
       const nameParts = name.trim().split(/\s+/);
       updates.first_name = nameParts[0];
       updates.last_name = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+      if (oldFullName !== name) {
+        changes.name = { old: oldFullName, new: name };
+      }
     }
-    if (email) updates.email = email;
-    if (role) updates.role = role;
+    if (email && email !== oldStaff.email) {
+      updates.email = email;
+      changes.email = { old: oldStaff.email, new: email };
+    }
+    if (role && role !== oldStaff.role) {
+      updates.role = role;
+      changes.role = { old: oldStaff.role, new: role };
+    }
     if (password) {
       updates.password_hash = hashPassword(password);
+      changes.password = { old: "[Hidden]", new: "[Updated]" };
+    }
+
+    // Only update if there are changes
+    if (Object.keys(updates).length === 0) {
+      res.json({
+        success: true,
+        data: {
+          id: oldStaff.id,
+          email: oldStaff.email,
+          name: oldFullName,
+          role: oldStaff.role,
+          created_at: oldStaff.created_at,
+        }
+      });
+      return;
     }
 
     // Update staff record
@@ -165,6 +205,24 @@ export const updateStaff: RequestHandler = async (req, res) => {
     }
 
     const staff = updatedData[0];
+
+    // Send notification email if user is authenticated and there are changes
+    if (currentUser && Object.keys(changes).length > 0) {
+      const notification: EmailNotification = {
+        action: "update",
+        type: "staff",
+        changes,
+        changedBy: {
+          id: currentUser.userId,
+          name: currentUser.name,
+          email: currentUser.email,
+        },
+        recordId: staff.id,
+        recordName: oldFullName,
+        timestamp: new Date().toISOString(),
+      };
+      await sendNotificationEmail(notification);
+    }
 
     res.json({
       success: true,
