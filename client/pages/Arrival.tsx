@@ -42,7 +42,9 @@ interface Activity {
 interface DayItinerary {
   day: string;
   arrivalInfo: string;
-  activities: Activity[];
+  plannedActivities: Activity[];
+  arrivalActivities: Activity[];
+  hotelActivities: Activity[];
   hotelInfo: string;
   paymentInfo: string;
   note: string;
