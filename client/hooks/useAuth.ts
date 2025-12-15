@@ -80,8 +80,14 @@ export const useAuth = (): AuthContextType => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const token = sessionToken || localStorage.getItem("sessionToken");
+        const token = localStorage.getItem("sessionToken");
         if (!token) {
+          setIsLoading(false);
+          return;
+        }
+
+        // Only check session if we don't already have a user set
+        if (user) {
           setIsLoading(false);
           return;
         }
@@ -113,7 +119,7 @@ export const useAuth = (): AuthContextType => {
     };
 
     checkSession();
-  }, [sessionToken]);
+  }, []);
 
   return {
     user,
