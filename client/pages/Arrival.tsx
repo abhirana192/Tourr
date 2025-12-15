@@ -519,6 +519,9 @@ export default function Arrival() {
               padding: 12px;
               border-radius: 6px;
               backdrop-filter: blur(10px);
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
             .info-label {
               font-weight: 600;
