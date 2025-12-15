@@ -1,9 +1,15 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { LogOut, Settings } from "lucide-react";
+import { toast } from "sonner";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -11,11 +17,22 @@ export default function Navigation() {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Logged out successfully");
+      navigate("/login");
+    } catch (error) {
+      toast.error("Failed to logout");
+    }
+  };
+
   const navItems = [
     { label: "Home", path: "/" },
     { label: "Schedule", path: "/schedule" },
     { label: "Monthly Plan", path: "/monthly-plan" },
     { label: "Arrival", path: "/arrival" },
+    ...(user?.role === "admin" ? [{ label: "Staff Management", path: "/staff" }] : []),
   ];
 
   return (
