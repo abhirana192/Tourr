@@ -90,7 +90,7 @@ export const createStaff: RequestHandler = async (req, res) => {
 export const updateStaff: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const { email, name, role, password } = req.body;
+    const { name, role, password } = req.body;
 
     if (!id) {
       res.status(400).json({ error: "Missing staff ID" });
@@ -98,21 +98,33 @@ export const updateStaff: RequestHandler = async (req, res) => {
     }
 
     const updates: any = {};
-    if (name) updates.name = name;
+    if (name) {
+      const nameParts = name.trim().split(/\s+/);
+      updates.first_name = nameParts[0];
+      updates.last_name = nameParts.slice(1).join(" ") || nameParts[0];
+    }
     if (role) updates.role = role;
 
-    if (password) {
-      const { error: pwError } = await supabase.auth.admin.updateUserById(id, {
-        password,
-      });
-      if (pwError) throw pwError;
+    // Update staff record
+    const updatedData = await makeSupabaseRequest("PATCH", `/staff?id=eq.${id}`, updates);
+
+    if (!updatedData || updatedData.length === 0) {
+      res.status(404).json({ error: "Staff member not found" });
+      return;
     }
 
-    const { data, error } = await supabase.from("staff").update(updates).eq("id", id).select();
+    const staff = updatedData[0];
 
-    if (error) throw error;
-
-    res.json({ success: true, data: data?.[0] });
+    res.json({
+      success: true,
+      data: {
+        id: staff.id,
+        email: staff.email,
+        name: `${staff.first_name} ${staff.last_name}`,
+        role: staff.role,
+        created_at: staff.created_at,
+      }
+    });
   } catch (error) {
     console.error("Error updating staff:", error);
     res.status(500).json({ error: "Failed to update staff" });
@@ -128,11 +140,7 @@ export const deleteStaff: RequestHandler = async (req, res) => {
       return;
     }
 
-    await supabase.auth.admin.deleteUser(id);
-
-    const { error } = await supabase.from("staff").delete().eq("id", id);
-
-    if (error) throw error;
+    await makeSupabaseRequest("DELETE", `/staff?id=eq.${id}`, undefined);
 
     res.json({ success: true });
   } catch (error) {
