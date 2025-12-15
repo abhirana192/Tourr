@@ -1,5 +1,7 @@
 import { RequestHandler } from "express";
 import { db } from "../database";
+import { sendNotificationEmail, EmailNotification } from "../email";
+import { getSessionFromRequest } from "./auth";
 
 export const getTours: RequestHandler = (req, res) => {
   try {
