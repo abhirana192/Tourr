@@ -286,14 +286,14 @@ export default function StaffManagement() {
             {/* Password */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                {editingId ? "New Password (optional, leave empty to keep current)" : "Password"}
+                Password
               </label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder={editingId ? "••••••••" : "Enter password"}
+                  placeholder="Enter password"
                   disabled={isLoading}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg pr-10"
                 />
