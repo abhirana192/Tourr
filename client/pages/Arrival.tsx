@@ -407,23 +407,7 @@ export default function Arrival() {
   };
 
   const handleResetSchedule = () => {
-    if (!selectedTour) return;
-    const arrival = extractDateAndTime(selectedTour.arrival);
-    const departure = extractDateAndTime(selectedTour.departure);
-
-    if (!arrival.date || !departure.date) return;
-
-    const arrivalDate = new Date(arrival.date);
-    const departureDate = new Date(departure.date);
-    const timeDiff = departureDate.getTime() - arrivalDate.getTime();
-    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
-
-    setSchedules((prev) => ({
-      ...prev,
-      [selectedTour.id]: generateRandomSchedule(selectedTour, daysDiff),
-    }));
-
-    toast.success("Schedule reset to random assignment");
+    window.location.reload();
   };
 
   const dayItinerary = selectedTour ? generateDayItinerary(selectedTour) : [];
