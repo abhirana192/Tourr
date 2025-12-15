@@ -76,7 +76,17 @@ export function createServer() {
   app.use((_req, res) => {
     const indexPath = path.join(clientBuildPath, "index.html");
     console.log(`[Server] SPA fallback: serving ${indexPath}`);
-    res.sendFile(indexPath);
+    try {
+      res.sendFile(indexPath, (err) => {
+        if (err) {
+          console.error(`[Server] Error sending file ${indexPath}:`, err.message);
+          res.status(404).json({ error: "Application files not found" });
+        }
+      });
+    } catch (err) {
+      console.error(`[Server] Error in SPA fallback:`, err);
+      res.status(500).json({ error: "Internal server error" });
+    }
   });
 
   return app;
