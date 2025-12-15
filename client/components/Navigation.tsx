@@ -34,7 +34,10 @@ export default function Navigation() {
     try {
       await logout();
       toast.success("Logged out successfully");
-      navigate("/login");
+      // Wait a tick to ensure auth state is updated before navigation
+      setTimeout(() => {
+        navigate("/login");
+      }, 0);
     } catch (error) {
       toast.error("Failed to logout");
     }
