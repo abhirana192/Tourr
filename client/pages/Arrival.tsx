@@ -973,7 +973,11 @@ export default function Arrival() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
-                        <div className="whitespace-normal text-justify leading-relaxed">{day.hotelInfo}</div>
+                        {idx === 0 ? (
+                          <div className="whitespace-normal text-justify leading-relaxed">{day.hotelInfo}</div>
+                        ) : (
+                          <div className="text-gray-400 italic">—</div>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-900 align-top">
                         <div className="space-y-2">
