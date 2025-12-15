@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { createClient } from "@supabase/supabase-js";
 
 interface User {
   id: string;
@@ -16,11 +15,6 @@ interface AuthContextType {
   logout: () => Promise<void>;
   signUp?: (email: string, password: string, name: string) => Promise<void>;
 }
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 export const useAuth = (): AuthContextType => {
   const [user, setUser] = useState<User | null>(null);
