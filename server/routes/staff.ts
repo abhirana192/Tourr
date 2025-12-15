@@ -269,6 +269,7 @@ export const deleteStaff: RequestHandler = async (req, res) => {
     await makeSupabaseRequest("DELETE", `/staff?id=eq.${id}`, undefined);
 
     // Send notification email if user is authenticated
+    let emailResult = null;
     if (currentUser) {
       const notification: EmailNotification = {
         action: "delete",
@@ -287,10 +288,10 @@ export const deleteStaff: RequestHandler = async (req, res) => {
         recordName: fullName,
         timestamp: new Date().toISOString(),
       };
-      await sendNotificationEmail(notification);
+      emailResult = await sendNotificationEmail(notification);
     }
 
-    res.json({ success: true });
+    res.json({ success: true, emailSent: emailResult });
   } catch (error) {
     console.error("Error deleting staff:", error);
     res.status(500).json({ error: "Failed to delete staff" });
