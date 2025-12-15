@@ -296,7 +296,8 @@ export default function Arrival() {
 
     setSchedules((prev) => {
       const tourSchedule = { ...prev[selectedTour.id] };
-      const dayActivities = [...(tourSchedule[dayIndex] || [])];
+      const dayData = tourSchedule[dayIndex] || { activities: [], note: "" };
+      const dayActivities = [...dayData.activities];
 
       if (newActivity) {
         dayActivities[activityIndex] = newActivity;
@@ -304,7 +305,7 @@ export default function Arrival() {
         dayActivities.splice(activityIndex, 1);
       }
 
-      tourSchedule[dayIndex] = dayActivities;
+      tourSchedule[dayIndex] = { activities: dayActivities, note: dayData.note };
       return {
         ...prev,
         [selectedTour.id]: tourSchedule,
@@ -330,9 +331,10 @@ export default function Arrival() {
 
     setSchedules((prev) => {
       const tourSchedule = { ...prev[selectedTour.id] };
-      const dayActivities = [...(tourSchedule[selectedDayForActivity] || [])];
+      const dayData = tourSchedule[selectedDayForActivity] || { activities: [], note: "" };
+      const dayActivities = [...dayData.activities];
       dayActivities.push(newActivity);
-      tourSchedule[selectedDayForActivity] = dayActivities;
+      tourSchedule[selectedDayForActivity] = { activities: dayActivities, note: dayData.note };
       return {
         ...prev,
         [selectedTour.id]: tourSchedule,
@@ -341,6 +343,20 @@ export default function Arrival() {
 
     setActivityPickerOpen(false);
     setSelectedDayForActivity(null);
+  };
+
+  const handleNoteChange = (dayIndex: number, noteText: string) => {
+    if (!selectedTour) return;
+
+    setSchedules((prev) => {
+      const tourSchedule = { ...prev[selectedTour.id] };
+      const dayData = tourSchedule[dayIndex] || { activities: [], note: "" };
+      tourSchedule[dayIndex] = { activities: dayData.activities, note: noteText };
+      return {
+        ...prev,
+        [selectedTour.id]: tourSchedule,
+      };
+    });
   };
 
   const handleSaveSchedule = async () => {
