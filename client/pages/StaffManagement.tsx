@@ -292,7 +292,7 @@ export default function StaffManagement() {
             {/* Password */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Password
+                Password {editingId ? "(optional - leave empty to keep current)" : "(required)"}
               </label>
               <div className="relative">
                 <Input
