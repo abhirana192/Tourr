@@ -126,9 +126,15 @@ export default function Schedule() {
 
   const handleAddTour = async (tourData: Omit<Tour, "id">) => {
     try {
+      const sessionToken = localStorage.getItem("sessionToken");
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (sessionToken) {
+        headers["Authorization"] = `Bearer ${sessionToken}`;
+      }
+
       const response = await fetch("/api/tours", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(tourData),
       });
       const newTour = await response.json();
