@@ -177,7 +177,16 @@ export default function Schedule() {
     if (!tourToDelete) return;
 
     try {
-      await fetch(`/api/tours/${tourToDelete}`, { method: "DELETE" });
+      const sessionToken = localStorage.getItem("sessionToken");
+      const headers: HeadersInit = {};
+      if (sessionToken) {
+        headers["Authorization"] = `Bearer ${sessionToken}`;
+      }
+
+      await fetch(`/api/tours/${tourToDelete}`, {
+        method: "DELETE",
+        headers,
+      });
       setTours(tours.filter((t) => t.id !== tourToDelete));
       toast.success("Tour deleted successfully", {
         description: "The tour has been permanently removed from the system.",
