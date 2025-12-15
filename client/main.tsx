@@ -45,6 +45,7 @@ const AppRoutes = () => {
       <div style={{ position: "relative", zIndex: 0 }}>
         <Routes>
           <Route path="/" element={<Navigate to="/schedule" replace />} />
+          <Route path="/login" element={<Navigate to="/schedule" replace />} />
           <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
           <Route path="/monthly-plan" element={<ProtectedRoute><MonthlyPlan /></ProtectedRoute>} />
           <Route path="/arrival" element={<ProtectedRoute><Arrival /></ProtectedRoute>} />
