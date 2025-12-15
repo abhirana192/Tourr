@@ -94,13 +94,8 @@ export default function StaffManagement() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-
-    if (!editingId && !formData.password) {
-      toast.error("Password is required for new staff");
+    if (!formData.name || !formData.email || !formData.password) {
+      toast.error("Please fill in all required fields including password");
       return;
     }
 
