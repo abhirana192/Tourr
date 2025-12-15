@@ -197,14 +197,23 @@ export default function Schedule() {
         headers["Authorization"] = `Bearer ${sessionToken}`;
       }
 
-      await fetch(`/api/tours/${tourToDelete}`, {
+      const response = await fetch(`/api/tours/${tourToDelete}`, {
         method: "DELETE",
         headers,
       });
+      const result = await response.json();
       setTours(tours.filter((t) => t.id !== tourToDelete));
-      toast.success("Tour deleted successfully", {
-        description: "The tour has been permanently removed from the system.",
-      });
+
+      if (result.emailSent) {
+        const emailTime = new Date(result.emailSent.timestamp).toLocaleTimeString();
+        toast.success(`Email sent to ${result.emailSent.recipientCount} staff members at ${emailTime}`, {
+          description: `From: ${result.emailSent.senderName} - Tour deleted`,
+        });
+      } else {
+        toast.success("Tour deleted successfully", {
+          description: "The tour has been permanently removed from the system.",
+        });
+      }
       setDeleteConfirmOpen(false);
       setTourToDelete(null);
     } catch (error) {
