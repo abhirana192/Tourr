@@ -63,10 +63,19 @@ export const createTour: RequestHandler = async (req, res) => {
   }
 };
 
-export const updateTour: RequestHandler = (req, res) => {
+export const updateTour: RequestHandler = async (req, res) => {
   try {
+    const currentUser = getSessionFromRequest(req);
     const { id } = req.params;
     const updates = req.body;
+
+    // Get the old tour data
+    const oldTour = db.getTourById(id);
+    if (!oldTour) {
+      res.status(404).json({ error: "Tour not found" });
+      return;
+    }
+
     const updated = db.updateTour(id, {
       ...updates,
       start_date: updates.start_date,
@@ -75,6 +84,34 @@ export const updateTour: RequestHandler = (req, res) => {
     if (!updated) {
       res.status(404).json({ error: "Tour not found" });
       return;
+    }
+
+    // Send notification email if user is authenticated
+    if (currentUser) {
+      const changes: any = {};
+      Object.entries(updates).forEach(([key, value]) => {
+        const oldValue = (oldTour as any)[key];
+        if (oldValue !== value) {
+          changes[key] = { old: oldValue, new: value };
+        }
+      });
+
+      if (Object.keys(changes).length > 0) {
+        const notification: EmailNotification = {
+          action: "update",
+          type: "tour",
+          changes,
+          changedBy: {
+            id: currentUser.userId,
+            name: currentUser.name,
+            email: currentUser.email,
+          },
+          recordId: oldTour.id,
+          recordName: oldTour.name || oldTour.invoice,
+          timestamp: new Date().toISOString(),
+        };
+        await sendNotificationEmail(notification);
+      }
     }
 
     res.json(updated);
