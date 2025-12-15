@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import crypto from "crypto";
 import { handleDemo } from "./routes/demo";
 import { getTours, createTour, updateTour, deleteTour, saveTourSchedule, getTourSchedule } from "./routes/tours";
 import { getAllStaff, createStaff, updateStaff, deleteStaff } from "./routes/staff";
