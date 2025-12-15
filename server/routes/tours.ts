@@ -73,3 +73,37 @@ export const deleteTour: RequestHandler = (req, res) => {
     res.status(500).json({ error: "Failed to delete tour" });
   }
 };
+
+export const saveTourSchedule: RequestHandler = (req, res) => {
+  try {
+    const { id } = req.params;
+    const schedule = req.body;
+
+    if (!id || !schedule) {
+      res.status(400).json({ error: "Missing tour ID or schedule data" });
+      return;
+    }
+
+    const tour = db.getTour(id);
+    if (!tour) {
+      res.status(404).json({ error: "Tour not found" });
+      return;
+    }
+
+    const scheduleJson = JSON.stringify(schedule);
+    const updated = db.updateTour(id, {
+      ...tour,
+      activity_schedule: scheduleJson,
+    });
+
+    if (!updated) {
+      res.status(404).json({ error: "Failed to save schedule" });
+      return;
+    }
+
+    res.json({ success: true, data: updated });
+  } catch (error) {
+    console.error("Error saving tour schedule:", error);
+    res.status(500).json({ error: "Failed to save schedule" });
+  }
+};
