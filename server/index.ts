@@ -46,6 +46,7 @@ export function createServer() {
   });
 
 
+  // API routes MUST come before the SPA fallback
   // Auth API routes
   app.post("/api/auth/login", login);
   app.post("/api/auth/logout", logout);
@@ -71,8 +72,11 @@ export function createServer() {
 
   // SPA Fallback - serve index.html for all non-API routes
   // This allows client-side routing to work properly
+  // MUST BE LAST - catch-all route
   app.use((_req, res) => {
-    res.sendFile(path.join(clientBuildPath, "index.html"));
+    const indexPath = path.join(clientBuildPath, "index.html");
+    console.log(`[Server] SPA fallback: serving ${indexPath}`);
+    res.sendFile(indexPath);
   });
 
   return app;
