@@ -8,23 +8,27 @@ function generateSessionToken(): string {
 }
 
 async function getStaffByEmail(email: string) {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+  const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+  // Use anon key since this is a public read
+  const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
 
-  if (!supabaseUrl || !supabaseKey) {
+  if (!supabaseUrl || !anonKey) {
+    console.error("Missing Supabase credentials:", { supabaseUrl: !!supabaseUrl, anonKey: !!anonKey });
     throw new Error("Missing Supabase credentials");
   }
 
   const response = await fetch(`${supabaseUrl}/rest/v1/staff?email=eq.${encodeURIComponent(email)}&select=id,email,first_name,last_name,role`, {
     headers: {
-      "Authorization": `Bearer ${supabaseKey}`,
-      "apikey": supabaseKey,
+      "Authorization": `Bearer ${anonKey}`,
+      "apikey": anonKey,
     },
   });
 
   if (!response.ok) {
     console.error(`Supabase REST API error: ${response.status} ${response.statusText}`);
-    throw new Error("Database query failed");
+    const text = await response.text();
+    console.error("Response:", text);
+    throw new Error(`Database query failed: ${response.statusText}`);
   }
 
   const data = await response.json();
