@@ -27,8 +27,8 @@ async function getStaffByName(name: string) {
     throw new Error("Missing Supabase credentials");
   }
 
-  // Search by first_name (case-insensitive)
-  const response = await fetch(`${supabaseUrl}/rest/v1/staff?first_name=ilike.${encodeURIComponent(name)}&select=id,email,first_name,last_name,role,password_hash`, {
+  // Search by first_name (exact match)
+  const response = await fetch(`${supabaseUrl}/rest/v1/staff?first_name=eq.${encodeURIComponent(name)}&select=id,email,first_name,last_name,role,password_hash`, {
     headers: {
       "Authorization": `Bearer ${anonKey}`,
       "apikey": anonKey,
