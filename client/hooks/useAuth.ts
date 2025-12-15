@@ -67,22 +67,11 @@ export const useAuth = (): AuthContextType => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const { data } = await supabase.auth.getSession();
-
-        if (data.session?.user) {
-          const { data: staffData, error } = await supabase
-            .from("staff")
-            .select("id, email, name, role")
-            .eq("id", data.session.user.id)
-            .single();
-
-          if (!error && staffData) {
-            setUser({
-              id: data.session.user.id,
-              email: staffData.email,
-              name: staffData.name,
-              role: staffData.role,
-            });
+        const response = await fetch("/api/auth/session");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.user) {
+            setUser(data.user);
           }
         }
       } catch (error) {
@@ -93,33 +82,6 @@ export const useAuth = (): AuthContextType => {
     };
 
     checkSession();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          const { data: staffData } = await supabase
-            .from("staff")
-            .select("id, email, name, role")
-            .eq("id", session.user.id)
-            .single();
-
-          if (staffData) {
-            setUser({
-              id: session.user.id,
-              email: staffData.email,
-              name: staffData.name,
-              role: staffData.role,
-            });
-          }
-        } else {
-          setUser(null);
-        }
-      }
-    );
-
-    return () => {
-      authListener?.subscription?.unsubscribe();
-    };
   }, []);
 
   return {
