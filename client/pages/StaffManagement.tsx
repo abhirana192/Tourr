@@ -33,6 +33,7 @@ export default function StaffManagement() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordStatus, setPasswordStatus] = useState<PasswordStatus | null>(null);
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
