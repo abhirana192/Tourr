@@ -90,6 +90,58 @@ export default function Arrival() {
   const [schedules, setSchedules] = useState<{ [tourId: string]: ActivitySchedule }>({});
   const [isSaving, setIsSaving] = useState(false);
 
+  const extractDateAndTime = (value: any) => {
+    if (!value) return { date: "", time: "" };
+    const str = String(value).trim();
+    const parts = str.split("|");
+    const date = parts[0]?.trim() || "";
+    const time = parts[1]?.trim() || "";
+    const flight = parts[2]?.trim() || "";
+    return { date, time, flight };
+  };
+
+  const getAvailableActivities = (tour: Tour): string[] => {
+    const available: string[] = [];
+    if (tour.city_tour === "Yes") available.push("city_tour");
+    if (tour.fishing === "Yes") available.push("fishing");
+    if (tour.dog_sledging === "Yes") available.push("dog_sledging");
+    if (tour.snowmobile_atv === "Yes") available.push("snowmobile_atv");
+    if (tour.hiking === "Yes") available.push("hiking");
+    if (tour.aurora_village === "Yes") available.push("aurora_village");
+    if (tour.nlt === "Yes") available.push("nlt");
+    return available;
+  };
+
+  const generateRandomSchedule = (tour: Tour, dayCount: number): ActivitySchedule => {
+    const available = getAvailableActivities(tour);
+    const schedule: ActivitySchedule = {};
+
+    // For middle days (excluding arrival day 0 and departure day dayCount-1)
+    for (let i = 1; i < dayCount - 1; i++) {
+      const activities: Activity[] = [];
+
+      // Randomly select 1-2 activities for each day
+      const activitiesToAdd = Math.random() > 0.5 ? 1 : 2;
+      const shuffled = [...available].sort(() => Math.random() - 0.5);
+
+      for (let j = 0; j < Math.min(activitiesToAdd, shuffled.length); j++) {
+        const activityKey = shuffled[j];
+        const activityData = ACTIVITY_TIMINGS[activityKey];
+        if (activityData) {
+          const timing = activityData.timings[Math.floor(Math.random() * activityData.timings.length)];
+          activities.push({
+            name: activityData.name,
+            timings: [timing],
+          });
+        }
+      }
+
+      schedule[i] = activities;
+    }
+
+    return schedule;
+  };
+
   useEffect(() => {
     fetchTours();
   }, []);
@@ -155,58 +207,6 @@ export default function Arrival() {
     setSearchDateTo("");
     setSelectedTour(null);
     fetchTours("", "");
-  };
-
-  const extractDateAndTime = (value: any) => {
-    if (!value) return { date: "", time: "" };
-    const str = String(value).trim();
-    const parts = str.split("|");
-    const date = parts[0]?.trim() || "";
-    const time = parts[1]?.trim() || "";
-    const flight = parts[2]?.trim() || "";
-    return { date, time, flight };
-  };
-
-  const getAvailableActivities = (tour: Tour): string[] => {
-    const available: string[] = [];
-    if (tour.city_tour === "Yes") available.push("city_tour");
-    if (tour.fishing === "Yes") available.push("fishing");
-    if (tour.dog_sledging === "Yes") available.push("dog_sledging");
-    if (tour.snowmobile_atv === "Yes") available.push("snowmobile_atv");
-    if (tour.hiking === "Yes") available.push("hiking");
-    if (tour.aurora_village === "Yes") available.push("aurora_village");
-    if (tour.nlt === "Yes") available.push("nlt");
-    return available;
-  };
-
-  const generateRandomSchedule = (tour: Tour, dayCount: number): ActivitySchedule => {
-    const available = getAvailableActivities(tour);
-    const schedule: ActivitySchedule = {};
-
-    // For middle days (excluding arrival day 0 and departure day dayCount-1)
-    for (let i = 1; i < dayCount - 1; i++) {
-      const activities: Activity[] = [];
-
-      // Randomly select 1-2 activities for each day
-      const activitiesToAdd = Math.random() > 0.5 ? 1 : 2;
-      const shuffled = [...available].sort(() => Math.random() - 0.5);
-
-      for (let j = 0; j < Math.min(activitiesToAdd, shuffled.length); j++) {
-        const activityKey = shuffled[j];
-        const activityData = ACTIVITY_TIMINGS[activityKey];
-        if (activityData) {
-          const timing = activityData.timings[Math.floor(Math.random() * activityData.timings.length)];
-          activities.push({
-            name: activityData.name,
-            timings: [timing],
-          });
-        }
-      }
-
-      schedule[i] = activities;
-    }
-
-    return schedule;
   };
 
   const generateDayItinerary = (tour: Tour): DayItinerary[] => {
