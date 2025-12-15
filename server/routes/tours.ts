@@ -172,8 +172,9 @@ export const deleteTour: RequestHandler = async (req, res) => {
   }
 };
 
-export const saveTourSchedule: RequestHandler = (req, res) => {
+export const saveTourSchedule: RequestHandler = async (req, res) => {
   try {
+    const currentUser = getSessionFromRequest(req);
     const { id } = req.params;
     const schedule = req.body;
 
@@ -189,6 +190,8 @@ export const saveTourSchedule: RequestHandler = (req, res) => {
     }
 
     const scheduleJson = JSON.stringify(schedule);
+    const oldSchedule = tour.activity_schedule;
+
     const updated = db.updateTour(id, {
       ...tour,
       activity_schedule: scheduleJson,
@@ -197,6 +200,29 @@ export const saveTourSchedule: RequestHandler = (req, res) => {
     if (!updated) {
       res.status(404).json({ error: "Failed to save schedule" });
       return;
+    }
+
+    // Send notification email if user is authenticated
+    if (currentUser && oldSchedule !== scheduleJson) {
+      const notification: EmailNotification = {
+        action: "update",
+        type: "arrival",
+        changes: {
+          activity_schedule: {
+            old: oldSchedule ? "Previous schedule" : "No schedule",
+            new: "Schedule updated",
+          },
+        },
+        changedBy: {
+          id: currentUser.userId,
+          name: currentUser.name,
+          email: currentUser.email,
+        },
+        recordId: tour.id,
+        recordName: `${tour.name} (Schedule Update)`,
+        timestamp: new Date().toISOString(),
+      };
+      await sendNotificationEmail(notification);
     }
 
     res.json({ success: true, data: updated });
