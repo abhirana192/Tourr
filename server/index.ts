@@ -34,7 +34,6 @@ export function createServer() {
   });
 
   app.get("/api/debug/password-hash/:password", (_req, res) => {
-    const crypto = require("crypto");
     const password = _req.params.password;
     const hash = crypto.createHash("sha256").update(password + "salt").digest("hex");
     res.json({ password, hash });
