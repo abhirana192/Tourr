@@ -23,6 +23,15 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // Debug endpoint
+  app.get("/api/debug/env", (_req, res) => {
+    res.json({
+      SUPABASE_URL: process.env.SUPABASE_URL ? "✓ set" : "✗ missing",
+      SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY ? "✓ set" : "✗ missing",
+      NODE_ENV: process.env.NODE_ENV,
+    });
+  });
+
   // Auth API routes
   app.post("/api/auth/login", login);
   app.post("/api/auth/logout", logout);
