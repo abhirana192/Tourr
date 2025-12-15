@@ -539,6 +539,9 @@ export default function Arrival() {
             .schedule-section {
               margin: 30px;
               margin-top: 0;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
             .section-title {
               font-size: 18px;
@@ -548,6 +551,9 @@ export default function Arrival() {
               padding-bottom: 10px;
               border-bottom: 3px solid #3ec4a0;
               display: inline-block;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
             table {
               width: 100%;
