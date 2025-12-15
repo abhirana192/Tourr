@@ -125,6 +125,9 @@ export const updateStaff: RequestHandler = async (req, res) => {
     }
     if (email) updates.email = email;
     if (role) updates.role = role;
+    if (password) {
+      updates.password_hash = hashPassword(password);
+    }
 
     // Update staff record
     const updatedData = await makeSupabaseRequest("PATCH", `/staff?id=eq.${id}`, updates);
