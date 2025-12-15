@@ -208,13 +208,23 @@ export default function Arrival() {
     const arrival = extractDateAndTime(selectedTour.arrival);
     const departure = extractDateAndTime(selectedTour.departure);
 
-    if (!arrival.date || !departure.date) return;
+    if (!arrival.date || !departure.date) {
+      // If dates couldn't be parsed, generate a default 3-day schedule
+      if (!schedules[selectedTour.id]) {
+        setSchedules((prev) => ({
+          ...prev,
+          [selectedTour.id]: generateRandomSchedule(selectedTour, 3),
+        }));
+      }
+      setIsEditMode(false);
+      return;
+    }
 
     if (!schedules[selectedTour.id]) {
       const arrivalDate = new Date(arrival.date);
       const departureDate = new Date(departure.date);
       const timeDiff = departureDate.getTime() - arrivalDate.getTime();
-      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+      const daysDiff = Math.max(1, Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1);
 
       // Try to load saved schedule first
       fetchSavedSchedule(selectedTour.id).then((savedSchedule) => {
