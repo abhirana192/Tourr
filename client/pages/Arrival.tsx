@@ -458,10 +458,16 @@ export default function Arrival() {
             * {
               margin: 0;
               padding: 0;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
             body {
               font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
               background-color: #f0f9f7;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
             .welcome-header {
               background: linear-gradient(135deg, #1b7a5c 0%, #2da578 50%, #3ec4a0 100%);
