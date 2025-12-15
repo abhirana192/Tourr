@@ -249,7 +249,42 @@ export const deleteStaff: RequestHandler = async (req, res) => {
       return;
     }
 
+    // Get current user from session
+    const currentUser = getSessionFromRequest(req);
+
+    // Fetch the staff data before deletion
+    const staffData = await makeSupabaseRequest("GET", `/staff?id=eq.${id}&select=id,email,first_name,last_name,role,created_at`);
+    if (!staffData || staffData.length === 0) {
+      res.status(404).json({ error: "Staff member not found" });
+      return;
+    }
+
+    const staff = staffData[0];
+    const fullName = staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name;
+
     await makeSupabaseRequest("DELETE", `/staff?id=eq.${id}`, undefined);
+
+    // Send notification email if user is authenticated
+    if (currentUser) {
+      const notification: EmailNotification = {
+        action: "delete",
+        type: "staff",
+        changes: {
+          email: { old: staff.email },
+          name: { old: fullName },
+          role: { old: staff.role },
+        },
+        changedBy: {
+          id: currentUser.userId,
+          name: currentUser.name,
+          email: currentUser.email,
+        },
+        recordId: staff.id,
+        recordName: fullName,
+        timestamp: new Date().toISOString(),
+      };
+      await sendNotificationEmail(notification);
+    }
 
     res.json({ success: true });
   } catch (error) {
