@@ -88,6 +88,7 @@ export const updateTour: RequestHandler = async (req, res) => {
     }
 
     // Send notification email if user is authenticated
+    let emailResult = null;
     if (currentUser) {
       const changes: any = {};
       Object.entries(updates).forEach(([key, value]) => {
@@ -111,11 +112,11 @@ export const updateTour: RequestHandler = async (req, res) => {
           recordName: oldTour.name || oldTour.invoice,
           timestamp: new Date().toISOString(),
         };
-        await sendNotificationEmail(notification);
+        emailResult = await sendNotificationEmail(notification);
       }
     }
 
-    res.json(updated);
+    res.json({ ...updated, emailSent: emailResult });
   } catch (error) {
     console.error("Error updating tour:", error);
     res.status(500).json({ error: "Failed to update tour" });
