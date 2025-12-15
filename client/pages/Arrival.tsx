@@ -576,36 +576,34 @@ export default function Arrival() {
         )}
 
         {/* Activity Picker Dialog */}
-        {activityPickerOpen && (
-          <Dialog open={true} onOpenChange={setActivityPickerOpen}>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Select an Activity</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {selectedTour && getAvailableActivities(selectedTour).map((activityKey) => {
-                  const activityData = ACTIVITY_TIMINGS[activityKey];
-                  if (!activityData) return null;
+        <Dialog open={activityPickerOpen} onOpenChange={setActivityPickerOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Select an Activity</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {selectedTour && getAvailableActivities(selectedTour).map((activityKey) => {
+                const activityData = ACTIVITY_TIMINGS[activityKey];
+                if (!activityData) return null;
 
-                  return (
-                    <button
-                      key={activityKey}
-                      onClick={() => handleSelectActivity(activityKey)}
-                      className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-colors"
-                    >
-                      <div className="font-semibold text-gray-900">{activityData.name}</div>
-                      <div className="text-xs text-gray-600 mt-1">
-                        {activityData.timings.map((timing, idx) => (
-                          <div key={idx}>{timing}</div>
-                        ))}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
+                return (
+                  <button
+                    key={activityKey}
+                    onClick={() => handleSelectActivity(activityKey)}
+                    className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                  >
+                    <div className="font-semibold text-gray-900">{activityData.name}</div>
+                    <div className="text-xs text-gray-600 mt-1">
+                      {activityData.timings.map((timing, idx) => (
+                        <div key={idx}>{timing}</div>
+                      ))}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
