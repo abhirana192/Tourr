@@ -451,6 +451,10 @@ export default function Arrival() {
         <head>
           <title>Guest Arrival Schedule</title>
           <style>
+            @page {
+              size: landscape;
+              margin: 10mm;
+            }
             body {
               font-family: Arial, sans-serif;
               margin: 20px;
