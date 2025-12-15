@@ -76,6 +76,9 @@ export const createStaff: RequestHandler = async (req, res) => {
     const firstName = nameParts[0];
     const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
 
+    // Hash the password
+    const passwordHash = hashPassword(password);
+
     // Insert into staff table
     const staffData = await makeSupabaseRequest("POST", "/staff", {
       email,
@@ -83,6 +86,7 @@ export const createStaff: RequestHandler = async (req, res) => {
       last_name: lastName,
       role,
       availability_status: "available",
+      password_hash: passwordHash,
     });
 
     const createdStaff = staffData[0];
