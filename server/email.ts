@@ -226,16 +226,19 @@ export async function sendNotificationEmail(
     const resendApiKey = process.env.RESEND_API_KEY;
 
     if (resendApiKey) {
-      // Send via Resend
+      // Send via Resend from the staff member's email
       await sendViaResend(
         recipientEmails,
         emailContent.subject,
         emailContent.html,
-        resendApiKey
+        resendApiKey,
+        notification.changedBy.email,
+        notification.changedBy.name
       );
     } else {
       // Fallback: log to console for development
       console.log("\n=== EMAIL NOTIFICATION ===");
+      console.log(`From: ${notification.changedBy.name} <${notification.changedBy.email}>`);
       console.log(`To: ${recipientEmails.join(", ")}`);
       console.log(`Subject: ${emailContent.subject}`);
       console.log("\n--- HTML Content ---");
