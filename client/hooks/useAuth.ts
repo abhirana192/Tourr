@@ -19,6 +19,12 @@ interface AuthContextType {
 export const useAuth = (): AuthContextType => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [sessionToken, setSessionToken] = useState<string | null>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("sessionToken");
+    }
+    return null;
+  });
 
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
@@ -38,6 +44,8 @@ export const useAuth = (): AuthContextType => {
 
       const data = await response.json();
       setUser(data.user);
+      setSessionToken(data.sessionToken);
+      localStorage.setItem("sessionToken", data.sessionToken);
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -49,30 +57,53 @@ export const useAuth = (): AuthContextType => {
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      if (sessionToken) {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${sessionToken}`,
+          },
+        });
+      }
       setUser(null);
+      setSessionToken(null);
+      localStorage.removeItem("sessionToken");
     } catch (error) {
       console.error("Logout error:", error);
       throw error;
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [sessionToken]);
 
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await fetch("/api/auth/session");
+        const token = sessionToken || localStorage.getItem("sessionToken");
+        if (!token) {
+          setIsLoading(false);
+          return;
+        }
+
+        const response = await fetch("/api/auth/session", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
         if (response.ok) {
           const data = await response.json();
           if (data.user) {
             setUser(data.user);
+            setSessionToken(token);
+          } else {
+            setSessionToken(null);
+            localStorage.removeItem("sessionToken");
           }
+        } else {
+          setSessionToken(null);
+          localStorage.removeItem("sessionToken");
         }
       } catch (error) {
         console.error("Session check error:", error);
@@ -82,7 +113,7 @@ export const useAuth = (): AuthContextType => {
     };
 
     checkSession();
-  }, []);
+  }, [sessionToken]);
 
   return {
     user,
