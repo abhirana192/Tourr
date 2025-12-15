@@ -11,10 +11,31 @@ function verifyPassword(password: string, hash: string): boolean {
 }
 
 // Simple in-memory session storage (replace with database in production)
-const sessions = new Map<string, { userId: string; email: string; name: string; role: string; expiresAt: number }>();
+export const sessions = new Map<string, { userId: string; email: string; name: string; role: string; expiresAt: number }>();
 
 function generateSessionToken(): string {
   return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
+export function getSessionFromRequest(req: any): { userId: string; email: string; name: string; role: string } | null {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+  if (!token) return null;
+
+  const session = sessions.get(token);
+  if (!session) return null;
+
+  // Check if session is expired
+  if (session.expiresAt < Date.now()) {
+    sessions.delete(token);
+    return null;
+  }
+
+  return {
+    userId: session.userId,
+    email: session.email,
+    name: session.name,
+    role: session.role,
+  };
 }
 
 async function getStaffByName(name: string) {
