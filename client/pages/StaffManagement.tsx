@@ -84,12 +84,19 @@ export default function StaffManagement() {
     if (!window.confirm("Are you sure you want to delete this staff member?")) return;
 
     try {
+      const sessionToken = localStorage.getItem("sessionToken");
+      const headers: HeadersInit = {};
+      if (sessionToken) {
+        headers["Authorization"] = `Bearer ${sessionToken}`;
+      }
+
       const response = await fetch(`/api/staff/${id}`, {
         method: "DELETE",
+        headers,
       });
 
       if (!response.ok) throw new Error("Failed to delete staff");
-      
+
       setStaff(staff.filter((s) => s.id !== id));
       toast.success("Staff member deleted successfully");
     } catch (err) {
