@@ -17,7 +17,7 @@ function generateSessionToken(): string {
   return Math.random().toString(36).substring(2) + Date.now().toString(36);
 }
 
-async function getStaffByEmail(email: string) {
+async function getStaffByName(name: string) {
   const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
   // Use anon key since this is a public read
   const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
@@ -27,7 +27,9 @@ async function getStaffByEmail(email: string) {
     throw new Error("Missing Supabase credentials");
   }
 
-  const response = await fetch(`${supabaseUrl}/rest/v1/staff?email=eq.${encodeURIComponent(email)}&select=id,email,first_name,last_name,role,password_hash`, {
+  // Search by first_name or the combined name
+  const encodedName = encodeURIComponent(`${name}%`);
+  const response = await fetch(`${supabaseUrl}/rest/v1/staff?or=(first_name.ilike.${encodedName},last_name.ilike.${encodedName})&select=id,email,first_name,last_name,role,password_hash`, {
     headers: {
       "Authorization": `Bearer ${anonKey}`,
       "apikey": anonKey,
