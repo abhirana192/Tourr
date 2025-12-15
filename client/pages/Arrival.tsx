@@ -448,8 +448,11 @@ export default function Arrival() {
 
     setSchedules((prev) => {
       const tourSchedule = { ...prev[selectedTour.id] };
-      const dayData = tourSchedule[dayIndex] || { activities: [], note: "" };
-      tourSchedule[dayIndex] = { activities: dayData.activities, note: noteText };
+      const dayData = tourSchedule[dayIndex] || { plannedActivities: [], arrivalActivities: [], hotelActivities: [], note: "" };
+      tourSchedule[dayIndex] = {
+        ...dayData,
+        note: noteText,
+      };
       return {
         ...prev,
         [selectedTour.id]: tourSchedule,
