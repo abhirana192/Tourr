@@ -22,6 +22,11 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // Auth API routes
+  app.post("/api/auth/login", login);
+  app.post("/api/auth/logout", logout);
+  app.get("/api/auth/session", getSession);
+
   // Tour API routes
   app.get("/api/tours", getTours);
   app.get("/api/tours/:id/schedule", getTourSchedule);
