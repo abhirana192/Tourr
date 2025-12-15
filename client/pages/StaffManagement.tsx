@@ -114,10 +114,16 @@ export default function StaffManagement() {
     try {
       setIsLoading(true);
 
+      const sessionToken = localStorage.getItem("sessionToken");
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (sessionToken) {
+        headers["Authorization"] = `Bearer ${sessionToken}`;
+      }
+
       if (editingId) {
         const response = await fetch(`/api/staff/${editingId}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers,
           body: JSON.stringify({
             name: formData.name,
             email: formData.email,
@@ -143,7 +149,7 @@ export default function StaffManagement() {
       } else {
         const response = await fetch("/api/staff", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers,
           body: JSON.stringify(formData),
         });
 
