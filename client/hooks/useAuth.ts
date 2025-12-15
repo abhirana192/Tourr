@@ -23,29 +23,21 @@ export const useAuth = (): AuthContextType => {
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (error) throw error;
-
-      if (data.user) {
-        const { data: staffData, error: staffError } = await supabase
-          .from("staff")
-          .select("id, email, name, role")
-          .eq("id", data.user.id)
-          .single();
-
-        if (staffError) throw staffError;
-
-        setUser({
-          id: data.user.id,
-          email: staffData.email,
-          name: staffData.name,
-          role: staffData.role,
-        });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Login failed");
       }
+
+      const data = await response.json();
+      setUser(data.user);
     } catch (error) {
       console.error("Login error:", error);
       throw error;
