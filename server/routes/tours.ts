@@ -24,13 +24,38 @@ export const getTours: RequestHandler = (req, res) => {
   }
 };
 
-export const createTour: RequestHandler = (req, res) => {
+export const createTour: RequestHandler = async (req, res) => {
   try {
+    const currentUser = getSessionFromRequest(req);
     const tour = req.body;
     const newTour = db.addTour({
       ...tour,
       start_date: tour.start_date,
     });
+
+    // Send notification email if user is authenticated
+    if (currentUser) {
+      const changes: any = {};
+      Object.entries(tour).forEach(([key, value]) => {
+        changes[key] = { new: value };
+      });
+
+      const notification: EmailNotification = {
+        action: "create",
+        type: "tour",
+        changes,
+        changedBy: {
+          id: currentUser.userId,
+          name: currentUser.name,
+          email: currentUser.email,
+        },
+        recordId: newTour.id,
+        recordName: tour.name || tour.invoice,
+        timestamp: new Date().toISOString(),
+      };
+      await sendNotificationEmail(notification);
+    }
+
     res.status(201).json(newTour);
   } catch (error) {
     console.error("Error creating tour:", error);
