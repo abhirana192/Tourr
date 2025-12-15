@@ -170,6 +170,13 @@ export default function Schedule() {
       setTours(tours.map((t) => (t.id === id ? updated : t)));
       setIsModalOpen(false);
       setEditingTour(null);
+
+      if (updated.emailSent) {
+        const emailTime = new Date(updated.emailSent.timestamp).toLocaleTimeString();
+        toast.success(`Email sent to ${updated.emailSent.recipientCount} staff members at ${emailTime}`, {
+          description: `From: ${updated.emailSent.senderName} - Tour updated`,
+        });
+      }
     } catch (error) {
       console.error("Error updating tour:", error);
     }
