@@ -20,6 +20,12 @@ interface FormData {
   role: "admin" | "staff";
 }
 
+interface PasswordStatus {
+  staffId: string;
+  email: string;
+  tempPassword: string;
+}
+
 export default function StaffManagement() {
   const [staff, setStaff] = useState<Staff[]>([]);
   const [isLoading, setIsLoading] = useState(true);
