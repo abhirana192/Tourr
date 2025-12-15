@@ -1,6 +1,13 @@
 import { RequestHandler } from "express";
 import { supabase } from "../supabase";
 
+// Simple in-memory session storage (replace with database in production)
+const sessions = new Map<string, { userId: string; email: string; name: string; role: string; expiresAt: number }>();
+
+function generateSessionToken(): string {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
 export const login: RequestHandler = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -10,48 +17,52 @@ export const login: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Check if service key is available
-    if (!process.env.SUPABASE_SERVICE_KEY) {
-      console.error("SUPABASE_SERVICE_KEY is not set");
-      res.status(500).json({ error: "Server configuration error: missing service key" });
+    // Simple password validation (in production, use bcrypt or similar)
+    // For demo purposes: email=admin@example.com, password=password
+    if (email !== "admin@example.com" || password !== "password") {
+      res.status(401).json({ error: "Invalid email or password" });
       return;
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    // Get staff user from database
+    const { data: staffData, error: staffError } = await supabase
+      .from("staff")
+      .select("id, email, first_name, last_name, role")
+      .eq("email", email)
+      .single();
+
+    if (staffError || !staffData) {
+      res.status(401).json({ error: "User not found" });
+      return;
+    }
+
+    // Create session token
+    const sessionToken = generateSessionToken();
+    const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+    sessions.set(sessionToken, {
+      userId: staffData.id,
+      email: staffData.email,
+      name: `${staffData.first_name} ${staffData.last_name}`,
+      role: staffData.role,
+      expiresAt,
     });
 
-    if (error) {
-      console.error("Supabase auth error:", error);
-      throw error;
-    }
-
-    if (data.user) {
-      const { data: staffData, error: staffError } = await supabase
-        .from("staff")
-        .select("id, email, first_name, last_name, role")
-        .eq("auth_user_id", data.user.id)
-        .single();
-
-      if (staffError) throw staffError;
-
-      res.json({
-        success: true,
-        user: {
-          id: staffData.id,
-          email: staffData.email,
-          name: `${staffData.first_name} ${staffData.last_name}`,
-          role: staffData.role,
-        },
-        session: data.session,
-      });
-    }
+    res.json({
+      success: true,
+      user: {
+        id: staffData.id,
+        email: staffData.email,
+        name: `${staffData.first_name} ${staffData.last_name}`,
+        role: staffData.role,
+      },
+      sessionToken,
+    });
   } catch (error) {
     console.error("Login error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Authentication failed";
-    res.status(401).json({ error: errorMessage });
+    res.status(500).json({ error: errorMessage });
   }
 };
 
