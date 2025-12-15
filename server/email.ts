@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import nodemailer from "nodemailer";
 
 export interface EmailNotification {
   action: "create" | "update" | "delete";
