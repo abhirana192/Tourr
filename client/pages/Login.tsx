@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -20,11 +20,11 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      if (!email || !password) {
-        throw new Error("Please enter email and password");
+      if (!name || !password) {
+        throw new Error("Please enter name and password");
       }
 
-      await login(email, password);
+      await login(name, password);
       toast.success("Login successful!");
       navigate("/schedule");
     } catch (err) {
