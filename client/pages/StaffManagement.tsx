@@ -174,6 +174,13 @@ export default function StaffManagement() {
         const newStaff = await response.json();
         setStaff([...staff, newStaff.data]);
 
+        if (newStaff.emailSent) {
+          const emailTime = new Date(newStaff.emailSent.timestamp).toLocaleTimeString();
+          toast.success(`Email sent to ${newStaff.emailSent.recipientCount} staff members at ${emailTime}`, {
+            description: `From: ${newStaff.emailSent.senderName}`,
+          });
+        }
+
         setPasswordStatus({
           staffId: newStaff.data.id,
           email: newStaff.data.email,
