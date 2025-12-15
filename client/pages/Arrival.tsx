@@ -984,8 +984,18 @@ export default function Arrival() {
                         {idx === 0 ? (
                           <div className="whitespace-normal text-justify leading-relaxed">{day.hotelInfo}</div>
                         ) : (
-                          <div className="whitespace-normal text-gray-500 italic">
-                            *Free activity
+                          <div className="space-y-2">
+                            <div className="whitespace-normal text-gray-500 italic">
+                              *Free activity
+                            </div>
+                            {isEditMode && (
+                              <button
+                                onClick={() => handleAddActivity(idx)}
+                                className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-blue-50 text-gray-600 font-medium"
+                              >
+                                + Add Activity
+                              </button>
+                            )}
                           </div>
                         )}
                       </td>
