@@ -14,6 +14,7 @@ async function makeSupabaseRequest(method: string, path: string, body?: any) {
       "Authorization": `Bearer ${anonKey}`,
       "apikey": anonKey,
       "Content-Type": "application/json",
+      "Prefer": "return=representation",
     },
     ...(body && { body: JSON.stringify(body) }),
   });
@@ -23,7 +24,12 @@ async function makeSupabaseRequest(method: string, path: string, body?: any) {
     throw new Error(`Supabase API error: ${response.status} ${error}`);
   }
 
-  return response.json();
+  const text = await response.text();
+  if (!text) {
+    return [];
+  }
+
+  return JSON.parse(text);
 }
 
 export const getAllStaff: RequestHandler = async (req, res) => {
