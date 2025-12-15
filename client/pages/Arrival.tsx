@@ -602,26 +602,33 @@ export default function Arrival() {
             <div class="header-content">
               <div class="welcome-text">WELCOME TO YOUR ARCTIC ADVENTURE</div>
               <div class="guest-title">${selectedTour.name}</div>
-            <div class="guest-info">
-              <div class="info-item">
-                <div class="info-label">Invoice</div>
-                <div class="info-value">${selectedTour.invoice}</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">Pax</div>
-                <div class="info-value">${selectedTour.pax}</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">Language</div>
-                <div class="info-value">${selectedTour.language}</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">Group</div>
-                <div class="info-value">${selectedTour.group_id}</div>
+              <div class="guest-info">
+                <div class="info-item">
+                  <div class="info-label">Invoice</div>
+                  <div class="info-value">${selectedTour.invoice}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Pax</div>
+                  <div class="info-value">${selectedTour.pax}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Language</div>
+                  <div class="info-value">${selectedTour.language}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Group</div>
+                  <div class="info-value">${selectedTour.group_id}</div>
+                </div>
               </div>
             </div>
           </div>
-          ${tableElement.outerHTML}
+          <div class="schedule-section">
+            <div class="section-title">Your Itinerary</div>
+            ${tableElement.outerHTML}
+          </div>
+          <div class="footer">
+            Welcome to the Arctic! We look forward to making your stay unforgettable with authentic experiences and warm hospitality.
+          </div>
         </body>
       </html>
     `;
