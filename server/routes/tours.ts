@@ -177,6 +177,64 @@ export const deleteTour: RequestHandler = async (req, res) => {
   }
 };
 
+function analyzeScheduleChanges(oldScheduleJson: string | null, newSchedule: any): { [key: string]: { old: string; new: string } } {
+  const changes: { [key: string]: { old: string; new: string } } = {};
+
+  try {
+    const oldSchedule = oldScheduleJson ? JSON.parse(oldScheduleJson) : {};
+
+    for (const dayIndex in newSchedule) {
+      const dayNum = parseInt(dayIndex);
+      const oldDay = oldSchedule[dayNum] || { plannedActivities: [], arrivalActivities: [], hotelActivities: [], note: "" };
+      const newDay = newSchedule[dayNum];
+
+      if (!newDay) continue;
+
+      // Check for activity changes
+      const dayLabel = dayNum === 0 ? "Arrival Day" : dayNum === 1 ? "1st Day" : dayNum === 2 ? "2nd Day" : dayNum === 3 ? "3rd Day" : `Day ${dayNum}`;
+
+      // Compare planned activities
+      const oldPlanned = (oldDay.plannedActivities || []).map((a: any) => a.name).join(", ") || "None";
+      const newPlanned = (newDay.plannedActivities || []).map((a: any) => a.name).join(", ") || "None";
+      if (oldPlanned !== newPlanned) {
+        changes[`${dayLabel} - Planned Activities`] = { old: oldPlanned, new: newPlanned };
+      }
+
+      // Compare arrival activities
+      const oldArrival = (oldDay.arrivalActivities || []).map((a: any) => a.name).join(", ") || "None";
+      const newArrival = (newDay.arrivalActivities || []).map((a: any) => a.name).join(", ") || "None";
+      if (oldArrival !== newArrival) {
+        changes[`${dayLabel} - Arrival Activities`] = { old: oldArrival, new: newArrival };
+      }
+
+      // Compare hotel activities
+      const oldHotel = (oldDay.hotelActivities || []).map((a: any) => a.name).join(", ") || "None";
+      const newHotel = (newDay.hotelActivities || []).map((a: any) => a.name).join(", ") || "None";
+      if (oldHotel !== newHotel) {
+        changes[`${dayLabel} - Hotel Activities`] = { old: oldHotel, new: newHotel };
+      }
+
+      // Compare notes
+      const oldNote = oldDay.note || "";
+      const newNote = newDay.note || "";
+      if (oldNote !== newNote) {
+        changes[`${dayLabel} - Note`] = { old: oldNote || "(empty)", new: newNote || "(empty)" };
+      }
+    }
+
+    // If no changes detected, return a generic change
+    if (Object.keys(changes).length === 0) {
+      changes["schedule"] = { old: "Previous schedule", new: "Schedule updated" };
+    }
+
+    return changes;
+  } catch {
+    return {
+      schedule: { old: "Previous schedule", new: "Schedule updated" },
+    };
+  }
+}
+
 export const saveTourSchedule: RequestHandler = async (req, res) => {
   try {
     const currentUser = getSessionFromRequest(req);
@@ -210,15 +268,12 @@ export const saveTourSchedule: RequestHandler = async (req, res) => {
     // Send notification email if user is authenticated
     let emailResult = null;
     if (currentUser && oldSchedule !== scheduleJson) {
+      const changes = analyzeScheduleChanges(oldSchedule, schedule);
+
       const notification: EmailNotification = {
         action: "update",
         type: "arrival",
-        changes: {
-          activity_schedule: {
-            old: oldSchedule ? "Previous schedule" : "No schedule",
-            new: "Schedule updated",
-          },
-        },
+        changes,
         changedBy: {
           id: currentUser.userId,
           name: currentUser.name,
