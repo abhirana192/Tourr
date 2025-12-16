@@ -208,29 +208,38 @@ export interface EmailSendResult {
 }
 
 export async function sendNotificationEmail(
-  notification: EmailNotification
+  notification: EmailNotification,
+  customRecipients?: string[]
 ): Promise<EmailSendResult | null> {
   try {
-    // Fetch all staff members except the one who made the change
-    const staffList = await makeSupabaseRequest(
-      "GET",
-      `/staff?id=neq.${notification.changedBy.id}&select=id,email,first_name,last_name`
-    );
+    let recipientEmails: string[] = [];
 
-    if (!staffList || staffList.length === 0) {
-      console.log("No other staff members to notify");
+    if (customRecipients && customRecipients.length > 0) {
+      // Use custom recipients provided
+      recipientEmails = customRecipients.filter((email: string) => email && typeof email === "string");
+    } else {
+      // Fetch all staff members except the one who made the change
+      const staffList = await makeSupabaseRequest(
+        "GET",
+        `/staff?id=neq.${notification.changedBy.id}&select=id,email,first_name,last_name`
+      );
+
+      if (!staffList || staffList.length === 0) {
+        console.log("No other staff members to notify");
+        return null;
+      }
+
+      recipientEmails = staffList
+        .map((staff: any) => staff.email)
+        .filter((email: string) => email);
+    }
+
+    if (recipientEmails.length === 0) {
+      console.log("No email addresses found");
       return null;
     }
 
     const emailContent = generateEmailContent(notification);
-    const recipientEmails = staffList
-      .map((staff: any) => staff.email)
-      .filter((email: string) => email);
-
-    if (recipientEmails.length === 0) {
-      console.log("No email addresses found for staff members");
-      return null;
-    }
 
     // Check if Gmail credentials are configured
     const gmailUser = process.env.GMAIL_USER;
