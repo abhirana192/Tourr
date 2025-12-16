@@ -1194,6 +1194,15 @@ export default function Arrival() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Email Recipients Dialog */}
+        <EmailRecipientsDialog
+          open={showEmailDialog}
+          onOpenChange={setShowEmailDialog}
+          onConfirm={handleConfirmEmailRecipients}
+          tourName={selectedTour ? `${selectedTour.name} (${selectedTour.pax} pax)` : undefined}
+          isLoading={isSaving}
+        />
       </div>
     </div>
   );
