@@ -239,7 +239,7 @@ export const saveTourSchedule: RequestHandler = async (req, res) => {
   try {
     const currentUser = getSessionFromRequest(req);
     const { id } = req.params;
-    const schedule = req.body;
+    const { schedule, customRecipients } = req.body;
 
     if (!id || !schedule) {
       res.status(400).json({ error: "Missing tour ID or schedule data" });
@@ -283,7 +283,7 @@ export const saveTourSchedule: RequestHandler = async (req, res) => {
         recordName: `${tour.name} (Schedule Update)`,
         timestamp: new Date().toISOString(),
       };
-      emailResult = await sendNotificationEmail(notification);
+      emailResult = await sendNotificationEmail(notification, customRecipients);
     }
 
     res.json({ success: true, data: updated, emailSent: emailResult });
