@@ -5,6 +5,7 @@ import { AlertCircle, Edit2, RotateCcw, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ActivityPickerModal } from "./ActivityPickerModal";
+import { EmailRecipientsDialog } from "@/components/EmailRecipientsDialog";
 
 interface Tour {
   id: string;
@@ -105,6 +106,8 @@ export default function Arrival() {
   const [notesEditingDay, setNotesEditingDay] = useState<number | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [showEditConfirmation, setShowEditConfirmation] = useState(false);
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [pendingScheduleData, setPendingScheduleData] = useState<any>(null);
 
   const extractDateAndTime = (value: any) => {
     if (!value) return { date: "", time: "" };
@@ -498,10 +501,15 @@ export default function Arrival() {
 
   const handleSaveSchedule = async () => {
     if (!selectedTour) return;
+    setPendingScheduleData(schedules[selectedTour.id]);
+    setShowEmailDialog(true);
+  };
+
+  const handleConfirmEmailRecipients = async (recipients: string[]) => {
+    if (!selectedTour || !pendingScheduleData) return;
 
     setIsSaving(true);
     try {
-      const scheduleData = schedules[selectedTour.id];
       const sessionToken = localStorage.getItem("sessionToken");
 
       const headers: HeadersInit = { "Content-Type": "application/json" };
@@ -512,7 +520,10 @@ export default function Arrival() {
       const response = await fetch(`/api/tours/${selectedTour.id}/schedule`, {
         method: "POST",
         headers,
-        body: JSON.stringify(scheduleData),
+        body: JSON.stringify({
+          schedule: pendingScheduleData,
+          customRecipients: recipients,
+        }),
       });
 
       if (!response.ok) {
@@ -523,12 +534,14 @@ export default function Arrival() {
 
       if (result.emailSent) {
         const emailTime = new Date(result.emailSent.timestamp).toLocaleTimeString();
-        toast.success(`Email sent to ${result.emailSent.recipientCount} staff members at ${emailTime}`, {
+        toast.success(`Email sent to ${result.emailSent.recipientCount} recipient(s) at ${emailTime}`, {
           description: `From: ${result.emailSent.senderName} - Guest schedule updated`,
         });
       } else {
         toast.success("Schedule saved successfully!");
       }
+
+      setPendingScheduleData(null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to save schedule";
       toast.error(errorMessage);
