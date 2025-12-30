@@ -59,8 +59,8 @@ async function getStaffByName(name: string) {
   const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !anonKey) {
-    console.error("Missing Supabase credentials:", { supabaseUrl: !!supabaseUrl, anonKey: !!anonKey });
-    throw new Error("Supabase is not configured. Please contact the administrator.");
+    console.error("[getStaffByName] Missing Supabase credentials");
+    return null;
   }
 
   try {
@@ -73,20 +73,16 @@ async function getStaffByName(name: string) {
     });
 
     if (!response.ok) {
-      console.error(`Supabase REST API error: ${response.status} ${response.statusText}`);
-      const text = await response.text();
-      console.error("Response:", text);
-      throw new Error(`Database query failed: ${response.statusText}`);
+      console.error(`[getStaffByName] Supabase API error: ${response.status}`);
+      return null;
     }
 
     const data = await response.json();
     return data.length > 0 ? data[0] : null;
   } catch (error) {
-    console.error("Error connecting to Supabase:", error);
-    if (error instanceof TypeError && error.message.includes('fetch failed')) {
-      console.warn("Supabase unreachable, but demo user available");
-    }
-    throw error;
+    console.error("[getStaffByName] Error connecting to Supabase:", error);
+    // Don't throw - just return null so login can proceed with demo user or fail gracefully
+    return null;
   }
 }
 
