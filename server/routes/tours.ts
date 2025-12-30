@@ -29,7 +29,7 @@ export const getTours: RequestHandler = (req, res) => {
 export const createTour: RequestHandler = async (req, res) => {
   try {
     const currentUser = getSessionFromRequest(req);
-    const tour = req.body;
+    const { customRecipients, ...tour } = req.body;
     const newTour = db.addTour({
       ...tour,
       start_date: tour.start_date,
@@ -40,7 +40,9 @@ export const createTour: RequestHandler = async (req, res) => {
     if (currentUser) {
       const changes: any = {};
       Object.entries(tour).forEach(([key, value]) => {
-        changes[key] = { new: value };
+        if (key !== "customRecipients") {
+          changes[key] = { new: value };
+        }
       });
 
       const notification: EmailNotification = {
@@ -56,7 +58,7 @@ export const createTour: RequestHandler = async (req, res) => {
         recordName: tour.name || tour.invoice,
         timestamp: new Date().toISOString(),
       };
-      emailResult = await sendNotificationEmail(notification);
+      emailResult = await sendNotificationEmail(notification, customRecipients);
     }
 
     res.status(201).json({ ...newTour, emailSent: emailResult });
