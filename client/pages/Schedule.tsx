@@ -657,6 +657,15 @@ export default function Schedule() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Email Recipients Dialog */}
+      <EmailRecipientsDialog
+        open={emailDialogOpen}
+        onOpenChange={setEmailDialogOpen}
+        onConfirm={handleConfirmEmailRecipients}
+        tourName={pendingTourData?.tourName}
+        isLoading={sendingEmail}
+      />
     </div>
   );
 }
