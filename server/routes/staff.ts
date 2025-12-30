@@ -307,16 +307,15 @@ export const deleteStaff: RequestHandler = async (req, res) => {
     const currentUser = getSessionFromRequest(req);
 
     // Fetch the staff data before deletion
-    const staffData = await makeSupabaseRequest("GET", `/staff?id=eq.${id}&select=id,email,first_name,last_name,role,created_at`);
-    if (!staffData || staffData.length === 0) {
+    const staff = await staffDb.getStaffById(id);
+    if (!staff) {
       res.status(404).json({ error: "Staff member not found" });
       return;
     }
 
-    const staff = staffData[0];
     const fullName = staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name;
 
-    await makeSupabaseRequest("DELETE", `/staff?id=eq.${id}`, undefined);
+    await staffDb.deleteStaff(id);
 
     // Send notification email if user is authenticated
     let emailResult = null;
@@ -343,7 +342,7 @@ export const deleteStaff: RequestHandler = async (req, res) => {
 
     res.json({ success: true, emailSent: emailResult });
   } catch (error) {
-    console.error("Error deleting staff:", error);
+    console.error("[deleteStaff] Error:", error);
     res.status(500).json({ error: "Failed to delete staff" });
   }
 };
