@@ -108,7 +108,10 @@ export const getAllStaff: RequestHandler = async (req, res) => {
 
     if (isDemoFallback) {
       // Supabase unavailable, return demo data + demo-created staff
-      console.log("Using demo data - Supabase unavailable");
+      console.log("[getAllStaff] Using demo data - Supabase unavailable");
+      console.log("[getAllStaff] Demo staff IDs:", data.map((s: any) => s.id));
+      console.log("[getAllStaff] Demo-created staff IDs:", demoModeCreatedStaff.map((s: any) => s.id));
+
       const fallbackData = [
         ...data.map((staff: any) => ({
           id: staff.id,
@@ -119,13 +122,16 @@ export const getAllStaff: RequestHandler = async (req, res) => {
         })),
         ...demoModeCreatedStaff,
       ];
+
+      console.log("[getAllStaff] Before dedup IDs:", fallbackData.map((s: any) => s.id));
       const result = deduplicateStaff(fallbackData);
+      console.log("[getAllStaff] After dedup IDs:", result.map((s: any) => s.id));
       res.json(result);
       return;
     }
 
     // Real data from Supabase - clear demo mode and return transformed data
-    console.log("Received real staff data from Supabase");
+    console.log("[getAllStaff] Received real staff data from Supabase");
     demoModeCreatedStaff = [];
     const transformedData = data.map((staff: any) => ({
       id: staff.id,
@@ -140,6 +146,7 @@ export const getAllStaff: RequestHandler = async (req, res) => {
     console.error("Error fetching staff:", error);
 
     // Return demo data as fallback on error
+    console.log("[getAllStaff] Error fallback - returning demo data");
     const fallbackData = [
       ...DEMO_STAFF.map((staff: any) => ({
         id: staff.id,
@@ -150,7 +157,9 @@ export const getAllStaff: RequestHandler = async (req, res) => {
       })),
       ...demoModeCreatedStaff,
     ];
+    console.log("[getAllStaff] Before dedup IDs:", fallbackData.map((s: any) => s.id));
     const result = deduplicateStaff(fallbackData);
+    console.log("[getAllStaff] After dedup IDs:", result.map((s: any) => s.id));
     res.json(result);
   }
 };
