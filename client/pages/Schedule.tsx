@@ -144,32 +144,14 @@ export default function Schedule() {
   };
 
   const handleUpdateTour = async (id: string, tourData: Omit<Tour, "id">) => {
-    try {
-      const sessionToken = localStorage.getItem("sessionToken");
-      const headers: HeadersInit = { "Content-Type": "application/json" };
-      if (sessionToken) {
-        headers["Authorization"] = `Bearer ${sessionToken}`;
-      }
-
-      const response = await fetch(`/api/tours/${id}`, {
-        method: "PUT",
-        headers,
-        body: JSON.stringify(tourData),
-      });
-      const updated = await response.json();
-      setTours(tours.map((t) => (t.id === id ? updated : t)));
-      setIsModalOpen(false);
-      setEditingTour(null);
-
-      if (updated.emailSent) {
-        const emailTime = new Date(updated.emailSent.timestamp).toLocaleTimeString();
-        toast.success(`Email sent to ${updated.emailSent.recipientCount} staff members at ${emailTime}`, {
-          description: `From: ${updated.emailSent.senderName} - Tour updated`,
-        });
-      }
-    } catch (error) {
-      console.error("Error updating tour:", error);
-    }
+    setIsModalOpen(false);
+    setPendingTourData({
+      tourData,
+      tourId: id,
+      operation: "update",
+      tourName: tourData.name || tourData.invoice,
+    });
+    setEmailDialogOpen(true);
   };
 
   const handleDeleteClick = (id: string) => {
