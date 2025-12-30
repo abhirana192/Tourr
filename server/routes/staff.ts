@@ -42,6 +42,9 @@ const DEMO_STAFF = [
 
 const DEMO_STAFF_IDS = new Set(DEMO_STAFF.map((s) => s.id));
 
+// In-memory storage for newly created staff in demo mode
+let demoModeCreatedStaff: any[] = [];
+
 async function makeSupabaseRequest(method: string, path: string, body?: any) {
   const supabaseUrl = process.env.SUPABASE_URL;
   const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
