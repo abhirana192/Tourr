@@ -25,30 +25,38 @@ async function makeSupabaseRequest(method: string, path: string, body?: any) {
   const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !anonKey) {
-    throw new Error("Missing Supabase credentials");
+    throw new Error("Database service is not configured");
   }
 
-  const response = await fetch(`${supabaseUrl}/rest/v1${path}`, {
-    method,
-    headers: {
-      "Authorization": `Bearer ${anonKey}`,
-      "apikey": anonKey,
-      "Content-Type": "application/json",
-    },
-    ...(body && { body: JSON.stringify(body) }),
-  });
+  try {
+    const response = await fetch(`${supabaseUrl}/rest/v1${path}`, {
+      method,
+      headers: {
+        "Authorization": `Bearer ${anonKey}`,
+        "apikey": anonKey,
+        "Content-Type": "application/json",
+      },
+      ...(body && { body: JSON.stringify(body) }),
+    });
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Supabase API error: ${response.status} ${error}`);
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Supabase API error: ${response.status} ${error}`);
+    }
+
+    const text = await response.text();
+    if (!text) {
+      return [];
+    }
+
+    return JSON.parse(text);
+  } catch (error) {
+    console.error("Supabase request failed:", error);
+    if (error instanceof TypeError && error.message.includes('fetch failed')) {
+      throw new Error("Database connection failed. Please check your internet connection and try again.");
+    }
+    throw error;
   }
-
-  const text = await response.text();
-  if (!text) {
-    return [];
-  }
-
-  return JSON.parse(text);
 }
 
 function generateEmailContent(notification: EmailNotification): {
