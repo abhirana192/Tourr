@@ -45,6 +45,17 @@ export interface Tour {
   start_date: string;
 }
 
+export interface StaffMember {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: "admin" | "staff";
+  created_at: string;
+  availability_status?: string;
+  password_hash?: string;
+}
+
 export const tourDb = {
   async getTours() {
     const { data, error } = await supabase
@@ -116,5 +127,74 @@ export const tourDb = {
     });
     if (error) throw error;
     return data || [];
+  },
+};
+
+export const staffDb = {
+  async getAllStaff() {
+    const { data, error } = await supabase
+      .from("staff")
+      .select("id,email,first_name,last_name,role,created_at")
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getStaffById(id: string) {
+    const { data, error } = await supabase
+      .from("staff")
+      .select("*")
+      .eq("id", id)
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async getStaffByEmail(email: string) {
+    const { data, error } = await supabase
+      .from("staff")
+      .select("*")
+      .eq("email", email)
+      .single();
+    if (error && error.code !== "PGRST116") throw error;
+    return data || null;
+  },
+
+  async getStaffByName(firstName: string) {
+    const { data, error } = await supabase
+      .from("staff")
+      .select("*")
+      .ilike("first_name", firstName)
+      .single();
+    if (error && error.code !== "PGRST116") throw error;
+    return data || null;
+  },
+
+  async createStaff(staff: Omit<StaffMember, "id" | "created_at">) {
+    const { data, error } = await supabase
+      .from("staff")
+      .insert([staff])
+      .select();
+    if (error) throw error;
+    return data?.[0];
+  },
+
+  async updateStaff(id: string, updates: Partial<StaffMember>) {
+    const { data, error } = await supabase
+      .from("staff")
+      .update(updates)
+      .eq("id", id)
+      .select();
+    if (error) throw error;
+    return data?.[0];
+  },
+
+  async deleteStaff(id: string) {
+    const { error } = await supabase
+      .from("staff")
+      .delete()
+      .eq("id", id);
+    if (error) throw error;
+    return true;
   },
 };
