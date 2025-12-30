@@ -16,6 +16,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export function createServer() {
   const app = express();
 
+  // Initialize database
+  getDatabase().catch((err) => {
+    console.error("[Server] Failed to initialize database:", err);
+  });
+
   // Middleware
   app.use(cors({
     origin: true,
