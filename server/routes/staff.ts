@@ -2,9 +2,8 @@ import { RequestHandler } from "express";
 import crypto from "crypto";
 import { sendNotificationEmail, EmailNotification } from "../email";
 import { getSessionFromRequest } from "./auth";
-import { staffDb } from "../supabase";
+import * as db from "../db";
 
-// Simple password hashing using crypto (alternative to bcrypt)
 function hashPassword(password: string): string {
   return crypto
     .createHash("sha256")
@@ -12,99 +11,20 @@ function hashPassword(password: string): string {
     .digest("hex");
 }
 
-function verifyPassword(password: string, hash: string): boolean {
-  return hashPassword(password) === hash;
-}
-
-// Demo staff data for development without Supabase connection
-const DEMO_STAFF = [
-  {
-    id: "demo-staff-1",
-    email: "abhijeet@jiguangtour.com",
-    first_name: "Abhijeet",
-    last_name: "Rana",
-    role: "admin",
-    created_at: "2024-01-01T00:00:00Z",
-  },
-  {
-    id: "demo-staff-2",
-    email: "john@jiguangtour.com",
-    first_name: "John",
-    last_name: "Smith",
-    role: "staff",
-    created_at: "2024-01-02T00:00:00Z",
-  },
-  {
-    id: "demo-staff-3",
-    email: "sarah@jiguangtour.com",
-    first_name: "Sarah",
-    last_name: "Johnson",
-    role: "staff",
-    created_at: "2024-01-03T00:00:00Z",
-  },
-];
-
-const DEMO_STAFF_IDS = new Set(DEMO_STAFF.map((s) => s.id));
-
-// In-memory storage for newly created staff in demo mode
-let demoModeCreatedStaff: any[] = [];
-
-function deduplicateStaff(staffArray: any[]): any[] {
-  const idMap = new Map<string, any>();
-  for (const staff of staffArray) {
-    if (!idMap.has(staff.id)) {
-      idMap.set(staff.id, staff);
-    } else {
-      console.warn(
-        `[deduplicateStaff] Duplicate found and removed: ${staff.id}`,
-      );
-    }
-  }
-  return Array.from(idMap.values());
-}
-
 export const getAllStaff: RequestHandler = async (req, res) => {
   try {
-    const data = await staffDb.getAllStaff();
-
-    console.log(
-      "[getAllStaff] Got staff from Supabase:",
-      data.length,
-      "records",
-    );
-    demoModeCreatedStaff = [];
-
-    const staffList = data.map((staff: any) => ({
-      id: staff.id,
-      email: staff.email,
-      name: staff.last_name
-        ? `${staff.first_name} ${staff.last_name}`
-        : staff.first_name,
-      role: staff.role,
-      created_at: staff.created_at,
+    const staff = await db.getAllStaff();
+    const formatted = staff.map((s: any) => ({
+      id: s.id,
+      email: s.email,
+      name: s.last_name ? `${s.first_name} ${s.last_name}` : s.first_name,
+      role: s.role,
+      created_at: s.created_at,
     }));
-
-    const result = deduplicateStaff(staffList);
-    res.json(result);
+    res.json(formatted);
   } catch (error) {
-    console.error("[getAllStaff] Error fetching from Supabase:", error);
-
-    console.log("[getAllStaff] Falling back to demo data");
-    const fallbackData = [
-      ...DEMO_STAFF.map((staff: any) => ({
-        id: staff.id,
-        email: staff.email,
-        name: staff.last_name
-          ? `${staff.first_name} ${staff.last_name}`
-          : staff.first_name,
-        role: staff.role,
-        created_at: staff.created_at,
-      })),
-      ...demoModeCreatedStaff,
-    ];
-
-    const result = deduplicateStaff(fallbackData);
-    res.json(result);
+    console.error("[getAllStaff] Error:", error);
+    res.status(500).json({ error: "Failed to fetch staff" });
   }
 };
 
@@ -117,53 +37,24 @@ export const createStaff: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Get current user from session
     const currentUser = getSessionFromRequest(req);
-
-    // Split name into first and last name
     const nameParts = name.trim().split(/\s+/);
     const firstName = nameParts[0];
     const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
-
-    // Hash the password
     const passwordHash = hashPassword(password);
 
-    let createdStaff: any;
+    const staffId = `staff-${Date.now()}`;
+    const createdStaff = await db.createStaff({
+      id: staffId,
+      email,
+      first_name: firstName,
+      last_name: lastName,
+      role,
+      password_hash: passwordHash,
+      availability_status: "available",
+      created_at: new Date().toISOString(),
+    });
 
-    try {
-      createdStaff = await staffDb.createStaff({
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        role,
-        availability_status: "available",
-        password_hash: passwordHash,
-      });
-    } catch (error) {
-      console.log("[createStaff] Supabase unavailable, creating in demo mode");
-      const demoId = `staff-${Date.now()}`;
-      createdStaff = {
-        id: demoId,
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        role,
-        created_at: new Date().toISOString(),
-        password_hash: passwordHash,
-      };
-
-      demoModeCreatedStaff.push({
-        id: createdStaff.id,
-        email: createdStaff.email,
-        name: createdStaff.last_name
-          ? `${createdStaff.first_name} ${createdStaff.last_name}`
-          : createdStaff.first_name,
-        role: createdStaff.role,
-        created_at: createdStaff.created_at,
-      });
-    }
-
-    // Send notification email if user is authenticated
     let emailResult = null;
     if (currentUser) {
       const notification: EmailNotification = {
@@ -215,11 +106,9 @@ export const updateStaff: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Get current user from session
     const currentUser = getSessionFromRequest(req);
+    const oldStaff = await db.getStaffById(id);
 
-    // Fetch the old staff data
-    const oldStaff = await staffDb.getStaffById(id);
     if (!oldStaff) {
       res.status(404).json({ error: "Staff member not found" });
       return;
@@ -254,7 +143,6 @@ export const updateStaff: RequestHandler = async (req, res) => {
       changes.password = { old: "[Hidden]", new: "[Updated]" };
     }
 
-    // Only update if there are changes
     if (Object.keys(updates).length === 0) {
       res.json({
         success: true,
@@ -269,15 +157,13 @@ export const updateStaff: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Update staff record
-    const staff = await staffDb.updateStaff(id, updates);
+    const staff = await db.updateStaff(id, updates);
 
     if (!staff) {
       res.status(404).json({ error: "Staff member not found" });
       return;
     }
 
-    // Send notification email if user is authenticated and there are changes
     let emailResult = null;
     if (currentUser && Object.keys(changes).length > 0) {
       const notification: EmailNotification = {
@@ -324,11 +210,9 @@ export const deleteStaff: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Get current user from session
     const currentUser = getSessionFromRequest(req);
+    const staff = await db.getStaffById(id);
 
-    // Fetch the staff data before deletion
-    const staff = await staffDb.getStaffById(id);
     if (!staff) {
       res.status(404).json({ error: "Staff member not found" });
       return;
@@ -338,9 +222,8 @@ export const deleteStaff: RequestHandler = async (req, res) => {
       ? `${staff.first_name} ${staff.last_name}`
       : staff.first_name;
 
-    await staffDb.deleteStaff(id);
+    await db.deleteStaff(id);
 
-    // Send notification email if user is authenticated
     let emailResult = null;
     if (currentUser) {
       const notification: EmailNotification = {
