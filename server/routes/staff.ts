@@ -88,15 +88,15 @@ async function makeSupabaseRequest(method: string, path: string, body?: any) {
 }
 
 function deduplicateStaff(staffArray: any[]): any[] {
-  const seen = new Set<string>();
-  return staffArray.filter((staff: any) => {
-    if (seen.has(staff.id)) {
-      console.warn(`Duplicate staff ID removed: ${staff.id}`);
-      return false;
+  const idMap = new Map<string, any>();
+  for (const staff of staffArray) {
+    if (!idMap.has(staff.id)) {
+      idMap.set(staff.id, staff);
+    } else {
+      console.warn(`[deduplicateStaff] Duplicate found and removed: ${staff.id}`);
     }
-    seen.add(staff.id);
-    return true;
-  });
+  }
+  return Array.from(idMap.values());
 }
 
 export const getAllStaff: RequestHandler = async (req, res) => {
@@ -106,60 +106,71 @@ export const getAllStaff: RequestHandler = async (req, res) => {
     // Check if this is demo data (returned due to Supabase being unavailable)
     const isDemoFallback = data.length > 0 && DEMO_STAFF_IDS.has(data[0].id);
 
+    let staffList: any[] = [];
+
     if (isDemoFallback) {
-      // Supabase unavailable, return demo data + demo-created staff
-      console.log("[getAllStaff] Using demo data - Supabase unavailable");
-      console.log("[getAllStaff] Demo staff IDs:", data.map((s: any) => s.id));
-      console.log("[getAllStaff] Demo-created staff IDs:", demoModeCreatedStaff.map((s: any) => s.id));
-
-      const fallbackData = [
-        ...data.map((staff: any) => ({
-          id: staff.id,
-          email: staff.email,
-          name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
-          role: staff.role,
-          created_at: staff.created_at,
-        })),
-        ...demoModeCreatedStaff,
-      ];
-
-      console.log("[getAllStaff] Before dedup IDs:", fallbackData.map((s: any) => s.id));
-      const result = deduplicateStaff(fallbackData);
-      console.log("[getAllStaff] After dedup IDs:", result.map((s: any) => s.id));
-      res.json(result);
-      return;
+      // Supabase unavailable - use demo data ONLY (no mixed data)
+      console.log("[getAllStaff] Supabase unavailable - using demo data only");
+      staffList = DEMO_STAFF.map((staff: any) => ({
+        id: staff.id,
+        email: staff.email,
+        name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
+        role: staff.role,
+        created_at: staff.created_at,
+      }));
+    } else if (data.length > 0) {
+      // Real data from Supabase
+      console.log("[getAllStaff] Received real data from Supabase");
+      demoModeCreatedStaff = [];
+      staffList = data.map((staff: any) => ({
+        id: staff.id,
+        email: staff.email,
+        name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
+        role: staff.role,
+        created_at: staff.created_at,
+      }));
+    } else {
+      // Empty response, use demo
+      console.log("[getAllStaff] Empty response, using demo data");
+      staffList = DEMO_STAFF.map((staff: any) => ({
+        id: staff.id,
+        email: staff.email,
+        name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
+        role: staff.role,
+        created_at: staff.created_at,
+      }));
     }
 
-    // Real data from Supabase - clear demo mode and return transformed data
-    console.log("[getAllStaff] Received real staff data from Supabase");
-    demoModeCreatedStaff = [];
-    const transformedData = data.map((staff: any) => ({
+    // Add demo-mode created staff only if we're in demo mode
+    if (isDemoFallback && demoModeCreatedStaff.length > 0) {
+      console.log("[getAllStaff] Adding demo-created staff:", demoModeCreatedStaff.map((s: any) => s.id));
+      staffList = [...staffList, ...demoModeCreatedStaff];
+    }
+
+    // Final deduplication before sending
+    console.log("[getAllStaff] Before final dedup count:", staffList.length, "IDs:", staffList.map((s: any) => s.id));
+    const result = deduplicateStaff(staffList);
+    console.log("[getAllStaff] After final dedup count:", result.length, "IDs:", result.map((s: any) => s.id));
+
+    res.json(result);
+  } catch (error) {
+    console.error("Error fetching staff:", error);
+
+    // Fallback to demo data
+    console.log("[getAllStaff] Exception occurred, returning demo data");
+    const staffList = DEMO_STAFF.map((staff: any) => ({
       id: staff.id,
       email: staff.email,
       name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
       role: staff.role,
       created_at: staff.created_at,
     }));
-    const result = deduplicateStaff(transformedData);
-    res.json(result);
-  } catch (error) {
-    console.error("Error fetching staff:", error);
 
-    // Return demo data as fallback on error
-    console.log("[getAllStaff] Error fallback - returning demo data");
-    const fallbackData = [
-      ...DEMO_STAFF.map((staff: any) => ({
-        id: staff.id,
-        email: staff.email,
-        name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
-        role: staff.role,
-        created_at: staff.created_at,
-      })),
-      ...demoModeCreatedStaff,
-    ];
-    console.log("[getAllStaff] Before dedup IDs:", fallbackData.map((s: any) => s.id));
-    const result = deduplicateStaff(fallbackData);
-    console.log("[getAllStaff] After dedup IDs:", result.map((s: any) => s.id));
+    if (demoModeCreatedStaff.length > 0) {
+      staffList.push(...demoModeCreatedStaff);
+    }
+
+    const result = deduplicateStaff(staffList);
     res.json(result);
   }
 };
