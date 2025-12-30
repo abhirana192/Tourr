@@ -134,32 +134,13 @@ export default function Schedule() {
   };
 
   const handleAddTour = async (tourData: Omit<Tour, "id">) => {
-    try {
-      const sessionToken = localStorage.getItem("sessionToken");
-      const headers: HeadersInit = { "Content-Type": "application/json" };
-      if (sessionToken) {
-        headers["Authorization"] = `Bearer ${sessionToken}`;
-      }
-
-      const response = await fetch("/api/tours", {
-        method: "POST",
-        headers,
-        body: JSON.stringify(tourData),
-      });
-      const newTour = await response.json();
-      setTours([...tours, newTour]);
-      setIsModalOpen(false);
-      setEditingTour(null);
-
-      if (newTour.emailSent) {
-        const emailTime = new Date(newTour.emailSent.timestamp).toLocaleTimeString();
-        toast.success(`Email sent to ${newTour.emailSent.recipientCount} staff members at ${emailTime}`, {
-          description: `From: ${newTour.emailSent.senderName} - Tour created`,
-        });
-      }
-    } catch (error) {
-      console.error("Error adding tour:", error);
-    }
+    setIsModalOpen(false);
+    setPendingTourData({
+      tourData,
+      operation: "create",
+      tourName: tourData.name || tourData.invoice,
+    });
+    setEmailDialogOpen(true);
   };
 
   const handleUpdateTour = async (id: string, tourData: Omit<Tour, "id">) => {
