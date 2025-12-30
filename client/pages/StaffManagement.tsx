@@ -51,7 +51,19 @@ export default function StaffManagement() {
       const response = await fetch("/api/staff");
       if (!response.ok) throw new Error("Failed to fetch staff");
       const data = await response.json();
-      setStaff(data);
+
+      // Deduplicate staff by ID (frontend safety check)
+      const seen = new Set<string>();
+      const deduplicated = data.filter((staff: Staff) => {
+        if (seen.has(staff.id)) {
+          console.warn(`Removing duplicate staff ID: ${staff.id}`);
+          return false;
+        }
+        seen.add(staff.id);
+        return true;
+      });
+
+      setStaff(deduplicated);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to load staff";
       setError(errorMessage);
