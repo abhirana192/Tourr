@@ -12,6 +12,34 @@ function verifyPassword(password: string, hash: string): boolean {
   return hashPassword(password) === hash;
 }
 
+// Demo staff data for development without Supabase connection
+const DEMO_STAFF = [
+  {
+    id: "demo-staff-1",
+    email: "abhijeet@jiguangtour.com",
+    first_name: "Abhijeet",
+    last_name: "Rana",
+    role: "admin",
+    created_at: "2024-01-01T00:00:00Z",
+  },
+  {
+    id: "demo-staff-2",
+    email: "john@jiguangtour.com",
+    first_name: "John",
+    last_name: "Smith",
+    role: "staff",
+    created_at: "2024-01-02T00:00:00Z",
+  },
+  {
+    id: "demo-staff-3",
+    email: "sarah@jiguangtour.com",
+    first_name: "Sarah",
+    last_name: "Johnson",
+    role: "staff",
+    created_at: "2024-01-03T00:00:00Z",
+  },
+];
+
 async function makeSupabaseRequest(method: string, path: string, body?: any) {
   const supabaseUrl = process.env.SUPABASE_URL;
   const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
