@@ -154,6 +154,70 @@ export default function Schedule() {
     setEmailDialogOpen(true);
   };
 
+  const handleConfirmEmailRecipients = async (recipients: string[]) => {
+    if (!pendingTourData) return;
+
+    try {
+      setSendingEmail(true);
+      const sessionToken = localStorage.getItem("sessionToken");
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (sessionToken) {
+        headers["Authorization"] = `Bearer ${sessionToken}`;
+      }
+
+      const payload = {
+        ...pendingTourData.tourData,
+        customRecipients: recipients,
+      };
+
+      let response;
+      if (pendingTourData.operation === "create") {
+        response = await fetch("/api/tours", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload),
+        });
+      } else {
+        response = await fetch(`/api/tours/${pendingTourData.tourId}`, {
+          method: "PUT",
+          headers,
+          body: JSON.stringify(payload),
+        });
+      }
+
+      const result = await response.json();
+
+      if (pendingTourData.operation === "create") {
+        setTours([...tours, result]);
+      } else {
+        setTours(tours.map((t) => (t.id === pendingTourData.tourId ? result : t)));
+      }
+
+      if (result.emailSent) {
+        const emailTime = new Date(result.emailSent.timestamp).toLocaleTimeString();
+        const action = pendingTourData.operation === "create" ? "created" : "updated";
+        toast.success(`Email sent to ${result.emailSent.recipientCount} staff members at ${emailTime}`, {
+          description: `From: ${result.emailSent.senderName} - Tour ${action}`,
+        });
+      } else {
+        const action = pendingTourData.operation === "create" ? "created" : "updated";
+        toast.success(`Tour ${action} successfully`, {
+          description: "No email recipients were selected",
+        });
+      }
+
+      setEmailDialogOpen(false);
+      setPendingTourData(null);
+    } catch (error) {
+      console.error("Error processing tour:", error);
+      toast.error("Failed to process tour", {
+        description: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
   const handleDeleteClick = (id: string) => {
     setTourToDelete(id);
     setDeleteConfirmOpen(true);
