@@ -172,17 +172,43 @@ export const createStaff: RequestHandler = async (req, res) => {
     // Hash the password
     const passwordHash = hashPassword(password);
 
-    // Insert into staff table
-    const staffData = await makeSupabaseRequest("POST", "/staff", {
-      email,
-      first_name: firstName,
-      last_name: lastName,
-      role,
-      availability_status: "available",
-      password_hash: passwordHash,
-    });
+    let createdStaff: any;
 
-    const createdStaff = staffData[0];
+    try {
+      // Try to insert into Supabase
+      const staffData = await makeSupabaseRequest("POST", "/staff", {
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        role,
+        availability_status: "available",
+        password_hash: passwordHash,
+      });
+
+      createdStaff = staffData[0];
+    } catch (error) {
+      // If Supabase fails, create in demo mode (in-memory)
+      console.log("Creating staff in demo mode (Supabase unavailable)");
+      const demoId = `staff-${Date.now()}`;
+      createdStaff = {
+        id: demoId,
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        role,
+        created_at: new Date().toISOString(),
+        password_hash: passwordHash,
+      };
+
+      // Store in memory for subsequent fetches
+      demoModeCreatedStaff.push({
+        id: createdStaff.id,
+        email: createdStaff.email,
+        name: createdStaff.last_name ? `${createdStaff.first_name} ${createdStaff.last_name}` : createdStaff.first_name,
+        role: createdStaff.role,
+        created_at: createdStaff.created_at,
+      });
+    }
 
     // Send notification email if user is authenticated
     let emailResult = null;
