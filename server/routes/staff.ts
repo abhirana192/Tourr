@@ -87,12 +87,23 @@ async function makeSupabaseRequest(method: string, path: string, body?: any) {
   }
 }
 
+function deduplicateStaff(staffArray: any[]): any[] {
+  const seen = new Set<string>();
+  return staffArray.filter((staff: any) => {
+    if (seen.has(staff.id)) {
+      console.warn(`Duplicate staff ID removed: ${staff.id}`);
+      return false;
+    }
+    seen.add(staff.id);
+    return true;
+  });
+}
+
 export const getAllStaff: RequestHandler = async (req, res) => {
   try {
     const data = await makeSupabaseRequest("GET", "/staff?select=id,email,first_name,last_name,role,created_at");
 
-    // Transform and deduplicate the response, filtering out any demo staff
-    const seen = new Set<string>();
+    // Transform the response
     const transformedData = data
       .map((staff: any) => ({
         id: staff.id,
@@ -102,40 +113,40 @@ export const getAllStaff: RequestHandler = async (req, res) => {
         created_at: staff.created_at,
       }))
       .filter((staff: any) => {
-        // Filter out demo staff IDs
+        // Never return demo staff IDs in the response
         if (DEMO_STAFF_IDS.has(staff.id)) {
           console.warn(`Filtering out demo staff ID: ${staff.id}`);
           return false;
         }
-        // Filter out duplicates
-        if (seen.has(staff.id)) {
-          console.warn(`Duplicate staff ID found: ${staff.id}`);
-          return false;
-        }
-        seen.add(staff.id);
         return true;
       });
 
-    // If no data from Supabase, return demo data
-    if (transformedData.length === 0) {
-      console.log("No staff found in Supabase, returning demo data");
-      const fallbackData = [
-        ...DEMO_STAFF.map((staff: any) => ({
-          id: staff.id,
-          email: staff.email,
-          name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
-          role: staff.role,
-          created_at: staff.created_at,
-        })),
-        // Include newly created staff in demo mode
-        ...demoModeCreatedStaff,
-      ];
-      res.json(fallbackData);
-    } else {
-      res.json(transformedData);
+    // If we got real data from Supabase, use it (and clear demo mode)
+    if (transformedData.length > 0) {
+      demoModeCreatedStaff = [];
+      const result = deduplicateStaff(transformedData);
+      res.json(result);
+      return;
     }
+
+    // No real data from Supabase, return demo data + demo mode created staff
+    console.log("No staff found in Supabase, using demo data");
+    const fallbackData = [
+      ...DEMO_STAFF.map((staff: any) => ({
+        id: staff.id,
+        email: staff.email,
+        name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
+        role: staff.role,
+        created_at: staff.created_at,
+      })),
+      ...demoModeCreatedStaff,
+    ];
+
+    const result = deduplicateStaff(fallbackData);
+    res.json(result);
   } catch (error) {
     console.error("Error fetching staff:", error);
+
     // Return demo data as fallback on error
     const fallbackData = [
       ...DEMO_STAFF.map((staff: any) => ({
@@ -145,10 +156,11 @@ export const getAllStaff: RequestHandler = async (req, res) => {
         role: staff.role,
         created_at: staff.created_at,
       })),
-      // Include newly created staff in demo mode
       ...demoModeCreatedStaff,
     ];
-    res.json(fallbackData);
+
+    const result = deduplicateStaff(fallbackData);
+    res.json(result);
   }
 };
 
