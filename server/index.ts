@@ -13,12 +13,28 @@ import { initializeDemo, initializePasswords } from "./routes/setup";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+let dbReady = false;
+
+export async function initializeServer() {
+  try {
+    await getDatabase();
+    dbReady = true;
+    console.log("[Server] Database initialized and ready");
+  } catch (error) {
+    console.error("[Server] Failed to initialize database:", error);
+    throw error;
+  }
+}
+
 export function createServer() {
   const app = express();
 
-  // Initialize database
-  getDatabase().catch((err) => {
-    console.error("[Server] Failed to initialize database:", err);
+  // Middleware to ensure database is ready
+  app.use((req, res, next) => {
+    if (!dbReady) {
+      return res.status(503).json({ error: "Database not ready" });
+    }
+    next();
   });
 
   // Middleware
