@@ -45,26 +45,34 @@ async function getStaffByName(name: string) {
 
   if (!supabaseUrl || !anonKey) {
     console.error("Missing Supabase credentials:", { supabaseUrl: !!supabaseUrl, anonKey: !!anonKey });
-    throw new Error("Missing Supabase credentials");
+    throw new Error("Supabase is not configured. Please contact the administrator.");
   }
 
-  // Search by first_name (exact match)
-  const response = await fetch(`${supabaseUrl}/rest/v1/staff?first_name=eq.${encodeURIComponent(name)}&select=id,email,first_name,last_name,role,password_hash`, {
-    headers: {
-      "Authorization": `Bearer ${anonKey}`,
-      "apikey": anonKey,
-    },
-  });
+  try {
+    // Search by first_name (exact match)
+    const response = await fetch(`${supabaseUrl}/rest/v1/staff?first_name=eq.${encodeURIComponent(name)}&select=id,email,first_name,last_name,role,password_hash`, {
+      headers: {
+        "Authorization": `Bearer ${anonKey}`,
+        "apikey": anonKey,
+      },
+    });
 
-  if (!response.ok) {
-    console.error(`Supabase REST API error: ${response.status} ${response.statusText}`);
-    const text = await response.text();
-    console.error("Response:", text);
-    throw new Error(`Database query failed: ${response.statusText}`);
+    if (!response.ok) {
+      console.error(`Supabase REST API error: ${response.status} ${response.statusText}`);
+      const text = await response.text();
+      console.error("Response:", text);
+      throw new Error(`Database query failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.length > 0 ? data[0] : null;
+  } catch (error) {
+    console.error("Error connecting to Supabase:", error);
+    if (error instanceof TypeError && error.message.includes('fetch failed')) {
+      throw new Error("Unable to reach the database. Please check your internet connection and try again.");
+    }
+    throw error;
   }
-
-  const data = await response.json();
-  return data.length > 0 ? data[0] : null;
 }
 
 export const login: RequestHandler = async (req, res) => {
