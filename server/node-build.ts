@@ -52,3 +52,9 @@ process.on("SIGINT", () => {
   console.log("🛑 Received SIGINT, shutting down gracefully");
   process.exit(0);
 });
+
+// Start the server
+start().catch((error) => {
+  console.error("[Startup] Fatal error:", error);
+  process.exit(1);
+});
