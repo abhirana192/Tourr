@@ -86,19 +86,29 @@ export const getAllStaff: RequestHandler = async (req, res) => {
   try {
     const data = await makeSupabaseRequest("GET", "/staff?select=id,email,first_name,last_name,role,created_at");
 
-    // Transform the response to match the expected format
-    const transformedData = data.map((staff: any) => ({
-      id: staff.id,
-      email: staff.email,
-      name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
-      role: staff.role,
-      created_at: staff.created_at,
-    }));
+    // Transform and deduplicate the response
+    const seen = new Set<string>();
+    const transformedData = data
+      .map((staff: any) => ({
+        id: staff.id,
+        email: staff.email,
+        name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
+        role: staff.role,
+        created_at: staff.created_at,
+      }))
+      .filter((staff: any) => {
+        if (seen.has(staff.id)) {
+          console.warn(`Duplicate staff ID found: ${staff.id}`);
+          return false;
+        }
+        seen.add(staff.id);
+        return true;
+      });
 
     res.json(transformedData);
   } catch (error) {
     console.error("Error fetching staff:", error);
-    // Return demo data as fallback
+    // Return demo data as fallback (already unique)
     const fallbackData = DEMO_STAFF.map((staff: any) => ({
       id: staff.id,
       email: staff.email,
