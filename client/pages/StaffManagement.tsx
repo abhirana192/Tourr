@@ -3,7 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertCircle, Plus, Edit2, Trash2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface Staff {
   id: string;
@@ -33,7 +39,9 @@ export default function StaffManagement() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordStatus, setPasswordStatus] = useState<PasswordStatus | null>(null);
+  const [passwordStatus, setPasswordStatus] = useState<PasswordStatus | null>(
+    null,
+  );
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -58,14 +66,17 @@ export default function StaffManagement() {
         if (!staffMap.has(staff.id)) {
           staffMap.set(staff.id, staff);
         } else {
-          console.warn(`[StaffManagement] Duplicate staff filtered: ${staff.id}`);
+          console.warn(
+            `[StaffManagement] Duplicate staff filtered: ${staff.id}`,
+          );
         }
       }
 
       const deduplicated = Array.from(staffMap.values());
       setStaff(deduplicated);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to load staff";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to load staff";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -93,7 +104,8 @@ export default function StaffManagement() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this staff member?")) return;
+    if (!window.confirm("Are you sure you want to delete this staff member?"))
+      return;
 
     try {
       const sessionToken = localStorage.getItem("sessionToken");
@@ -113,15 +125,21 @@ export default function StaffManagement() {
       setStaff(staff.filter((s) => s.id !== id));
 
       if (result.emailSent) {
-        const emailTime = new Date(result.emailSent.timestamp).toLocaleTimeString();
-        toast.success(`Email sent to ${result.emailSent.recipientCount} staff members at ${emailTime}`, {
-          description: `From: ${result.emailSent.senderName} - Staff member deleted`,
-        });
+        const emailTime = new Date(
+          result.emailSent.timestamp,
+        ).toLocaleTimeString();
+        toast.success(
+          `Email sent to ${result.emailSent.recipientCount} staff members at ${emailTime}`,
+          {
+            description: `From: ${result.emailSent.senderName} - Staff member deleted`,
+          },
+        );
       } else {
         toast.success("Staff member deleted successfully");
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to delete staff";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to delete staff";
       toast.error(errorMessage);
     }
   };
@@ -163,13 +181,22 @@ export default function StaffManagement() {
         if (!response.ok) throw new Error("Failed to update staff");
 
         const updated = await response.json();
-        setStaff(staff.map((s) => (s.id === editingId ? { ...s, ...updated.data } : s)));
+        setStaff(
+          staff.map((s) =>
+            s.id === editingId ? { ...s, ...updated.data } : s,
+          ),
+        );
 
         if (updated.emailSent) {
-          const emailTime = new Date(updated.emailSent.timestamp).toLocaleTimeString();
-          toast.success(`Email sent to ${updated.emailSent.recipientCount} staff members at ${emailTime}`, {
-            description: `From: ${updated.emailSent.senderName}`,
-          });
+          const emailTime = new Date(
+            updated.emailSent.timestamp,
+          ).toLocaleTimeString();
+          toast.success(
+            `Email sent to ${updated.emailSent.recipientCount} staff members at ${emailTime}`,
+            {
+              description: `From: ${updated.emailSent.senderName}`,
+            },
+          );
         }
 
         if (formData.password) {
@@ -196,10 +223,15 @@ export default function StaffManagement() {
         setStaff([...staff, newStaff.data]);
 
         if (newStaff.emailSent) {
-          const emailTime = new Date(newStaff.emailSent.timestamp).toLocaleTimeString();
-          toast.success(`Email sent to ${newStaff.emailSent.recipientCount} staff members at ${emailTime}`, {
-            description: `From: ${newStaff.emailSent.senderName}`,
-          });
+          const emailTime = new Date(
+            newStaff.emailSent.timestamp,
+          ).toLocaleTimeString();
+          toast.success(
+            `Email sent to ${newStaff.emailSent.recipientCount} staff members at ${emailTime}`,
+            {
+              description: `From: ${newStaff.emailSent.senderName}`,
+            },
+          );
         }
 
         setPasswordStatus({
@@ -212,7 +244,8 @@ export default function StaffManagement() {
       setIsDialogOpen(false);
       setFormData({ name: "", email: "", password: "", role: "staff" });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Operation failed";
+      const errorMessage =
+        err instanceof Error ? err.message : "Operation failed";
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -224,7 +257,9 @@ export default function StaffManagement() {
       <div className="flex-1 flex flex-col">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Staff Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Staff Management
+          </h1>
           <p className="text-gray-600">Manage staff accounts and permissions</p>
         </div>
 
@@ -260,16 +295,27 @@ export default function StaffManagement() {
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-gray-800 text-white border-b border-gray-400">
-                    <th className="px-4 py-3 text-left text-sm font-bold border-r border-gray-400">Name</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold border-r border-gray-400">Email</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold border-r border-gray-400">Role</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold">Actions</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold border-r border-gray-400">
+                      Name
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-bold border-r border-gray-400">
+                      Email
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-bold border-r border-gray-400">
+                      Role
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-bold">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {staff.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="px-4 py-12 text-center text-gray-500">
+                      <td
+                        colSpan={4}
+                        className="px-4 py-12 text-center text-gray-500"
+                      >
                         No staff members found
                       </td>
                     </tr>
@@ -324,23 +370,30 @@ export default function StaffManagement() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingId ? "Edit Staff Member" : "Add New Staff Member"}</DialogTitle>
+            <DialogTitle>
+              {editingId ? "Edit Staff Member" : "Add New Staff Member"}
+            </DialogTitle>
           </DialogHeader>
 
           {editingId && (
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
-              <strong>Password is set.</strong> Leave empty to keep current password, or enter a new one to change it.
+              <strong>Password is set.</strong> Leave empty to keep current
+              password, or enter a new one to change it.
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Name</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Name
+              </label>
               <Input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 placeholder="John Doe"
                 disabled={isLoading}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg"
@@ -349,11 +402,15 @@ export default function StaffManagement() {
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Email
+              </label>
               <Input
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 placeholder="john@example.com"
                 disabled={isLoading}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg disabled:opacity-50"
@@ -363,13 +420,18 @@ export default function StaffManagement() {
             {/* Password */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Password {editingId ? "(optional - leave empty to keep current)" : "(required)"}
+                Password{" "}
+                {editingId
+                  ? "(optional - leave empty to keep current)"
+                  : "(required)"}
               </label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   placeholder="Enter password"
                   disabled={isLoading}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg pr-10"
@@ -386,10 +448,17 @@ export default function StaffManagement() {
 
             {/* Role */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Role</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Role
+              </label>
               <select
                 value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value as "admin" | "staff" })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    role: e.target.value as "admin" | "staff",
+                  })
+                }
                 disabled={isLoading}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white"
               >
@@ -422,7 +491,10 @@ export default function StaffManagement() {
       </Dialog>
 
       {/* Password Confirmation Dialog */}
-      <Dialog open={!!passwordStatus} onOpenChange={(open) => !open && setPasswordStatus(null)}>
+      <Dialog
+        open={!!passwordStatus}
+        onOpenChange={(open) => !open && setPasswordStatus(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-green-600">
@@ -448,7 +520,9 @@ export default function StaffManagement() {
                 <Button
                   onClick={() => {
                     if (passwordStatus) {
-                      navigator.clipboard.writeText(passwordStatus.tempPassword);
+                      navigator.clipboard.writeText(
+                        passwordStatus.tempPassword,
+                      );
                       toast.success("Password copied to clipboard");
                     }
                   }}
@@ -460,7 +534,8 @@ export default function StaffManagement() {
             </div>
 
             <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
-              <strong>⚠️ Important:</strong> Save this password in a secure location. You won't see it again.
+              <strong>⚠️ Important:</strong> Save this password in a secure
+              location. You won't see it again.
             </div>
           </div>
 

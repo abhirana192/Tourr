@@ -9,7 +9,10 @@ function getSupabaseClient() {
   }
 
   if (!supabaseKey) {
-    console.error("SUPABASE_SERVICE_KEY is not set. Available env vars:", Object.keys(process.env).filter(k => k.includes('SUPABASE')));
+    console.error(
+      "SUPABASE_SERVICE_KEY is not set. Available env vars:",
+      Object.keys(process.env).filter((k) => k.includes("SUPABASE")),
+    );
   }
 
   return createClient(supabaseUrl || "", supabaseKey || "");
@@ -105,7 +108,7 @@ export const tourDb = {
     dateFrom?: string,
     dateTo?: string,
     invoice?: string,
-    name?: string
+    name?: string,
   ) {
     let query = supabase.from("tours").select("*");
 
@@ -190,10 +193,7 @@ export const staffDb = {
   },
 
   async deleteStaff(id: string) {
-    const { error } = await supabase
-      .from("staff")
-      .delete()
-      .eq("id", id);
+    const { error } = await supabase.from("staff").delete().eq("id", id);
     if (error) throw error;
     return true;
   },

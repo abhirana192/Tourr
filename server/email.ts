@@ -32,8 +32,8 @@ async function makeSupabaseRequest(method: string, path: string, body?: any) {
     const response = await fetch(`${supabaseUrl}/rest/v1${path}`, {
       method,
       headers: {
-        "Authorization": `Bearer ${anonKey}`,
-        "apikey": anonKey,
+        Authorization: `Bearer ${anonKey}`,
+        apikey: anonKey,
         "Content-Type": "application/json",
       },
       ...(body && { body: JSON.stringify(body) }),
@@ -52,8 +52,10 @@ async function makeSupabaseRequest(method: string, path: string, body?: any) {
     return JSON.parse(text);
   } catch (error) {
     console.error("Supabase request failed:", error);
-    if (error instanceof TypeError && error.message.includes('fetch failed')) {
-      throw new Error("Database connection failed. Please check your internet connection and try again.");
+    if (error instanceof TypeError && error.message.includes("fetch failed")) {
+      throw new Error(
+        "Database connection failed. Please check your internet connection and try again.",
+      );
     }
     throw error;
   }
@@ -68,8 +70,17 @@ function generateEmailContent(notification: EmailNotification): {
     notification;
 
   const actionText =
-    action === "create" ? "created" : action === "update" ? "updated" : "deleted";
-  const typeText = type === "staff" ? "Staff Member" : type === "tour" ? "Tour" : "Guest Arrival";
+    action === "create"
+      ? "created"
+      : action === "update"
+        ? "updated"
+        : "deleted";
+  const typeText =
+    type === "staff"
+      ? "Staff Member"
+      : type === "tour"
+        ? "Tour"
+        : "Guest Arrival";
 
   let changesHtml = "";
   let changesText = "";
@@ -217,19 +228,21 @@ export interface EmailSendResult {
 
 export async function sendNotificationEmail(
   notification: EmailNotification,
-  customRecipients?: string[]
+  customRecipients?: string[],
 ): Promise<EmailSendResult | null> {
   try {
     let recipientEmails: string[] = [];
 
     if (customRecipients && customRecipients.length > 0) {
       // Use custom recipients provided
-      recipientEmails = customRecipients.filter((email: string) => email && typeof email === "string");
+      recipientEmails = customRecipients.filter(
+        (email: string) => email && typeof email === "string",
+      );
     } else {
       // Fetch all staff members except the one who made the change
       const staffList = await makeSupabaseRequest(
         "GET",
-        `/staff?id=neq.${notification.changedBy.id}&select=id,email,first_name,last_name`
+        `/staff?id=neq.${notification.changedBy.id}&select=id,email,first_name,last_name`,
       );
 
       if (!staffList || staffList.length === 0) {
@@ -263,12 +276,14 @@ export async function sendNotificationEmail(
         gmailUser,
         gmailPassword,
         notification.changedBy.email,
-        notification.changedBy.name
+        notification.changedBy.name,
       );
     } else {
       // Fallback: log to console for development
       console.log("\n=== EMAIL NOTIFICATION ===");
-      console.log(`From: ${notification.changedBy.name} <${notification.changedBy.email}>`);
+      console.log(
+        `From: ${notification.changedBy.name} <${notification.changedBy.email}>`,
+      );
       console.log(`To: ${recipientEmails.join(", ")}`);
       console.log(`Subject: ${emailContent.subject}`);
       console.log("\n--- HTML Content ---");
@@ -301,7 +316,7 @@ async function sendViaNodemailer(
   gmailUser: string,
   gmailPassword: string,
   replyToEmail: string,
-  senderName: string
+  senderName: string,
 ): Promise<void> {
   // Create a Nodemailer transporter using Gmail
   const transporter = nodemailer.createTransport({

@@ -2,7 +2,10 @@ import { RequestHandler } from "express";
 import crypto from "crypto";
 
 function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password + "salt").digest("hex");
+  return crypto
+    .createHash("sha256")
+    .update(password + "salt")
+    .digest("hex");
 }
 
 const DEMO_EMAIL = "admin@example.com";
@@ -20,10 +23,10 @@ async function makeSupabaseRequest(method: string, path: string, body?: any) {
     const response = await fetch(`${supabaseUrl}/rest/v1${path}`, {
       method,
       headers: {
-        "Authorization": `Bearer ${anonKey}`,
-        "apikey": anonKey,
+        Authorization: `Bearer ${anonKey}`,
+        apikey: anonKey,
         "Content-Type": "application/json",
-        "Prefer": "return=representation",
+        Prefer: "return=representation",
       },
       ...(body && { body: JSON.stringify(body) }),
     });
@@ -41,8 +44,10 @@ async function makeSupabaseRequest(method: string, path: string, body?: any) {
     return JSON.parse(text);
   } catch (error) {
     console.error("Supabase request failed:", error);
-    if (error instanceof TypeError && error.message.includes('fetch failed')) {
-      throw new Error("Database connection failed. Please check your internet connection and try again.");
+    if (error instanceof TypeError && error.message.includes("fetch failed")) {
+      throw new Error(
+        "Database connection failed. Please check your internet connection and try again.",
+      );
     }
     throw error;
   }
@@ -51,7 +56,10 @@ async function makeSupabaseRequest(method: string, path: string, body?: any) {
 export const initializeDemo: RequestHandler = async (req, res) => {
   try {
     // Check if demo user already exists
-    const existingUsers = await makeSupabaseRequest("GET", `/staff?email=eq.${encodeURIComponent(DEMO_EMAIL)}&select=id`);
+    const existingUsers = await makeSupabaseRequest(
+      "GET",
+      `/staff?email=eq.${encodeURIComponent(DEMO_EMAIL)}&select=id`,
+    );
 
     if (existingUsers.length > 0) {
       res.json({
@@ -83,7 +91,8 @@ export const initializeDemo: RequestHandler = async (req, res) => {
     });
   } catch (error) {
     console.error("Setup error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Setup failed";
+    const errorMessage =
+      error instanceof Error ? error.message : "Setup failed";
     res.status(500).json({ error: errorMessage });
   }
 };
@@ -91,7 +100,10 @@ export const initializeDemo: RequestHandler = async (req, res) => {
 export const initializePasswords: RequestHandler = async (req, res) => {
   try {
     // Get all staff without password_hash
-    const allStaff = await makeSupabaseRequest("GET", "/staff?password_hash=is.null&select=id");
+    const allStaff = await makeSupabaseRequest(
+      "GET",
+      "/staff?password_hash=is.null&select=id",
+    );
 
     if (allStaff.length === 0) {
       res.json({
@@ -116,7 +128,8 @@ export const initializePasswords: RequestHandler = async (req, res) => {
     });
   } catch (error) {
     console.error("Initialize passwords error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Initialization failed";
+    const errorMessage =
+      error instanceof Error ? error.message : "Initialization failed";
     res.status(500).json({ error: errorMessage });
   }
 };

@@ -3,7 +3,10 @@ import crypto from "crypto";
 
 // Simple password hashing using crypto (alternative to bcrypt)
 function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password + "salt").digest("hex");
+  return crypto
+    .createHash("sha256")
+    .update(password + "salt")
+    .digest("hex");
 }
 
 function verifyPassword(password: string, hash: string): boolean {
@@ -11,13 +14,24 @@ function verifyPassword(password: string, hash: string): boolean {
 }
 
 // Simple in-memory session storage (replace with database in production)
-export const sessions = new Map<string, { userId: string; email: string; name: string; role: string; expiresAt: number }>();
+export const sessions = new Map<
+  string,
+  {
+    userId: string;
+    email: string;
+    name: string;
+    role: string;
+    expiresAt: number;
+  }
+>();
 
 function generateSessionToken(): string {
   return Math.random().toString(36).substring(2) + Date.now().toString(36);
 }
 
-export function getSessionFromRequest(req: any): { userId: string; email: string; name: string; role: string } | null {
+export function getSessionFromRequest(
+  req: any,
+): { userId: string; email: string; name: string; role: string } | null {
   const token = req.headers.authorization?.replace("Bearer ", "");
   if (!token) return null;
 
@@ -65,12 +79,15 @@ async function getStaffByName(name: string) {
 
   try {
     // Search by first_name (exact match)
-    const response = await fetch(`${supabaseUrl}/rest/v1/staff?first_name=eq.${encodeURIComponent(name)}&select=id,email,first_name,last_name,role,password_hash`, {
-      headers: {
-        "Authorization": `Bearer ${anonKey}`,
-        "apikey": anonKey,
+    const response = await fetch(
+      `${supabaseUrl}/rest/v1/staff?first_name=eq.${encodeURIComponent(name)}&select=id,email,first_name,last_name,role,password_hash`,
+      {
+        headers: {
+          Authorization: `Bearer ${anonKey}`,
+          apikey: anonKey,
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       console.error(`[getStaffByName] Supabase API error: ${response.status}`);
@@ -104,7 +121,10 @@ export const login: RequestHandler = async (req, res) => {
     }
 
     // Verify password against hashed password
-    if (!staffData.password_hash || !verifyPassword(password, staffData.password_hash)) {
+    if (
+      !staffData.password_hash ||
+      !verifyPassword(password, staffData.password_hash)
+    ) {
       res.status(401).json({ error: "Invalid name or password" });
       return;
     }
@@ -113,7 +133,9 @@ export const login: RequestHandler = async (req, res) => {
     const sessionToken = generateSessionToken();
     const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
 
-    const fullName = staffData.last_name ? `${staffData.first_name} ${staffData.last_name}` : staffData.first_name;
+    const fullName = staffData.last_name
+      ? `${staffData.first_name} ${staffData.last_name}`
+      : staffData.first_name;
 
     sessions.set(sessionToken, {
       userId: staffData.id,

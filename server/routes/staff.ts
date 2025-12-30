@@ -6,7 +6,10 @@ import { staffDb } from "../supabase";
 
 // Simple password hashing using crypto (alternative to bcrypt)
 function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password + "salt").digest("hex");
+  return crypto
+    .createHash("sha256")
+    .update(password + "salt")
+    .digest("hex");
 }
 
 function verifyPassword(password: string, hash: string): boolean {
@@ -46,14 +49,15 @@ const DEMO_STAFF_IDS = new Set(DEMO_STAFF.map((s) => s.id));
 // In-memory storage for newly created staff in demo mode
 let demoModeCreatedStaff: any[] = [];
 
-
 function deduplicateStaff(staffArray: any[]): any[] {
   const idMap = new Map<string, any>();
   for (const staff of staffArray) {
     if (!idMap.has(staff.id)) {
       idMap.set(staff.id, staff);
     } else {
-      console.warn(`[deduplicateStaff] Duplicate found and removed: ${staff.id}`);
+      console.warn(
+        `[deduplicateStaff] Duplicate found and removed: ${staff.id}`,
+      );
     }
   }
   return Array.from(idMap.values());
@@ -63,13 +67,19 @@ export const getAllStaff: RequestHandler = async (req, res) => {
   try {
     const data = await staffDb.getAllStaff();
 
-    console.log("[getAllStaff] Got staff from Supabase:", data.length, "records");
+    console.log(
+      "[getAllStaff] Got staff from Supabase:",
+      data.length,
+      "records",
+    );
     demoModeCreatedStaff = [];
 
     const staffList = data.map((staff: any) => ({
       id: staff.id,
       email: staff.email,
-      name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
+      name: staff.last_name
+        ? `${staff.first_name} ${staff.last_name}`
+        : staff.first_name,
       role: staff.role,
       created_at: staff.created_at,
     }));
@@ -84,7 +94,9 @@ export const getAllStaff: RequestHandler = async (req, res) => {
       ...DEMO_STAFF.map((staff: any) => ({
         id: staff.id,
         email: staff.email,
-        name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
+        name: staff.last_name
+          ? `${staff.first_name} ${staff.last_name}`
+          : staff.first_name,
         role: staff.role,
         created_at: staff.created_at,
       })),
@@ -143,7 +155,9 @@ export const createStaff: RequestHandler = async (req, res) => {
       demoModeCreatedStaff.push({
         id: createdStaff.id,
         email: createdStaff.email,
-        name: createdStaff.last_name ? `${createdStaff.first_name} ${createdStaff.last_name}` : createdStaff.first_name,
+        name: createdStaff.last_name
+          ? `${createdStaff.first_name} ${createdStaff.last_name}`
+          : createdStaff.first_name,
         role: createdStaff.role,
         created_at: createdStaff.created_at,
       });
@@ -177,7 +191,9 @@ export const createStaff: RequestHandler = async (req, res) => {
       data: {
         id: createdStaff.id,
         email: createdStaff.email,
-        name: createdStaff.last_name ? `${createdStaff.first_name} ${createdStaff.last_name}` : createdStaff.first_name,
+        name: createdStaff.last_name
+          ? `${createdStaff.first_name} ${createdStaff.last_name}`
+          : createdStaff.first_name,
         role: createdStaff.role,
         created_at: createdStaff.created_at,
       },
@@ -209,7 +225,9 @@ export const updateStaff: RequestHandler = async (req, res) => {
       return;
     }
 
-    const oldFullName = oldStaff.last_name ? `${oldStaff.first_name} ${oldStaff.last_name}` : oldStaff.first_name;
+    const oldFullName = oldStaff.last_name
+      ? `${oldStaff.first_name} ${oldStaff.last_name}`
+      : oldStaff.first_name;
 
     const updates: any = {};
     const changes: any = {};
@@ -217,7 +235,8 @@ export const updateStaff: RequestHandler = async (req, res) => {
     if (name) {
       const nameParts = name.trim().split(/\s+/);
       updates.first_name = nameParts[0];
-      updates.last_name = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+      updates.last_name =
+        nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
       if (oldFullName !== name) {
         changes.name = { old: oldFullName, new: name };
       }
@@ -245,7 +264,7 @@ export const updateStaff: RequestHandler = async (req, res) => {
           name: oldFullName,
           role: oldStaff.role,
           created_at: oldStaff.created_at,
-        }
+        },
       });
       return;
     }
@@ -282,7 +301,9 @@ export const updateStaff: RequestHandler = async (req, res) => {
       data: {
         id: staff.id,
         email: staff.email,
-        name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
+        name: staff.last_name
+          ? `${staff.first_name} ${staff.last_name}`
+          : staff.first_name,
         role: staff.role,
         created_at: staff.created_at,
       },
@@ -313,7 +334,9 @@ export const deleteStaff: RequestHandler = async (req, res) => {
       return;
     }
 
-    const fullName = staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name;
+    const fullName = staff.last_name
+      ? `${staff.first_name} ${staff.last_name}`
+      : staff.first_name;
 
     await staffDb.deleteStaff(id);
 
