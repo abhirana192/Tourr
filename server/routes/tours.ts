@@ -72,7 +72,7 @@ export const updateTour: RequestHandler = async (req, res) => {
   try {
     const currentUser = getSessionFromRequest(req);
     const { id } = req.params;
-    const updates = req.body;
+    const { customRecipients, ...updates } = req.body;
 
     // Get the old tour data
     const oldTour = db.getTourById(id);
@@ -116,7 +116,7 @@ export const updateTour: RequestHandler = async (req, res) => {
           recordName: oldTour.name || oldTour.invoice,
           timestamp: new Date().toISOString(),
         };
-        emailResult = await sendNotificationEmail(notification);
+        emailResult = await sendNotificationEmail(notification, customRecipients);
       }
     }
 
