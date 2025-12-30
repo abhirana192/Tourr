@@ -49,8 +49,8 @@ const DEMO_USER = {
 };
 
 async function getStaffByName(name: string) {
-  // Check if this is the demo user
-  if (name === DEMO_USER.first_name) {
+  // Always check demo user first, regardless of Supabase availability
+  if (name.toLowerCase() === DEMO_USER.first_name.toLowerCase()) {
     return DEMO_USER;
   }
 
@@ -84,12 +84,7 @@ async function getStaffByName(name: string) {
   } catch (error) {
     console.error("Error connecting to Supabase:", error);
     if (error instanceof TypeError && error.message.includes('fetch failed')) {
-      // Fall back to demo user if Supabase is unreachable
-      console.warn("Supabase unreachable, falling back to demo authentication");
-      if (name === DEMO_USER.first_name) {
-        return DEMO_USER;
-      }
-      throw new Error("Supabase is unavailable and user not found in demo credentials.");
+      console.warn("Supabase unreachable, but demo user available");
     }
     throw error;
   }
