@@ -9,15 +9,13 @@ services:
       - key: NODE_ENV
         value: production
       - key: SUPABASE_URL
-        fromDatabase:
-          name: jigquang_db
-          property: connectionString
+        value: https://yqfwlfiiuojmbmwqvwfj.supabase.co
       - key: SUPABASE_SERVICE_KEY
         sync: false
       - key: VITE_SUPABASE_URL
-        sync: false
+        value: https://yqfwlfiiuojmbmwqvwfj.supabase.co
       - key: VITE_SUPABASE_ANON_KEY
-        sync: false
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxZndsZmlpdW9qbWJtd3F2d2ZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3MzIwNDEsImV4cCI6MjA3MDMwODA0MX0.uHeQjr2XuLE6kVwygG-Yi3I44NYKm-5E7lMwUHbBZtk
       - key: GMAIL_USER
         sync: false
       - key: GMAIL_PASSWORD
