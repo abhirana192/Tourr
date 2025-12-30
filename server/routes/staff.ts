@@ -119,8 +119,7 @@ export const createStaff: RequestHandler = async (req, res) => {
     let createdStaff: any;
 
     try {
-      // Try to insert into Supabase
-      const staffData = await makeSupabaseRequest("POST", "/staff", {
+      createdStaff = await staffDb.createStaff({
         email,
         first_name: firstName,
         last_name: lastName,
@@ -128,11 +127,8 @@ export const createStaff: RequestHandler = async (req, res) => {
         availability_status: "available",
         password_hash: passwordHash,
       });
-
-      createdStaff = staffData[0];
     } catch (error) {
-      // If Supabase fails, create in demo mode (in-memory)
-      console.log("Creating staff in demo mode (Supabase unavailable)");
+      console.log("[createStaff] Supabase unavailable, creating in demo mode");
       const demoId = `staff-${Date.now()}`;
       createdStaff = {
         id: demoId,
@@ -144,7 +140,6 @@ export const createStaff: RequestHandler = async (req, res) => {
         password_hash: passwordHash,
       };
 
-      // Store in memory for subsequent fetches
       demoModeCreatedStaff.push({
         id: createdStaff.id,
         email: createdStaff.email,
@@ -189,7 +184,7 @@ export const createStaff: RequestHandler = async (req, res) => {
       emailSent: emailResult,
     });
   } catch (error) {
-    console.error("Error creating staff:", error);
+    console.error("[createStaff] Error:", error);
     res.status(500).json({ error: "Failed to create staff" });
   }
 };
