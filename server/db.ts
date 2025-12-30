@@ -2,29 +2,42 @@ import initSqlJs, { Database as SqlJsDatabase } from "sql.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import crypto from "crypto";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = path.join(__dirname, "../data.db");
 
 let db: SqlJsDatabase | null = null;
 let SQL: any = null;
+let initPromise: Promise<SqlJsDatabase> | null = null;
+
+function hashPassword(password: string): string {
+  return crypto.createHash("sha256").update(password + "salt").digest("hex");
+}
 
 async function initDatabase() {
   if (db && SQL) return db;
 
-  SQL = await initSqlJs();
+  if (initPromise) return initPromise;
 
-  if (fs.existsSync(dbPath)) {
-    const buffer = fs.readFileSync(dbPath);
-    db = new SQL.Database(buffer);
-    console.log("[Database] Loaded existing SQLite database");
-  } else {
-    db = new SQL.Database();
-    console.log("[Database] Created new SQLite database");
-  }
+  initPromise = (async () => {
+    SQL = await initSqlJs();
 
-  initializeSchema();
-  return db;
+    if (fs.existsSync(dbPath)) {
+      const buffer = fs.readFileSync(dbPath);
+      db = new SQL.Database(buffer);
+      console.log("[Database] Loaded existing SQLite database");
+    } else {
+      db = new SQL.Database();
+      console.log("[Database] Created new SQLite database");
+    }
+
+    initializeSchema();
+    await seedDemoUser();
+    return db as SqlJsDatabase;
+  })();
+
+  return initPromise;
 }
 
 function initializeSchema() {
@@ -94,11 +107,46 @@ function initializeSchema() {
   console.log("[Database] Schema initialized");
 }
 
+async function seedDemoUser() {
+  if (!db) return;
+
+  try {
+    const result = db.exec("SELECT id FROM staff WHERE first_name = 'abhi' LIMIT 1");
+    if (result.length > 0 && result[0].values.length > 0) {
+      console.log("[Database] Demo user already exists");
+      return;
+    }
+
+    const demoUserId = "demo-user-1";
+    const demoEmail = "admin@example.com";
+    const demoFirstName = "abhi";
+    const demoLastName = "admin";
+    const demoRole = "admin";
+    const demoPasswordHash = hashPassword("password");
+    const now = new Date().toISOString();
+
+    db.run(
+      `INSERT INTO staff (id, email, first_name, last_name, role, password_hash, availability_status, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [demoUserId, demoEmail, demoFirstName, demoLastName, demoRole, demoPasswordHash, "available", now]
+    );
+
+    saveDatabase();
+    console.log("[Database] Demo user seeded successfully");
+  } catch (error) {
+    console.error("[Database] Error seeding demo user:", error);
+  }
+}
+
 function saveDatabase() {
   if (!db) return;
-  const data = db.export();
-  const buffer = Buffer.from(data);
-  fs.writeFileSync(dbPath, buffer);
+  try {
+    const data = db.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(dbPath, buffer);
+  } catch (error) {
+    console.error("[Database] Error saving database:", error);
+  }
 }
 
 export async function getDatabase() {
@@ -110,7 +158,9 @@ export async function getDatabase() {
 
 export async function getAllStaff() {
   const database = await getDatabase();
-  const result = database.exec("SELECT id, email, first_name, last_name, role, created_at FROM staff ORDER BY created_at ASC");
+  const result = database.exec(
+    "SELECT id, email, first_name, last_name, role, created_at FROM staff ORDER BY created_at ASC"
+  );
   if (result.length === 0) return [];
   return result[0].values.map((row) => ({
     id: row[0],
@@ -158,7 +208,9 @@ export async function getStaffByEmail(email: string) {
 
 export async function getStaffByFirstName(firstName: string) {
   const database = await getDatabase();
-  const result = database.exec("SELECT * FROM staff WHERE first_name = ?", [firstName]);
+  const result = database.exec("SELECT * FROM staff WHERE first_name = ?", [
+    firstName,
+  ]);
   if (result.length === 0 || result[0].values.length === 0) return null;
   const row = result[0].values[0];
   return {
@@ -178,7 +230,16 @@ export async function createStaff(data: any) {
   database.run(
     `INSERT INTO staff (id, email, first_name, last_name, role, password_hash, availability_status, created_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [data.id, data.email, data.first_name, data.last_name, data.role, data.password_hash, data.availability_status, data.created_at]
+    [
+      data.id,
+      data.email,
+      data.first_name,
+      data.last_name,
+      data.role,
+      data.password_hash,
+      data.availability_status,
+      data.created_at,
+    ]
   );
   saveDatabase();
   return getStaffById(data.id);
@@ -214,7 +275,9 @@ export async function deleteStaff(id: string) {
 
 export async function getAllTours() {
   const database = await getDatabase();
-  const result = database.exec("SELECT * FROM tours ORDER BY start_date ASC");
+  const result = database.exec(
+    "SELECT * FROM tours ORDER BY start_date ASC"
+  );
   if (result.length === 0) return [];
   return result[0].values.map((row) => ({
     id: row[0],
@@ -373,7 +436,10 @@ export async function deleteTour(id: string) {
 
 export async function getScheduleByTourId(tourId: string) {
   const database = await getDatabase();
-  const result = database.exec("SELECT * FROM tour_schedules WHERE tour_id = ?", [tourId]);
+  const result = database.exec(
+    "SELECT * FROM tour_schedules WHERE tour_id = ?",
+    [tourId]
+  );
   if (result.length === 0 || result[0].values.length === 0) return null;
   const row = result[0].values[0];
   return {
@@ -390,11 +456,14 @@ export async function saveSchedule(tourId: string, scheduleData: any) {
   const existing = await getScheduleByTourId(tourId);
 
   if (existing) {
-    database.run("UPDATE tour_schedules SET schedule_data = ?, updated_at = ? WHERE tour_id = ?", [
-      JSON.stringify(scheduleData),
-      new Date().toISOString(),
-      tourId,
-    ]);
+    database.run(
+      "UPDATE tour_schedules SET schedule_data = ?, updated_at = ? WHERE tour_id = ?",
+      [
+        JSON.stringify(scheduleData),
+        new Date().toISOString(),
+        tourId,
+      ]
+    );
   } else {
     const id = `schedule-${Date.now()}`;
     database.run(
