@@ -1,0 +1,50 @@
+# Fly.io configuration
+app = "jigquang-tour-manager"
+primary_region = "sjc"
+
+# Set kill_signal to allow graceful shutdown
+processes = []
+
+[env]
+  NODE_ENV = "production"
+
+[build]
+  builder = "paketobuildpacks/builder:full"
+  buildpacks = []
+
+[build.args]
+
+[env.production]
+  NODE_ENV = "production"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  processes = ["app"]
+  
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 1000
+    soft_limit = 512
+  
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+    force_https = true
+  
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+  
+  [[services.tcp_checks]]
+    grace_period = "10s"
+    interval = "15s"
+    timeout = "2s"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
