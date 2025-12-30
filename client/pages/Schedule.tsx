@@ -58,6 +58,14 @@ export default function Schedule() {
   const [printDialogOpen, setPrintDialogOpen] = useState(false);
   const [printDateFrom, setPrintDateFrom] = useState("");
   const [printDateTo, setPrintDateTo] = useState("");
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [pendingTourData, setPendingTourData] = useState<{
+    tourData: Omit<Tour, "id">;
+    tourId?: string;
+    operation: "create" | "update";
+    tourName?: string;
+  } | null>(null);
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   // Ensure tours is always an array
   const safeTours = Array.isArray(tours) ? tours : [];
