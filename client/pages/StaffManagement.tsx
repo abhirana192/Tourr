@@ -52,17 +52,17 @@ export default function StaffManagement() {
       if (!response.ok) throw new Error("Failed to fetch staff");
       const data = await response.json();
 
-      // Deduplicate staff by ID (frontend safety check)
-      const seen = new Set<string>();
-      const deduplicated = data.filter((staff: Staff) => {
-        if (seen.has(staff.id)) {
-          console.warn(`Removing duplicate staff ID: ${staff.id}`);
-          return false;
+      // Deduplicate by ID, keeping first occurrence
+      const staffMap = new Map<string, Staff>();
+      for (const staff of data) {
+        if (!staffMap.has(staff.id)) {
+          staffMap.set(staff.id, staff);
+        } else {
+          console.warn(`[StaffManagement] Duplicate staff filtered: ${staff.id}`);
         }
-        seen.add(staff.id);
-        return true;
-      });
+      }
 
+      const deduplicated = Array.from(staffMap.values());
       setStaff(deduplicated);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to load staff";
