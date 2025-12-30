@@ -38,7 +38,22 @@ export function getSessionFromRequest(req: any): { userId: string; email: string
   };
 }
 
+// Demo user for development/testing without Supabase
+const DEMO_USER = {
+  id: "demo-user-1",
+  email: "admin@example.com",
+  first_name: "abhi",
+  last_name: "admin",
+  role: "admin",
+  password_hash: hashPassword("password"),
+};
+
 async function getStaffByName(name: string) {
+  // Check if this is the demo user
+  if (name === DEMO_USER.first_name) {
+    return DEMO_USER;
+  }
+
   const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
   // Use anon key since this is a public read
   const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
@@ -69,7 +84,12 @@ async function getStaffByName(name: string) {
   } catch (error) {
     console.error("Error connecting to Supabase:", error);
     if (error instanceof TypeError && error.message.includes('fetch failed')) {
-      throw new Error("Unable to reach the database. Please check your internet connection and try again.");
+      // Fall back to demo user if Supabase is unreachable
+      console.warn("Supabase unreachable, falling back to demo authentication");
+      if (name === DEMO_USER.first_name) {
+        return DEMO_USER;
+      }
+      throw new Error("Supabase is unavailable and user not found in demo credentials.");
     }
     throw error;
   }
