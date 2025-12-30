@@ -46,47 +46,6 @@ const DEMO_STAFF_IDS = new Set(DEMO_STAFF.map((s) => s.id));
 // In-memory storage for newly created staff in demo mode
 let demoModeCreatedStaff: any[] = [];
 
-async function makeSupabaseRequest(method: string, path: string, body?: any) {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !anonKey) {
-    throw new Error("Database service is not configured");
-  }
-
-  try {
-    const response = await fetch(`${supabaseUrl}/rest/v1${path}`, {
-      method,
-      headers: {
-        "Authorization": `Bearer ${anonKey}`,
-        "apikey": anonKey,
-        "Content-Type": "application/json",
-        "Prefer": "return=representation",
-      },
-      ...(body && { body: JSON.stringify(body) }),
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`Supabase API error: ${response.status} ${error}`);
-    }
-
-    const text = await response.text();
-    if (!text) {
-      return [];
-    }
-
-    return JSON.parse(text);
-  } catch (error) {
-    console.error("Supabase request failed:", error);
-    if (error instanceof TypeError && error.message.includes('fetch failed')) {
-      // Return demo data as fallback for development
-      console.warn("Using demo staff data - Supabase unavailable");
-      return DEMO_STAFF;
-    }
-    throw error;
-  }
-}
 
 function deduplicateStaff(staffArray: any[]): any[] {
   const idMap = new Map<string, any>();
