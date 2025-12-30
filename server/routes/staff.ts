@@ -113,10 +113,23 @@ export const getAllStaff: RequestHandler = async (req, res) => {
         return true;
       });
 
-    res.json(transformedData);
+    // If no data from Supabase, return demo data
+    if (transformedData.length === 0) {
+      console.log("No staff found in Supabase, returning demo data");
+      const fallbackData = DEMO_STAFF.map((staff: any) => ({
+        id: staff.id,
+        email: staff.email,
+        name: staff.last_name ? `${staff.first_name} ${staff.last_name}` : staff.first_name,
+        role: staff.role,
+        created_at: staff.created_at,
+      }));
+      res.json(fallbackData);
+    } else {
+      res.json(transformedData);
+    }
   } catch (error) {
     console.error("Error fetching staff:", error);
-    // Return demo data as fallback (already unique)
+    // Return demo data as fallback on error
     const fallbackData = DEMO_STAFF.map((staff: any) => ({
       id: staff.id,
       email: staff.email,
