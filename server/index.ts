@@ -29,14 +29,6 @@ export async function initializeServer() {
 export function createServer() {
   const app = express();
 
-  // Middleware to ensure database is ready
-  app.use((req, res, next) => {
-    if (!dbReady) {
-      return res.status(503).json({ error: "Database not ready" });
-    }
-    next();
-  });
-
   // Middleware
   app.use(cors({
     origin: true,
