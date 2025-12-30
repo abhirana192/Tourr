@@ -203,13 +203,12 @@ export const updateStaff: RequestHandler = async (req, res) => {
     const currentUser = getSessionFromRequest(req);
 
     // Fetch the old staff data
-    const oldStaffData = await makeSupabaseRequest("GET", `/staff?id=eq.${id}&select=id,email,first_name,last_name,role,created_at`);
-    if (!oldStaffData || oldStaffData.length === 0) {
+    const oldStaff = await staffDb.getStaffById(id);
+    if (!oldStaff) {
       res.status(404).json({ error: "Staff member not found" });
       return;
     }
 
-    const oldStaff = oldStaffData[0];
     const oldFullName = oldStaff.last_name ? `${oldStaff.first_name} ${oldStaff.last_name}` : oldStaff.first_name;
 
     const updates: any = {};
@@ -252,14 +251,12 @@ export const updateStaff: RequestHandler = async (req, res) => {
     }
 
     // Update staff record
-    const updatedData = await makeSupabaseRequest("PATCH", `/staff?id=eq.${id}`, updates);
+    const staff = await staffDb.updateStaff(id, updates);
 
-    if (!updatedData || updatedData.length === 0) {
+    if (!staff) {
       res.status(404).json({ error: "Staff member not found" });
       return;
     }
-
-    const staff = updatedData[0];
 
     // Send notification email if user is authenticated and there are changes
     let emailResult = null;
@@ -292,7 +289,7 @@ export const updateStaff: RequestHandler = async (req, res) => {
       emailSent: emailResult,
     });
   } catch (error) {
-    console.error("Error updating staff:", error);
+    console.error("[updateStaff] Error:", error);
     res.status(500).json({ error: "Failed to update staff" });
   }
 };
