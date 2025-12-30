@@ -88,7 +88,7 @@ export const getAllStaff: RequestHandler = async (req, res) => {
   try {
     const data = await makeSupabaseRequest("GET", "/staff?select=id,email,first_name,last_name,role,created_at");
 
-    // Transform and deduplicate the response
+    // Transform and deduplicate the response, filtering out any demo staff
     const seen = new Set<string>();
     const transformedData = data
       .map((staff: any) => ({
@@ -99,6 +99,12 @@ export const getAllStaff: RequestHandler = async (req, res) => {
         created_at: staff.created_at,
       }))
       .filter((staff: any) => {
+        // Filter out demo staff IDs
+        if (DEMO_STAFF_IDS.has(staff.id)) {
+          console.warn(`Filtering out demo staff ID: ${staff.id}`);
+          return false;
+        }
+        // Filter out duplicates
         if (seen.has(staff.id)) {
           console.warn(`Duplicate staff ID found: ${staff.id}`);
           return false;
