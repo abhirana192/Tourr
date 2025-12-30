@@ -1,19 +1,15 @@
 import { RequestHandler } from "express";
 import crypto from "crypto";
+import * as db from "../db";
 
-// Simple password hashing using crypto (alternative to bcrypt)
 function hashPassword(password: string): string {
-  return crypto
-    .createHash("sha256")
-    .update(password + "salt")
-    .digest("hex");
+  return crypto.createHash("sha256").update(password + "salt").digest("hex");
 }
 
 function verifyPassword(password: string, hash: string): boolean {
   return hashPassword(password) === hash;
 }
 
-// Simple in-memory session storage (replace with database in production)
 export const sessions = new Map<
   string,
   {
@@ -38,7 +34,6 @@ export function getSessionFromRequest(
   const session = sessions.get(token);
   if (!session) return null;
 
-  // Check if session is expired
   if (session.expiresAt < Date.now()) {
     sessions.delete(token);
     return null;
@@ -52,7 +47,6 @@ export function getSessionFromRequest(
   };
 }
 
-// Demo user for development/testing without Supabase
 const DEMO_USER = {
   id: "demo-user-1",
   email: "admin@example.com",
@@ -63,42 +57,15 @@ const DEMO_USER = {
 };
 
 async function getStaffByName(name: string) {
-  // Always check demo user first, regardless of Supabase availability
   if (name.toLowerCase() === DEMO_USER.first_name.toLowerCase()) {
     return DEMO_USER;
   }
 
-  const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
-  // Use anon key since this is a public read
-  const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !anonKey) {
-    console.error("[getStaffByName] Missing Supabase credentials");
-    return null;
-  }
-
   try {
-    // Search by first_name (exact match)
-    const response = await fetch(
-      `${supabaseUrl}/rest/v1/staff?first_name=eq.${encodeURIComponent(name)}&select=id,email,first_name,last_name,role,password_hash`,
-      {
-        headers: {
-          Authorization: `Bearer ${anonKey}`,
-          apikey: anonKey,
-        },
-      },
-    );
-
-    if (!response.ok) {
-      console.error(`[getStaffByName] Supabase API error: ${response.status}`);
-      return null;
-    }
-
-    const data = await response.json();
-    return data.length > 0 ? data[0] : null;
+    const staff = await db.getStaffByFirstName(name);
+    return staff;
   } catch (error) {
-    console.error("[getStaffByName] Error connecting to Supabase:", error);
-    // Don't throw - just return null so login can proceed with demo user or fail gracefully
+    console.error("[getStaffByName] Database error:", error);
     return null;
   }
 }
@@ -112,7 +79,6 @@ export const login: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Get staff user from database using REST API
     const staffData = await getStaffByName(name);
 
     if (!staffData) {
@@ -120,7 +86,6 @@ export const login: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Verify password against hashed password
     if (
       !staffData.password_hash ||
       !verifyPassword(password, staffData.password_hash)
@@ -129,9 +94,8 @@ export const login: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Create session token
     const sessionToken = generateSessionToken();
-    const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
 
     const fullName = staffData.last_name
       ? `${staffData.first_name} ${staffData.last_name}`
@@ -190,7 +154,6 @@ export const getSession: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Check if session is expired
     if (session.expiresAt < Date.now()) {
       sessions.delete(token);
       res.json({ success: true, user: null, session: null });
