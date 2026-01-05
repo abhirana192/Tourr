@@ -443,6 +443,34 @@ export default function Arrival() {
     });
   };
 
+  const handleActivityNoteChange = (dayIndex: number, activityIndex: number, notes: string, column: "planned" | "arrival" | "hotel" = "planned") => {
+    if (!selectedTour) return;
+
+    setSchedules((prev) => {
+      const tourSchedule = { ...prev[selectedTour.id] };
+      const dayData = tourSchedule[dayIndex] || { plannedActivities: [], arrivalActivities: [], hotelActivities: [], note: "" };
+
+      const columnKey = column === "planned" ? "plannedActivities" : column === "arrival" ? "arrivalActivities" : "hotelActivities";
+      const dayActivities = [...(dayData[columnKey] || [])];
+
+      if (dayActivities[activityIndex]) {
+        dayActivities[activityIndex] = {
+          ...dayActivities[activityIndex],
+          notes,
+        };
+      }
+
+      tourSchedule[dayIndex] = {
+        ...dayData,
+        [columnKey]: dayActivities,
+      };
+      return {
+        ...prev,
+        [selectedTour.id]: tourSchedule,
+      };
+    });
+  };
+
   const handleAddActivity = (dayIndex: number, column: "planned" | "arrival" | "hotel" = "planned") => {
     setSelectedDayForActivity(dayIndex);
     setSelectedColumnForActivity(column);
