@@ -215,9 +215,17 @@ export function EmailRecipientsDialog({
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="gap-2">
           <Button variant="outline" onClick={handleClose} disabled={isLoading}>
             Cancel
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleSkipEmail}
+            disabled={isLoading}
+            className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+          >
+            Skip Email
           </Button>
           <Button onClick={handleConfirm} disabled={isLoading || selectedStaff.size + customEmails.length === 0}>
             Send Email
