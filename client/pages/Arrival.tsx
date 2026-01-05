@@ -516,6 +516,7 @@ export default function Arrival() {
   };
 
   const handleAddActivity = (dayIndex: number, column: "planned" | "arrival" | "hotel" = "planned") => {
+    console.log("Adding activity to day", dayIndex, "column", column);
     setSelectedDayForActivity(dayIndex);
     setSelectedColumnForActivity(column);
     setActivityPickerOpen(true);
