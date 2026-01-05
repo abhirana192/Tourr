@@ -491,6 +491,9 @@ export default function Summary() {
                       {activityData.guests.map((guest, idx) => {
                         const arrivalInfo = [guest.arrival, guest.arrivalTime].filter(Boolean).join(" ") + (guest.arrivalFlight ? ` | ${guest.arrivalFlight}` : "");
                         const departureInfo = [guest.departure, guest.departureTime].filter(Boolean).join(" ") + (guest.departureFlight ? ` | ${guest.departureFlight}` : "");
+                        const assignmentKey = `${activityData.activityKey}-${idx}`;
+                        const assignment = assignments.get(assignmentKey) || { van: "", employee: "" };
+                        const isEditing = editingKey === assignmentKey;
                         return (
                           <tr key={idx} className={`border-b border-gray-200 hover:bg-blue-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
                             <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{guest.guestName}</td>
@@ -502,7 +505,77 @@ export default function Summary() {
                             <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.accommodation}</td>
                             <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{arrivalInfo}</td>
                             <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{departureInfo}</td>
-                            <td className="px-4 py-3 text-sm text-gray-600">{guest.activityTiming}</td>
+                            <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.activityTiming}</td>
+                            <td className="px-4 py-3 text-sm border-r border-gray-200">
+                              {isEditing ? (
+                                <input
+                                  type="text"
+                                  value={assignment.van}
+                                  onChange={(e) => {
+                                    const newAssignments = new Map(assignments);
+                                    newAssignments.set(assignmentKey, { ...assignment, van: e.target.value });
+                                    setAssignments(newAssignments);
+                                  }}
+                                  placeholder="e.g., Van A"
+                                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                />
+                              ) : (
+                                <span className="text-gray-600">{assignment.van || "-"}</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-sm border-r border-gray-200">
+                              {isEditing ? (
+                                <select
+                                  value={assignment.employee}
+                                  onChange={(e) => {
+                                    const newAssignments = new Map(assignments);
+                                    newAssignments.set(assignmentKey, { ...assignment, employee: e.target.value });
+                                    setAssignments(newAssignments);
+                                  }}
+                                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                >
+                                  <option value="">Select Employee</option>
+                                  {staffList.map((staff) => (
+                                    <option key={staff.id} value={staff.name}>
+                                      {staff.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <span className="text-gray-600">{assignment.employee || "-"}</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-sm">
+                              {isEditing ? (
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => setEditingKey(null)}
+                                    className="text-green-600 hover:text-green-700 flex items-center gap-1"
+                                    title="Save"
+                                  >
+                                    <Save className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setAssignments(new Map(assignments));
+                                      setEditingKey(null);
+                                    }}
+                                    className="text-red-600 hover:text-red-700 flex items-center gap-1"
+                                    title="Cancel"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => setEditingKey(assignmentKey)}
+                                  className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                                  title="Edit"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                              )}
+                            </td>
                           </tr>
                         );
                       })}
