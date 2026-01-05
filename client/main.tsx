@@ -74,14 +74,21 @@ const App = () => (
   </QueryClientProvider>
 );
 
-// Store root in module scope to persist across HMR
-let appRoot: any;
-
 const container = document.getElementById("root");
+
 if (container) {
-  // Only create root once - store it in module scope
-  if (!appRoot) {
-    appRoot = createRoot(container);
+  // Use window to persist root across HMR reloads
+  const w = window as any;
+  if (!w.__appRoot) {
+    w.__appRoot = createRoot(container);
+  } else {
+    // Root already exists, just use it
+    try {
+      w.__appRoot.render(<App />);
+    } catch (e) {
+      // If render fails, create a new root
+      w.__appRoot = createRoot(container);
+      w.__appRoot.render(<App />);
+    }
   }
-  appRoot.render(<App />);
 }
