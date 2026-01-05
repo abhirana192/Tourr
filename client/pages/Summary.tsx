@@ -433,7 +433,22 @@ export default function Summary() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+            <button
+              onClick={() => {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, "0");
+                const date = String(today.getDate()).padStart(2, "0");
+                const todayStr = `${year}-${month}-${date}`;
+                setFilterFromDate(todayStr);
+                setFilterToDate(todayStr);
+              }}
+              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium"
+            >
+              Reset to Today
+            </button>
           </div>
+          <p className="text-xs text-gray-500 mt-2">Showing data from {filterFromDate} to {filterToDate}</p>
         </div>
 
         {/* Arrivals Table */}
