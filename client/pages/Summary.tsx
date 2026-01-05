@@ -68,6 +68,24 @@ interface GuestActivityRow {
   accommodation: string;
   activityTiming?: string;
   dayNumber?: number;
+  activityDate?: string;
+  activityName?: string;
+}
+
+interface ActivityByDate {
+  date: string;
+  activities: Array<{
+    guestName: string;
+    tourName: string;
+    invoiceNumber: string;
+    language: string;
+    pax: number;
+    agent: string;
+    accommodation: string;
+    activityName: string;
+    activityTiming: string;
+    dayNumber: number;
+  }>;
 }
 
 const ACTIVITY_TIMINGS: { [key: string]: Activity } = {
