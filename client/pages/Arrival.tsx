@@ -913,22 +913,23 @@ export default function Arrival() {
             }
             body {
               font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-              background-color: #ffffff;
+              background-color: #f8f8f8;
               position: relative;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
             }
             .welcome-header {
-              background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-              color: white;
-              padding: 30px;
+              background: #ffffff;
+              color: #333333;
+              padding: 50px;
               margin-bottom: 20px;
               margin-top: 40px;
               border-radius: 0;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
               position: relative;
               overflow: hidden;
+              border: 1px solid #e0e0e0;
               border-left: 6px solid #2da578;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
@@ -953,14 +954,15 @@ export default function Arrival() {
               opacity: 1;
               margin-bottom: 10px;
               letter-spacing: 1px;
-              color: white;
+              color: #666666;
             }
             .guest-title {
               font-size: 48px;
               font-weight: 700;
               margin-bottom: 20px;
-              text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+              text-shadow: none;
               text-align: center;
+              color: #1a1a1a;
             }
             .guest-info {
               display: none;
@@ -1000,7 +1002,7 @@ export default function Arrival() {
               color: #1a1a1a;
               margin-bottom: 15px;
               padding-bottom: 10px;
-              border-bottom: 3px solid #2da578;
+              border-bottom: 3px solid #cccccc;
               display: inline-block;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
@@ -1016,14 +1018,14 @@ export default function Arrival() {
               print-color-adjust: exact;
             }
             th {
-              background: #2d3436;
-              color: white;
+              background: #f5f5f5;
+              color: #1a1a1a;
               padding: 14px;
               text-align: left;
               font-weight: 700;
               font-size: 12px;
               letter-spacing: 0.5px;
-              border: 1px solid #555555;
+              border: 1px solid #e0e0e0;
               border-bottom: 2px solid #2da578;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
@@ -1031,9 +1033,9 @@ export default function Arrival() {
             }
             td {
               padding: 12px 14px;
-              border-bottom: 1px solid #cccccc;
+              border-bottom: 1px solid #e0e0e0;
               font-size: 12px;
-              color: #000000;
+              color: #333333;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
@@ -1046,29 +1048,29 @@ export default function Arrival() {
               print-color-adjust: exact;
             }
             tbody tr:nth-child(even) {
-              background-color: #f9f9f9;
+              background-color: #fafafa;
               border-bottom: 1px solid #e0e0e0;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
             }
             tbody tr:hover {
-              background-color: #f0f9f7;
-              border-bottom: 1px solid #2da578;
+              background-color: #f5f5f5;
+              border-bottom: 1px solid #e0e0e0;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
             }
             .activity-box {
-              background: #f0f9f7;
-              border-left: 4px solid #2da578;
+              background: #f9f9f9;
+              border-left: 4px solid #cccccc;
               padding: 8px;
               margin: 4px 0;
               border-radius: 0;
             }
             .activity-name {
               font-weight: 700;
-              color: #000000;
+              color: #1a1a1a;
               margin-bottom: 3px;
             }
             .activity-timing {
@@ -1079,10 +1081,10 @@ export default function Arrival() {
               margin-top: 40px;
               text-align: center;
               padding: 20px;
-              background: #f9f9f9;
+              background: #ffffff;
               border-radius: 0;
-              border-top: 3px solid #2da578;
-              color: #555555;
+              border-top: 1px solid #e0e0e0;
+              color: #666666;
               font-size: 12px;
               font-style: italic;
               -webkit-print-color-adjust: exact;
@@ -1094,7 +1096,9 @@ export default function Arrival() {
               top: 0;
               left: 0;
               display: flex;
+              flex-direction: column;
               align-items: center;
+              justify-content: center;
               gap: 0;
               z-index: 10;
               background: transparent;
@@ -1102,16 +1106,17 @@ export default function Arrival() {
               border-radius: 0;
               box-shadow: none;
               border: none;
-              margin-bottom: 20px;
+              margin-bottom: 0;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
             }
             .logo-image {
-              width: 180px;
-              height: 180px;
+              width: 280px;
+              height: 280px;
               object-fit: contain;
               flex-shrink: 0;
+              margin-bottom: 30px;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
