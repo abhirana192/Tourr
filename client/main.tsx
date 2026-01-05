@@ -74,18 +74,14 @@ const App = () => (
   </QueryClientProvider>
 );
 
+// Store root in module scope to persist across HMR
+let appRoot: any;
+
 const container = document.getElementById("root");
-
 if (container) {
-  // Check if root already exists on the container
-  const existingRoot = (container as any)._reactRootContainer;
-
-  if (existingRoot) {
-    // Root already exists, just update it
-    existingRoot._internalRoot.render(<App />);
-  } else {
-    // Create new root
-    const root = createRoot(container);
-    root.render(<App />);
+  // Only create root once - store it in module scope
+  if (!appRoot) {
+    appRoot = createRoot(container);
   }
+  appRoot.render(<App />);
 }
