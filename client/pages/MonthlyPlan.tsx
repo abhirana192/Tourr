@@ -576,12 +576,6 @@ export default function MonthlyPlan() {
                         {day.city_tour}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
-                        {day.snowshoe}
-                      </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
-                        {day.dnr}
-                      </td>
-                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.nlt}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
