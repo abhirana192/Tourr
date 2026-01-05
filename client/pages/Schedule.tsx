@@ -629,48 +629,69 @@ export default function Schedule() {
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.accommodation}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.gears}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-10 whitespace-nowrap">{tour.snowshoe}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
-                        <div>{getActivityDetails(tour, "nlt").text}</div>
-                        {getActivityDetails(tour, "nlt").notes && (
-                          <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {getActivityDetails(tour, "nlt").notes}</div>
-                        )}
-                      </td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
-                        <div>{getActivityDetails(tour, "city_tour").text}</div>
-                        {getActivityDetails(tour, "city_tour").notes && (
-                          <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {getActivityDetails(tour, "city_tour").notes}</div>
-                        )}
-                      </td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
-                        <div>{getActivityDetails(tour, "hiking").text}</div>
-                        {getActivityDetails(tour, "hiking").notes && (
-                          <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {getActivityDetails(tour, "hiking").notes}</div>
-                        )}
-                      </td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
-                        <div>{getActivityDetails(tour, "fishing").text}</div>
-                        {getActivityDetails(tour, "fishing").notes && (
-                          <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {getActivityDetails(tour, "fishing").notes}</div>
-                        )}
-                      </td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
-                        <div>{getActivityDetails(tour, "dog_sledging").text}</div>
-                        {getActivityDetails(tour, "dog_sledging").notes && (
-                          <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {getActivityDetails(tour, "dog_sledging").notes}</div>
-                        )}
-                      </td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
-                        <div>{getActivityDetails(tour, "snowmobile_atv").text}</div>
-                        {getActivityDetails(tour, "snowmobile_atv").notes && (
-                          <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {getActivityDetails(tour, "snowmobile_atv").notes}</div>
-                        )}
-                      </td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
-                        <div>{getActivityDetails(tour, "aurora_village").text}</div>
-                        {getActivityDetails(tour, "aurora_village").notes && (
-                          <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {getActivityDetails(tour, "aurora_village").notes}</div>
-                        )}
-                      </td>
+                      {(() => {
+                        const nltDetails = getActivityDetails(tour, "nlt");
+                        return (
+                          <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
+                            <div>{nltDetails.text}</div>
+                            {nltDetails.notes && <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {nltDetails.notes}</div>}
+                          </td>
+                        );
+                      })()}
+                      {(() => {
+                        const cityTourDetails = getActivityDetails(tour, "city_tour");
+                        return (
+                          <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
+                            <div>{cityTourDetails.text}</div>
+                            {cityTourDetails.notes && <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {cityTourDetails.notes}</div>}
+                          </td>
+                        );
+                      })()}
+                      {(() => {
+                        const hikingDetails = getActivityDetails(tour, "hiking");
+                        return (
+                          <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
+                            <div>{hikingDetails.text}</div>
+                            {hikingDetails.notes && <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {hikingDetails.notes}</div>}
+                          </td>
+                        );
+                      })()}
+                      {(() => {
+                        const fishingDetails = getActivityDetails(tour, "fishing");
+                        return (
+                          <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
+                            <div>{fishingDetails.text}</div>
+                            {fishingDetails.notes && <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {fishingDetails.notes}</div>}
+                          </td>
+                        );
+                      })()}
+                      {(() => {
+                        const dogSledgingDetails = getActivityDetails(tour, "dog_sledging");
+                        return (
+                          <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
+                            <div>{dogSledgingDetails.text}</div>
+                            {dogSledgingDetails.notes && <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {dogSledgingDetails.notes}</div>}
+                          </td>
+                        );
+                      })()}
+                      {(() => {
+                        const snowmobileDetails = getActivityDetails(tour, "snowmobile_atv");
+                        return (
+                          <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
+                            <div>{snowmobileDetails.text}</div>
+                            {snowmobileDetails.notes && <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {snowmobileDetails.notes}</div>}
+                          </td>
+                        );
+                      })()}
+                      {(() => {
+                        const auroraVillageDetails = getActivityDetails(tour, "aurora_village");
+                        return (
+                          <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
+                            <div>{auroraVillageDetails.text}</div>
+                            {auroraVillageDetails.notes && <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {auroraVillageDetails.notes}</div>}
+                          </td>
+                        );
+                      })()}
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.payment}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.reservation_number}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.remarks}</td>
