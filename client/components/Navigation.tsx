@@ -47,6 +47,7 @@ export default function Navigation() {
     { label: "Schedule", path: "/schedule" },
     { label: "Monthly Plan", path: "/monthly-plan" },
     { label: "Arrival", path: "/arrival" },
+    { label: "Summary", path: "/summary" },
     ...(user?.role === "admin" ? [{ label: "Staff Management", path: "/staff" }] : []),
   ];
 
