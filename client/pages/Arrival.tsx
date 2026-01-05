@@ -1099,7 +1099,9 @@ export default function Arrival() {
                         <div className="whitespace-normal">{day.day}</div>
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
-                        <div className="whitespace-normal text-justify leading-relaxed mb-2">{day.arrivalInfo}</div>
+                        {(day.arrivalActivities?.length ?? 0) === 0 && (
+                          <div className="whitespace-normal text-justify leading-relaxed mb-2">{day.arrivalInfo}</div>
+                        )}
                         {(day.arrivalActivities?.length ?? 0) > 0 && (
                           <div className="space-y-2 mb-2">
                             {(day.arrivalActivities || []).map((activity, actIdx) => (
