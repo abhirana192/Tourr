@@ -266,49 +266,55 @@ export default function Summary() {
                 <p className="text-sm text-blue-700 mt-1">{activityData.guests.length} guest{activityData.guests.length !== 1 ? "s" : ""} scheduled</p>
               </div>
 
-              {/* Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-gray-100 border-b border-gray-200">
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Name</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Language</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 border-r border-gray-200">Pax</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Tour</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Invoice</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Agent</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Hotel</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Time</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Flight</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Departure Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Departure Time</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Departure Flight</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Activity Timing</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {activityData.guests.map((guest, idx) => (
-                      <tr key={idx} className={`border-b border-gray-200 hover:bg-blue-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
-                        <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{guest.guestName}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.language}</td>
-                        <td className="px-4 py-3 text-sm text-gray-900 text-center border-r border-gray-200 font-medium">{guest.pax}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.tourName}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.invoiceNumber}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.agent}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.accommodation}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrival}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrivalTime}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrivalFlight}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.departure}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.departureTime}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.departureFlight}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600">{guest.activityTiming}</td>
+              {/* Table or No Participants Message */}
+              {activityData.guests.length === 0 ? (
+                <div className="p-8 text-center text-gray-500">
+                  <p>No participants scheduled for this activity</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="bg-gray-100 border-b border-gray-200">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Name</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Language</th>
+                        <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 border-r border-gray-200">Pax</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Tour</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Invoice</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Agent</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Hotel</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Date</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Time</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Flight</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Departure Date</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Departure Time</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Departure Flight</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Activity Timing</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {activityData.guests.map((guest, idx) => (
+                        <tr key={idx} className={`border-b border-gray-200 hover:bg-blue-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+                          <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{guest.guestName}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.language}</td>
+                          <td className="px-4 py-3 text-sm text-gray-900 text-center border-r border-gray-200 font-medium">{guest.pax}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.tourName}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.invoiceNumber}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.agent}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.accommodation}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrival}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrivalTime}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrivalFlight}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.departure}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.departureTime}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.departureFlight}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600">{guest.activityTiming}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           ))}
         </div>
