@@ -1176,18 +1176,18 @@ export default function Arrival() {
           </style>
         </head>
         <body>
-          <div class="logo-and-qr-wrapper">
-            <div class="logo-section">
-              <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F490934e205af421d8f25ac51d3ee565b?format=webp&width=800" alt="Jiguang Tour Logo" class="logo-image" />
-            </div>
-            <div class="qr-codes-section">
-              <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F53041013df304a4c9d8f2ba023b52f25?format=webp&width=800" alt="QR Code 1" class="qr-code-image" />
-              <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F6aae87c3960148d783c72776545a5054?format=webp&width=800" alt="QR Code 2" class="qr-code-image" />
-              <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F4371583341114a53aa318828afcc3ed2?format=webp&width=800" alt="QR Code 3" class="qr-code-image" />
-            </div>
-          </div>
           <div class="welcome-header">
-            <div class="header-content" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+            <div class="logo-and-qr-wrapper">
+              <div class="logo-section">
+                <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F490934e205af421d8f25ac51d3ee565b?format=webp&width=800" alt="Jiguang Tour Logo" class="logo-image" />
+              </div>
+              <div class="qr-codes-section">
+                <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F53041013df304a4c9d8f2ba023b52f25?format=webp&width=800" alt="QR Code 1" class="qr-code-image" />
+                <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F6aae87c3960148d783c72776545a5054?format=webp&width=800" alt="QR Code 2" class="qr-code-image" />
+                <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F4371583341114a53aa318828afcc3ed2?format=webp&width=800" alt="QR Code 3" class="qr-code-image" />
+              </div>
+            </div>
+            <div class="header-content" style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: 20px;">
               <div class="welcome-text">${welcomeText}</div>
               <div class="guest-title">${guestName}</div>
               <div class="guest-info">
