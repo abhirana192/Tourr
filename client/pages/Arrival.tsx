@@ -38,6 +38,7 @@ interface Tour {
 interface Activity {
   name: string;
   timings: string[];
+  notes?: string;
 }
 
 interface DayItinerary {
