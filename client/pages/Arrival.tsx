@@ -1182,7 +1182,7 @@ export default function Arrival() {
           <div class="welcome-header">
             <div class="logo-and-qr-wrapper">
               <div class="logo-section">
-                <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F490934e205af421d8f25ac51d3ee565b?format=webp&width=800" alt="Jiguang Tour Logo" class="logo-image" />
+                <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2Fe258920ba0ea4a8e95e9472be8b9c602?format=webp&width=800" alt="Jiguang Tour Logo" class="logo-image" />
               </div>
               <div class="qr-codes-section">
                 <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F53041013df304a4c9d8f2ba023b52f25?format=webp&width=800" alt="QR Code 1" class="qr-code-image" />
