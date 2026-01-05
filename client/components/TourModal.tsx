@@ -29,6 +29,13 @@ interface Tour {
   payment: string;
   reservation_number: string;
   remarks: string;
+  activity_schedule?: string;
+}
+
+interface Activity {
+  name: string;
+  timings: string[];
+  notes?: string;
 }
 
 interface TourModalProps {
