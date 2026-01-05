@@ -132,6 +132,9 @@ export default function Summary() {
     const date = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${date}`;
   });
+  const [staffList, setStaffList] = useState<Staff[]>([]);
+  const [assignments, setAssignments] = useState<Map<string, ActivityAssignment>>(new Map());
+  const [editingKey, setEditingKey] = useState<string | null>(null);
 
   const extractDateAndTime = (value: any) => {
     if (!value) return { date: "", time: "", flight: "" };
