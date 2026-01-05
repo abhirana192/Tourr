@@ -1199,7 +1199,7 @@ export default function Arrival() {
           </style>
         </head>
         <body>
-          <div class="welcome-header">
+          <div class="branding-header">
             <div class="logo-and-qr-wrapper">
               <div class="logo-section">
                 <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2Fe258920ba0ea4a8e95e9472be8b9c602?format=webp&width=800" alt="Jiguang Tour Logo" class="logo-image" />
@@ -1210,7 +1210,9 @@ export default function Arrival() {
                 <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F4371583341114a53aa318828afcc3ed2?format=webp&width=800" alt="QR Code 3" class="qr-code-image" />
               </div>
             </div>
-            <div class="header-content" style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: 20px;">
+          </div>
+          <div class="welcome-header">
+            <div class="header-content" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
               <div class="welcome-text">${welcomeText}</div>
               <div class="guest-title">${guestName}</div>
               <div class="guest-info">
