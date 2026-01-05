@@ -298,9 +298,24 @@ export const saveTourSchedule: RequestHandler = async (req, res) => {
     const scheduleJson = JSON.stringify(schedule);
     const oldSchedule = tour.activity_schedule;
 
+    // Extract activities from schedule and determine which flags to set
+    const presentActivities = extractActivitiesFromSchedule(schedule);
+
+    // Map of all activity flags
+    const activityFlags = {
+      city_tour: presentActivities.has("city_tour") ? "Yes" : "No",
+      fishing: presentActivities.has("fishing") ? "Yes" : "No",
+      dog_sledging: presentActivities.has("dog_sledging") ? "Yes" : "No",
+      snowmobile_atv: presentActivities.has("snowmobile_atv") ? "Yes" : "No",
+      hiking: presentActivities.has("hiking") ? "Yes" : "No",
+      aurora_village: presentActivities.has("aurora_village") ? "Yes" : "No",
+      nlt: presentActivities.has("nlt") ? "Yes" : "No",
+    };
+
     const updated = db.updateTour(id, {
       ...tour,
       activity_schedule: scheduleJson,
+      ...activityFlags,
     });
 
     if (!updated) {
