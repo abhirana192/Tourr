@@ -814,6 +814,142 @@ export default function Summary() {
             </div>
           ))}
         </div>
+
+        {/* Activities by Date */}
+        <div className="mt-12">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Activities by Date</h2>
+            <p className="text-gray-600 mt-1">Activities scheduled for each calendar date</p>
+          </div>
+
+          <div className="space-y-6">
+            {activitiesByDate
+              .filter((item) => item.date >= filterFromDate && item.date <= filterToDate)
+              .map((dateItem) => (
+                <div key={dateItem.date} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+                  {/* Date Header */}
+                  <div className="bg-gradient-to-r from-purple-50 to-purple-100 border-b border-purple-200 px-6 py-4">
+                    <h3 className="text-lg font-bold text-purple-900">{dateItem.date}</h3>
+                    <p className="text-sm text-purple-700 mt-1">{dateItem.activities.length} activity{dateItem.activities.length !== 1 ? "ies" : ""} scheduled</p>
+                  </div>
+
+                  {/* Date Activities Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-gray-100 border-b border-gray-200">
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Activity</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Guest Name</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Language</th>
+                          <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 border-r border-gray-200">Pax</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Tour</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Invoice</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Agent</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Hotel</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Timing</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Day</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Van</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Employee</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dateItem.activities.map((activity, idx) => {
+                          const assignmentKey = `date-${dateItem.date}-${idx}`;
+                          const assignment = assignments.get(assignmentKey) || { van: "", employee: "" };
+                          const isEditing = editingKey === assignmentKey;
+                          return (
+                            <tr key={idx} className={`border-b border-gray-200 hover:bg-purple-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+                              <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{activity.activityName}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{activity.guestName}</td>
+                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.language}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900 text-center border-r border-gray-200 font-medium">{activity.pax}</td>
+                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.tourName}</td>
+                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.invoiceNumber}</td>
+                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.agent}</td>
+                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.accommodation}</td>
+                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.activityTiming}</td>
+                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">Day {activity.dayNumber}</td>
+                              <td className="px-4 py-3 text-sm border-r border-gray-200">
+                                {isEditing ? (
+                                  <input
+                                    type="text"
+                                    value={assignment.van}
+                                    onChange={(e) => {
+                                      const newAssignments = new Map(assignments);
+                                      newAssignments.set(assignmentKey, { ...assignment, van: e.target.value });
+                                      setAssignments(newAssignments);
+                                    }}
+                                    placeholder="e.g., Van A"
+                                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                  />
+                                ) : (
+                                  <span className="text-gray-600">{assignment.van || "-"}</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-sm border-r border-gray-200">
+                                {isEditing ? (
+                                  <select
+                                    value={assignment.employee}
+                                    onChange={(e) => {
+                                      const newAssignments = new Map(assignments);
+                                      newAssignments.set(assignmentKey, { ...assignment, employee: e.target.value });
+                                      setAssignments(newAssignments);
+                                    }}
+                                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                  >
+                                    <option value="">Select Employee</option>
+                                    {staffList.map((staff) => (
+                                      <option key={staff.id} value={staff.name}>
+                                        {staff.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  <span className="text-gray-600">{assignment.employee || "-"}</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-sm">
+                                {isEditing ? (
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => setEditingKey(null)}
+                                      className="text-green-600 hover:text-green-700 flex items-center gap-1"
+                                      title="Save"
+                                    >
+                                      <Save className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setAssignments(new Map(assignments));
+                                        setEditingKey(null);
+                                      }}
+                                      className="text-red-600 hover:text-red-700 flex items-center gap-1"
+                                      title="Cancel"
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => setEditingKey(assignmentKey)}
+                                    className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                                    title="Edit"
+                                  >
+                                    <Edit2 className="w-4 h-4" />
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
       </div>
     </div>
   );
