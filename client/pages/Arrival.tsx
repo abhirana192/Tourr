@@ -1165,10 +1165,12 @@ export default function Arrival() {
               justify-content: space-between;
               align-items: flex-start;
               gap: 20px;
-              margin-bottom: 5px;
+              margin-bottom: 0;
               margin-top: 0;
               width: 100%;
               flex-wrap: nowrap;
+              padding-bottom: 15px;
+              border-bottom: 1px solid #e0e0e0;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
