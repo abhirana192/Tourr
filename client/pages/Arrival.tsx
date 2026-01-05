@@ -542,15 +542,12 @@ export default function Arrival() {
   };
 
   const handleSelectActivity = (activityKey: string) => {
-    console.log("Selected activity:", activityKey, "Day:", selectedDayForActivity, "Column:", selectedColumnForActivity);
     if (!selectedTour || selectedDayForActivity === null || !selectedColumnForActivity) {
-      console.log("Missing required data - Tour:", !!selectedTour, "Day:", selectedDayForActivity, "Column:", selectedColumnForActivity);
       return;
     }
 
     const activityData = ACTIVITY_TIMINGS[activityKey];
     if (!activityData) {
-      console.log("Activity not found:", activityKey);
       return;
     }
 
