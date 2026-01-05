@@ -283,12 +283,8 @@ export default function Summary() {
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Invoice</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Agent</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Hotel</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Date</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Time</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Flight</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Departure Date</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Departure Time</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Departure Flight</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arr</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Dep</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Activity Timing</th>
                       </tr>
                     </thead>
