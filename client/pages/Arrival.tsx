@@ -922,16 +922,16 @@ export default function Arrival() {
             .welcome-header {
               background: #ffffff;
               color: #333333;
-              padding: 50px 50px 50px 200px;
+              padding: 50px 50px 50px 50px;
               margin-bottom: 20px;
-              margin-top: 40px;
+              margin-top: 0;
               border-radius: 0;
               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
               position: relative;
               overflow: visible;
               border: 1px solid #e0e0e0;
               border-left: 6px solid #2da578;
-              min-height: 150px;
+              min-height: auto;
               display: flex;
               align-items: center;
               justify-content: center;
@@ -1096,13 +1096,13 @@ export default function Arrival() {
               print-color-adjust: exact;
             }
             .logo-section {
-              position: absolute;
-              top: 2px;
-              left: 8px;
+              position: relative;
+              top: auto;
+              left: auto;
               display: flex;
               flex-direction: column;
-              align-items: flex-start;
-              justify-content: flex-start;
+              align-items: center;
+              justify-content: center;
               gap: 0;
               z-index: 10;
               background: transparent;
@@ -1111,6 +1111,7 @@ export default function Arrival() {
               box-shadow: none;
               border: none;
               margin-bottom: 0;
+              margin-top: 0;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
@@ -1131,10 +1132,10 @@ export default function Arrival() {
           </style>
         </head>
         <body>
+          <div class="logo-section">
+            <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F490934e205af421d8f25ac51d3ee565b?format=webp&width=800" alt="Jiguang Tour Logo" class="logo-image" />
+          </div>
           <div class="welcome-header">
-            <div class="logo-section">
-              <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F490934e205af421d8f25ac51d3ee565b?format=webp&width=800" alt="Jiguang Tour Logo" class="logo-image" />
-            </div>
             <div class="header-content" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
               <div class="guest-title">${guestName}</div>
               <div class="guest-info">
