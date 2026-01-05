@@ -77,3 +77,8 @@ const App = () => (
 const container = document.getElementById("root")!;
 const root = createRoot(container);
 root.render(<App />);
+
+// Prevent HMR from reloading the entire app
+if (import.meta.hot) {
+  import.meta.hot.accept();
+}
