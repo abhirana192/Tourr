@@ -258,37 +258,26 @@ export default function Summary() {
 
 
   // Filter guests based on date range
-  const getArrivalsInRange = () => {
-    const allGuests = activitiesData.flatMap((activity) => activity.guests);
-    const uniqueGuestsByTour = Array.from(new Map(allGuests.map((g) => [g.tourName + g.invoiceNumber, g])).values());
-    return uniqueGuestsByTour.filter((guest) => {
+  const allGuests = activitiesData.flatMap((activity) => activity.guests);
+  const uniqueGuestsByTour = Array.from(new Map(allGuests.map((g) => [g.tourName + g.invoiceNumber, g])).values());
+
+  const arrivals = uniqueGuestsByTour.filter((guest) => {
+    if (!guest.arrival) return false;
+    return guest.arrival >= filterFromDate && guest.arrival <= filterToDate;
+  });
+
+  const departures = uniqueGuestsByTour.filter((guest) => {
+    if (!guest.departure) return false;
+    return guest.departure >= filterFromDate && guest.departure <= filterToDate;
+  });
+
+  const filteredActivities = activitiesData.map((activity) => ({
+    ...activity,
+    guests: activity.guests.filter((guest) => {
       if (!guest.arrival) return false;
       return guest.arrival >= filterFromDate && guest.arrival <= filterToDate;
-    });
-  };
-
-  const getDeparturesInRange = () => {
-    const allGuests = activitiesData.flatMap((activity) => activity.guests);
-    const uniqueGuestsByTour = Array.from(new Map(allGuests.map((g) => [g.tourName + g.invoiceNumber, g])).values());
-    return uniqueGuestsByTour.filter((guest) => {
-      if (!guest.departure) return false;
-      return guest.departure >= filterFromDate && guest.departure <= filterToDate;
-    });
-  };
-
-  const getActivitiesInRange = () => {
-    return activitiesData.map((activity) => ({
-      ...activity,
-      guests: activity.guests.filter((guest) => {
-        if (!guest.arrival) return false;
-        return guest.arrival >= filterFromDate && guest.arrival <= filterToDate;
-      }),
-    }));
-  };
-
-  const arrivals = getArrivalsInRange();
-  const departures = getDeparturesInRange();
-  const filteredActivities = getActivitiesInRange();
+    }),
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 pt-6">
