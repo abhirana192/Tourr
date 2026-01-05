@@ -1330,6 +1330,13 @@ export default function Arrival() {
           tourName={selectedTour ? `${selectedTour.name} (${selectedTour.pax} pax)` : undefined}
           isLoading={isSaving}
         />
+
+        {/* Print Language Dialog */}
+        <PrintLanguageDialog
+          open={showPrintLanguageDialog}
+          onOpenChange={setShowPrintLanguageDialog}
+          onConfirm={handlePrintWithLanguage}
+        />
       </div>
     </div>
   );
