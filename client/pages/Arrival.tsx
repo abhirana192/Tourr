@@ -914,6 +914,7 @@ export default function Arrival() {
             body {
               font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
               background-color: #f0f9f7;
+              position: relative;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
