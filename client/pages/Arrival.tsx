@@ -1156,7 +1156,7 @@ export default function Arrival() {
               right: auto;
               display: flex;
               flex-direction: row;
-              align-items: flex-start;
+              align-items: center;
               justify-content: flex-end;
               gap: 15px;
               z-index: 10;
@@ -1166,7 +1166,7 @@ export default function Arrival() {
               box-shadow: none;
               border: none;
               margin-bottom: 0;
-              margin-top: 115px;
+              margin-top: 0;
               flex-wrap: nowrap;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
