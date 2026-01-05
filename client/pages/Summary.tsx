@@ -375,7 +375,7 @@ export default function Summary() {
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-8">
           <div className="bg-gradient-to-r from-red-50 to-red-100 border-b border-red-200 px-6 py-4">
             <h2 className="text-xl font-bold text-red-900">Departures</h2>
-            <p className="text-sm text-red-700 mt-1">{uniqueGuestsByTour.length} guest{uniqueGuestsByTour.length !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-red-700 mt-1">{departures.length} guest{departures.length !== 1 ? "s" : ""}</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
