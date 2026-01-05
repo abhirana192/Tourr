@@ -198,6 +198,15 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
       setDepartureDate(departureParsed.date);
       setDepartureTime(departureParsed.time);
       setDepartureFlight(departureParsed.flight);
+
+      // Initialize activity notes from tour
+      const notes: { [key: string]: string } = {};
+      Object.keys(activityNameToKey).forEach((activityName) => {
+        const key = activityNameToKey[activityName];
+        const activityDetail = getActivityDetailsForModal(key);
+        notes[key] = activityDetail.notes;
+      });
+      setActivityNotes(notes);
     } else {
       setFormData({
         start_date: "",
