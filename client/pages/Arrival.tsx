@@ -913,19 +913,20 @@ export default function Arrival() {
             }
             body {
               font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-              background-color: #f0f9f7;
+              background-color: #ffffff;
               position: relative;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
             }
             .welcome-header {
-              background: linear-gradient(135deg, #1b7a5c 0%, #2da578 50%, #3ec4a0 100%);
+              background: #000000;
               color: white;
               padding: 30px;
               margin-bottom: 20px;
-              border-radius: 10px;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+              margin-top: 40px;
+              border-radius: 0;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
               position: relative;
               overflow: hidden;
               -webkit-print-color-adjust: exact;
@@ -939,7 +940,7 @@ export default function Arrival() {
               right: -10%;
               width: 400px;
               height: 400px;
-              background: radial-gradient(circle, rgba(62, 196, 160, 0.2) 0%, transparent 70%);
+              background: none;
               border-radius: 50%;
             }
             .header-content {
@@ -948,9 +949,10 @@ export default function Arrival() {
             }
             .welcome-text {
               font-size: 14px;
-              opacity: 0.95;
+              opacity: 1;
               margin-bottom: 10px;
               letter-spacing: 1px;
+              color: white;
             }
             .guest-title {
               font-size: 48px;
@@ -994,10 +996,10 @@ export default function Arrival() {
             .section-title {
               font-size: 18px;
               font-weight: 700;
-              color: #1b7a5c;
+              color: #000000;
               margin-bottom: 15px;
               padding-bottom: 10px;
-              border-bottom: 3px solid #3ec4a0;
+              border-bottom: 3px solid #000000;
               display: inline-block;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
@@ -1013,55 +1015,55 @@ export default function Arrival() {
               print-color-adjust: exact;
             }
             th {
-              background: linear-gradient(135deg, #1b7a5c 0%, #2da578 100%);
+              background: #1a1a1a;
               color: white;
               padding: 14px;
               text-align: left;
               font-weight: 700;
               font-size: 12px;
               letter-spacing: 0.5px;
-              border: none;
+              border: 1px solid #333333;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
             }
             td {
               padding: 12px 14px;
-              border-bottom: 1px solid #d0e8e5;
+              border-bottom: 1px solid #cccccc;
               font-size: 12px;
-              color: #333;
+              color: #000000;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
             }
             tbody tr:nth-child(odd) {
-              background-color: #e8f5f2;
+              background-color: #ffffff;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
             }
             tbody tr:nth-child(even) {
-              background-color: #f5faf9;
+              background-color: #f5f5f5;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
             }
             tbody tr:hover {
-              background-color: #d0e8e5;
+              background-color: #eeeeee;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
             }
             .activity-box {
-              background: linear-gradient(135deg, rgba(27, 122, 92, 0.1) 0%, rgba(62, 196, 160, 0.1) 100%);
-              border-left: 4px solid #2da578;
+              background: #f9f9f9;
+              border-left: 4px solid #000000;
               padding: 8px;
               margin: 4px 0;
-              border-radius: 4px;
+              border-radius: 0;
             }
             .activity-name {
               font-weight: 700;
-              color: #1b7a5c;
+              color: #000000;
               margin-bottom: 3px;
             }
             .activity-timing {
@@ -1072,10 +1074,10 @@ export default function Arrival() {
               margin-top: 40px;
               text-align: center;
               padding: 20px;
-              background: linear-gradient(135deg, rgba(27, 122, 92, 0.05) 0%, rgba(62, 196, 160, 0.05) 100%);
-              border-radius: 8px;
-              border-top: 2px solid #3ec4a0;
-              color: #1b7a5c;
+              background: #f5f5f5;
+              border-radius: 0;
+              border-top: 2px solid #000000;
+              color: #333333;
               font-size: 12px;
               font-style: italic;
               -webkit-print-color-adjust: exact;
@@ -1083,9 +1085,9 @@ export default function Arrival() {
               print-color-adjust: exact;
             }
             .logo-section {
-              position: absolute;
-              top: 15px;
-              left: 20px;
+              position: relative;
+              top: 0;
+              left: 0;
               display: flex;
               align-items: center;
               gap: 0;
@@ -1095,6 +1097,7 @@ export default function Arrival() {
               border-radius: 0;
               box-shadow: none;
               border: none;
+              margin-bottom: 20px;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
