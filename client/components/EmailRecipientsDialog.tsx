@@ -107,6 +107,14 @@ export function EmailRecipientsDialog({
     setCustomEmailInput("");
   };
 
+  const handleSkipEmail = () => {
+    onConfirm([]);
+    onOpenChange(false);
+    setSelectedStaff(new Set());
+    setCustomEmails([]);
+    setCustomEmailInput("");
+  };
+
   const handleClose = () => {
     onOpenChange(false);
     setSelectedStaff(new Set());
