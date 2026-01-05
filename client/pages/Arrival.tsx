@@ -335,7 +335,7 @@ export default function Arrival() {
     initializeSchedule();
   }, [selectedTour?.id]);
 
-  const fetchTours = async (dateFrom = "", dateTo = "") => {
+  const fetchTours = async (dateFrom = "", dateTo = "", retries = 3) => {
     try {
       setLoading(true);
       setError("");
@@ -346,20 +346,36 @@ export default function Arrival() {
       const url = `/api/tours${params.toString() ? `?${params.toString()}` : ""}`;
       console.log(`[Arrival] Fetching tours from: ${url}`);
 
-      const response = await fetch(url);
+      let lastError: Error | null = null;
 
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error(`[Arrival] Server error ${response.status}:`, errorData);
-        throw new Error(`Server error: ${response.status}`);
+      for (let attempt = 0; attempt < retries; attempt++) {
+        try {
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            const errorData = await response.text();
+            console.error(`[Arrival] Server error ${response.status}:`, errorData);
+            throw new Error(`Server error: ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log(`[Arrival] Fetched ${Array.isArray(data) ? data.length : 0} tours`);
+          setTours(Array.isArray(data) ? data : []);
+          return; // Success
+        } catch (err) {
+          lastError = err instanceof Error ? err : new Error(String(err));
+          console.warn(`[Arrival] Fetch attempt ${attempt + 1}/${retries} failed:`, lastError);
+
+          if (attempt < retries - 1) {
+            await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)));
+          }
+        }
       }
 
-      const data = await response.json();
-      console.log(`[Arrival] Fetched ${Array.isArray(data) ? data.length : 0} tours`);
-      setTours(Array.isArray(data) ? data : []);
+      throw lastError;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to load tours";
-      console.error(`[Arrival] Fetch error:`, err);
+      console.error(`[Arrival] Fetch error after retries:`, err);
       setError(`Unable to connect to server. ${errorMessage}`);
     } finally {
       setLoading(false);
