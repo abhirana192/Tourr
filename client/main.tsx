@@ -76,19 +76,19 @@ const App = () => (
 
 const container = document.getElementById("root");
 
-if (container) {
-  // Use window to persist root across HMR reloads
+if (container && !container.hasChildNodes()) {
+  // Only create root if container is empty
+  const root = createRoot(container);
+  root.render(<App />);
+} else if (container?.hasChildNodes()) {
+  // Container already has content, find and update the existing root
   const w = window as any;
-  if (!w.__appRoot) {
-    w.__appRoot = createRoot(container);
-  } else {
-    // Root already exists, just use it
-    try {
-      w.__appRoot.render(<App />);
-    } catch (e) {
-      // If render fails, create a new root
-      w.__appRoot = createRoot(container);
-      w.__appRoot.render(<App />);
-    }
+  if (w.__appRoot) {
+    w.__appRoot.render(<App />);
   }
+}
+
+// Store root reference for HMR
+if (container) {
+  (window as any).__appRoot = createRoot(container);
 }
