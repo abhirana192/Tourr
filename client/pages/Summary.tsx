@@ -44,6 +44,24 @@ interface ActivitySchedule {
   };
 }
 
+interface GuestActivityRow {
+  guestName: string;
+  language: string;
+  pax: number;
+  tourName: string;
+  invoiceNumber: string;
+  agent: string;
+  arrival: string;
+  arrivalTime: string;
+  arrivalFlight: string;
+  departure: string;
+  departureTime: string;
+  departureFlight: string;
+  accommodation: string;
+  activityTiming?: string;
+  dayNumber?: number;
+}
+
 const ACTIVITY_TIMINGS: { [key: string]: Activity } = {
   city_tour: {
     name: "City Tour",
@@ -75,25 +93,37 @@ const ACTIVITY_TIMINGS: { [key: string]: Activity } = {
   },
 };
 
-interface ActivityDetail {
+interface ActivityData {
   activityKey: string;
   activityName: string;
-  timings: string[];
-  totalGuests: number;
-  tours: Array<{
-    tourId: string;
-    tourName: string;
-    invoiceNumber: string;
-    pax: number;
-    occurrences: number;
-  }>;
+  guests: GuestActivityRow[];
 }
 
 export default function Summary() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [activities, setActivities] = useState<ActivityDetail[]>([]);
-  const [expandedActivities, setExpandedActivities] = useState<Set<string>>(new Set());
+  const [activitiesData, setActivitiesData] = useState<ActivityData[]>([]);
+
+  const extractDateAndTime = (value: any) => {
+    if (!value) return { date: "", time: "", flight: "" };
+    const str = String(value).trim();
+
+    if (str.includes("|")) {
+      const parts = str.split("|");
+      const date = parts[0]?.trim() || "";
+      const time = parts[1]?.trim() || "";
+      const flight = parts[2]?.trim() || "";
+      return { date, time, flight };
+    }
+
+    if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+      const date = str.substring(0, 10);
+      const time = str.substring(11).trim() || "";
+      return { date, time, flight: "" };
+    }
+
+    return { date: str, time: "", flight: "" };
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -101,42 +131,30 @@ export default function Summary() {
         setLoading(true);
         setError("");
 
-        // Fetch all tours
         const toursResponse = await fetch("/api/tours");
         if (!toursResponse.ok) {
           throw new Error("Failed to fetch tours");
         }
         const tours: Tour[] = await toursResponse.json();
 
-        // Aggregate activities
-        const activityMap = new Map<string, ActivityDetail>();
+        const activityMap = new Map<string, GuestActivityRow[]>();
 
-        // Initialize activity map with all activity types
-        for (const [key, data] of Object.entries(ACTIVITY_TIMINGS)) {
-          activityMap.set(key, {
-            activityKey: key,
-            activityName: data.name,
-            timings: data.timings,
-            totalGuests: 0,
-            tours: [],
-          });
-        }
-
-        // Process each tour
         for (const tour of tours) {
           try {
-            // Fetch schedule for this tour
             const scheduleResponse = await fetch(`/api/tours/${tour.id}/schedule`);
             if (!scheduleResponse.ok) continue;
 
             const scheduleData = await scheduleResponse.json();
             const schedule: ActivitySchedule = scheduleData.schedule || {};
 
-            // Count activity occurrences for this tour
-            const activityCounts = new Map<string, number>();
+            const arrivalData = extractDateAndTime(tour.arrival);
+            const departureData = extractDateAndTime(tour.departure);
 
-            // Iterate through all days in schedule
-            for (const dayData of Object.values(schedule) as any[]) {
+            // Track which activities are present in this tour
+            const activitiesInTour = new Set<string>();
+
+            for (const [dayIndexStr, dayData] of Object.entries(schedule)) {
+              const dayIndex = parseInt(dayIndexStr);
               const allActivities = [
                 ...(dayData.plannedActivities || []),
                 ...(dayData.arrivalActivities || []),
@@ -144,33 +162,35 @@ export default function Summary() {
               ];
 
               for (const activity of allActivities) {
-                // Find the activity key by matching the name
                 for (const [key, timingData] of Object.entries(ACTIVITY_TIMINGS)) {
                   if (timingData.name === activity.name) {
-                    const count = activityCounts.get(key) || 0;
-                    activityCounts.set(key, count + 1);
+                    activitiesInTour.add(key);
+
+                    if (!activityMap.has(key)) {
+                      activityMap.set(key, []);
+                    }
+
+                    const guestRow: GuestActivityRow = {
+                      guestName: tour.name,
+                      language: tour.language,
+                      pax: tour.pax,
+                      tourName: tour.name,
+                      invoiceNumber: tour.invoice,
+                      agent: tour.agent,
+                      arrival: arrivalData.date,
+                      arrivalTime: arrivalData.time,
+                      arrivalFlight: arrivalData.flight,
+                      departure: departureData.date,
+                      departureTime: departureData.time,
+                      departureFlight: departureData.flight,
+                      accommodation: tour.accommodation,
+                      activityTiming: activity.timings?.[0] || "",
+                      dayNumber: dayIndex,
+                    };
+
+                    activityMap.get(key)!.push(guestRow);
                     break;
                   }
-                }
-              }
-            }
-
-            // Add tour data to activities
-            for (const [activityKey, count] of activityCounts.entries()) {
-              const detail = activityMap.get(activityKey);
-              if (detail) {
-                detail.totalGuests += tour.pax;
-                const existingTour = detail.tours.find((t) => t.tourId === tour.id);
-                if (existingTour) {
-                  existingTour.occurrences += count;
-                } else {
-                  detail.tours.push({
-                    tourId: tour.id,
-                    tourName: tour.name,
-                    invoiceNumber: tour.invoice,
-                    pax: tour.pax,
-                    occurrences: count,
-                  });
                 }
               }
             }
@@ -179,12 +199,20 @@ export default function Summary() {
           }
         }
 
-        // Filter to only activities that have been scheduled, sort by total guests
-        const activeActivities = Array.from(activityMap.values())
-          .filter((a) => a.tours.length > 0)
-          .sort((a, b) => b.totalGuests - a.totalGuests);
+        const result: ActivityData[] = [];
+        for (const [key, timingData] of Object.entries(ACTIVITY_TIMINGS)) {
+          const guests = activityMap.get(key) || [];
+          if (guests.length > 0) {
+            result.push({
+              activityKey: key,
+              activityName: timingData.name,
+              guests,
+            });
+          }
+        }
 
-        setActivities(activeActivities);
+        result.sort((a, b) => b.guests.length - a.guests.length);
+        setActivitiesData(result);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
         setError(errorMessage);
@@ -197,118 +225,104 @@ export default function Summary() {
     fetchData();
   }, []);
 
-  const toggleActivityExpand = (activityKey: string) => {
-    const newExpanded = new Set(expandedActivities);
-    if (newExpanded.has(activityKey)) {
-      newExpanded.delete(activityKey);
-    } else {
-      newExpanded.add(activityKey);
-    }
-    setExpandedActivities(newExpanded);
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <span className="ml-2 text-gray-600">Loading activity data...</span>
+      </div>
+    );
+  }
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col p-2 pt-6">
-      <div className="flex-1 flex flex-col max-w-6xl mx-auto w-full">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Activity Summary</h1>
-          <p className="text-gray-600 mt-1">Complete overview of all scheduled activities across all tours</p>
-        </div>
-
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg border border-red-200 p-6 max-w-md">
+          <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium text-red-900">Error loading data</p>
-              <p className="text-red-700 text-sm">{error}</p>
+              <p className="text-red-700 text-sm mt-1">{error}</p>
             </div>
           </div>
-        )}
+        </div>
+      </div>
+    );
+  }
 
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-            <span className="ml-2 text-gray-600">Loading activity data...</span>
-          </div>
-        ) : activities.length === 0 ? (
-          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-            <p className="text-gray-600">No activities have been scheduled yet.</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {activities.map((activity) => (
-              <div key={activity.activityKey} className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-                {/* Activity Header */}
-                <button
-                  onClick={() => toggleActivityExpand(activity.activityKey)}
-                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-center gap-4 flex-1 text-left">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900">{activity.activityName}</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {activity.tours.length} tour{activity.tours.length !== 1 ? "s" : ""} • {activity.totalGuests} total guest{activity.totalGuests !== 1 ? "s" : ""}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                      {activity.totalGuests} guests
-                    </div>
-                  </div>
-                  <div className={`ml-4 transition-transform ${expandedActivities.has(activity.activityKey) ? "rotate-180" : ""}`}>
-                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                    </svg>
-                  </div>
-                </button>
+  if (activitiesData.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+          <p className="text-gray-600">No activities have been scheduled yet.</p>
+        </div>
+      </div>
+    );
+  }
 
-                {/* Activity Details */}
-                {expandedActivities.has(activity.activityKey) && (
-                  <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
-                    {/* Timings */}
-                    <div className="mb-6">
-                      <h4 className="font-semibold text-gray-900 mb-3">Available Timings</h4>
-                      <div className="space-y-2">
-                        {activity.timings.map((timing, idx) => (
-                          <div key={idx} className="flex items-center gap-3 text-sm text-gray-700">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
-                            <span>{timing}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+  return (
+    <div className="min-h-screen bg-gray-50 p-4 pt-6">
+      <div className="max-w-full mx-auto">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">Activity Summary</h1>
+          <p className="text-gray-600 mt-1">Guest details for all scheduled activities</p>
+        </div>
 
-                    {/* Tours breakdown */}
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Tours ({activity.tours.length})</h4>
-                      <div className="space-y-3">
-                        {activity.tours.map((tour) => (
-                          <div key={tour.tourId} className="bg-white rounded border border-gray-200 p-3">
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1">
-                                <p className="font-medium text-gray-900">{tour.tourName}</p>
-                                <p className="text-xs text-gray-600 mt-1">Invoice: {tour.invoiceNumber}</p>
-                                <p className="text-xs text-gray-600">Group ID / PAX: {tour.pax}</p>
-                              </div>
-                              <div className="text-right flex-shrink-0">
-                                <div className="text-2xl font-bold text-blue-600">{tour.pax}</div>
-                                <p className="text-xs text-gray-600">guests</p>
-                                <div className="mt-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                                  {tour.occurrences} occurrence{tour.occurrences !== 1 ? "s" : ""}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
+        <div className="space-y-8">
+          {activitiesData.map((activityData) => (
+            <div key={activityData.activityKey} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+              {/* Activity Header */}
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200 px-6 py-4">
+                <h2 className="text-xl font-bold text-blue-900">{activityData.activityName}</h2>
+                <p className="text-sm text-blue-700 mt-1">{activityData.guests.length} guest{activityData.guests.length !== 1 ? "s" : ""} scheduled</p>
               </div>
-            ))}
-          </div>
-        )}
+
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gray-100 border-b border-gray-200">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Name</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Language</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 border-r border-gray-200">Pax</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Tour</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Invoice</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Agent</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Hotel</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Date</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Time</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Flight</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Departure Date</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Departure Time</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Departure Flight</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Activity Timing</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activityData.guests.map((guest, idx) => (
+                      <tr key={idx} className={`border-b border-gray-200 hover:bg-blue-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+                        <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{guest.guestName}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.language}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900 text-center border-r border-gray-200 font-medium">{guest.pax}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.tourName}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.invoiceNumber}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.agent}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.accommodation}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrival}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrivalTime}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrivalFlight}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.departure}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.departureTime}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.departureFlight}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{guest.activityTiming}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
