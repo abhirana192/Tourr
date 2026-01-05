@@ -922,15 +922,19 @@ export default function Arrival() {
             .welcome-header {
               background: #ffffff;
               color: #333333;
-              padding: 50px;
+              padding: 50px 50px 50px 200px;
               margin-bottom: 20px;
               margin-top: 40px;
               border-radius: 0;
               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
               position: relative;
-              overflow: hidden;
+              overflow: visible;
               border: 1px solid #e0e0e0;
               border-left: 6px solid #2da578;
+              min-height: 150px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
