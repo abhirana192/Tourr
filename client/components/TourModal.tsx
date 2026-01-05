@@ -92,6 +92,81 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
   const [departureFlight, setDepartureFlight] = useState<string>("");
   const [activityNotes, setActivityNotes] = useState<{ [key: string]: string }>({});
 
+  const activityNameToKey: { [key: string]: string } = {
+    "Aurora Viewing": "nlt",
+    "City Tour": "city_tour",
+    "Cameron Fall Hiking": "hiking",
+    "Ice Fishing": "fishing",
+    "Dog Sledging": "dog_sledging",
+    "Snowmobile": "snowmobile_atv",
+    "Ice Lake Tour": "aurora_village",
+  };
+
+  const getDayLabel = (dayIndex: number): string => {
+    if (dayIndex === 0) return "Arrival";
+    if (dayIndex === 1) return "Day 1";
+    if (dayIndex === 2) return "Day 2";
+    if (dayIndex === 3) return "Day 3";
+    return `Day ${dayIndex}`;
+  };
+
+  const getActivityDetailsForModal = (activityKey: string): { details: string; notes: string } => {
+    if (!tour?.activity_schedule) {
+      return { details: "", notes: "" };
+    }
+
+    try {
+      const schedule = JSON.parse(tour.activity_schedule);
+      const activityName = Object.keys(activityNameToKey).find(
+        (name) => activityNameToKey[name] === activityKey
+      );
+
+      if (!activityName) return { details: "", notes: "" };
+
+      const dayDetails: string[] = [];
+      const allNotes: string[] = [];
+
+      for (const dayIndex in schedule) {
+        const dayNum = parseInt(dayIndex);
+        const dayData = schedule[dayNum];
+
+        if (!dayData) continue;
+
+        const allActivities = [
+          ...(dayData.plannedActivities || []),
+          ...(dayData.arrivalActivities || []),
+          ...(dayData.hotelActivities || []),
+        ];
+
+        const matchingActivities = allActivities.filter(
+          (activity: any) => activity.name === activityName
+        );
+
+        if (matchingActivities.length > 0) {
+          const dayLabel = getDayLabel(dayNum);
+          for (const activity of matchingActivities) {
+            if (activity.timings && activity.timings.length > 0) {
+              const timing = activity.timings[0];
+              dayDetails.push(`${dayLabel}: ${timing}`);
+            } else {
+              dayDetails.push(dayLabel);
+            }
+            if (activity.notes) {
+              allNotes.push(activity.notes);
+            }
+          }
+        }
+      }
+
+      return {
+        details: dayDetails.length > 0 ? dayDetails.join(", ") : "",
+        notes: allNotes.length > 0 ? allNotes.join(" | ") : "",
+      };
+    } catch (error) {
+      return { details: "", notes: "" };
+    }
+  };
+
   const parseArrivalDeparture = (str: string) => {
     if (!str) return { date: "", time: "", flight: "" };
     const parts = str.split(" | ");
