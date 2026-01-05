@@ -1129,6 +1129,48 @@ export default function Arrival() {
             .company-name {
               display: none;
             }
+            .qr-codes-section {
+              position: relative;
+              top: auto;
+              right: auto;
+              display: flex;
+              flex-direction: row;
+              align-items: flex-start;
+              justify-content: flex-end;
+              gap: 15px;
+              z-index: 10;
+              background: transparent;
+              padding: 0;
+              border-radius: 0;
+              box-shadow: none;
+              border: none;
+              margin-bottom: 0;
+              margin-top: 0;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .qr-code-image {
+              width: 100px;
+              height: 100px;
+              object-fit: contain;
+              flex-shrink: 0;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .logo-and-qr-wrapper {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              gap: 20px;
+              margin-bottom: 0;
+              margin-top: 0;
+              width: 100%;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
+            }
           </style>
         </head>
         <body>
