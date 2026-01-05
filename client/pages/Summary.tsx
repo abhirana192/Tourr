@@ -267,8 +267,8 @@ export default function Summary() {
 
         const result: ActivityData[] = [];
         for (const [key, timingData] of Object.entries(ACTIVITY_TIMINGS)) {
-          const guestMap = activityMap.get(key) || new Map();
-          const guests = Array.from(guestMap.values());
+          const guestMap = activityMap.get(key);
+          const guests: GuestActivityRow[] = guestMap ? Array.from(guestMap.values()) : [];
           result.push({
             activityKey: key,
             activityName: timingData.name,
