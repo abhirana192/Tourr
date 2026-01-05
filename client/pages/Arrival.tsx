@@ -1165,7 +1165,7 @@ export default function Arrival() {
               justify-content: space-between;
               align-items: flex-start;
               gap: 20px;
-              margin-bottom: 0;
+              margin-bottom: 5px;
               margin-top: 0;
               width: 100%;
               flex-wrap: nowrap;
