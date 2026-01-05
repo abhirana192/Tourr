@@ -74,27 +74,18 @@ const App = () => (
   </QueryClientProvider>
 );
 
-declare global {
-  interface Window {
-    __viteReactRoot?: any;
-  }
-}
-
 const container = document.getElementById("root");
 
 if (container) {
-  let root = window.__viteReactRoot;
+  // Check if root already exists on the container
+  const existingRoot = (container as any)._reactRootContainer;
 
-  if (!root) {
-    root = createRoot(container);
-    window.__viteReactRoot = root;
+  if (existingRoot) {
+    // Root already exists, just update it
+    existingRoot._internalRoot.render(<App />);
+  } else {
+    // Create new root
+    const root = createRoot(container);
+    root.render(<App />);
   }
-
-  root.render(<App />);
-}
-
-if (import.meta.hot) {
-  import.meta.hot.dispose(() => {
-    // Don't unmount on HMR, just let the root update
-  });
 }
