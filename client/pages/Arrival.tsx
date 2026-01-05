@@ -1117,8 +1117,8 @@ export default function Arrival() {
               print-color-adjust: exact;
             }
             .logo-image {
-              width: 310px;
-              height: 310px;
+              width: 100px;
+              height: 100px;
               object-fit: contain;
               flex-shrink: 0;
               margin-bottom: 0;
