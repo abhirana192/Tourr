@@ -202,7 +202,7 @@ export default function Summary() {
         }
         const tours: Tour[] = await toursResponse.json();
 
-        const activityMap = new Map<string, GuestActivityRow[]>();
+        const activityMap = new Map<string, Map<string, GuestActivityRow>>();
 
         for (const tour of tours) {
           try {
@@ -215,7 +215,7 @@ export default function Summary() {
             const arrivalData = extractDateAndTime(tour.arrival);
             const departureData = extractDateAndTime(tour.departure);
 
-            // Track which activities are present in this tour
+            // Track which activities are present in this tour (to deduplicate guests)
             const activitiesInTour = new Set<string>();
 
             for (const [dayIndexStr, dayData] of Object.entries(schedule)) {
@@ -232,7 +232,7 @@ export default function Summary() {
                     activitiesInTour.add(key);
 
                     if (!activityMap.has(key)) {
-                      activityMap.set(key, []);
+                      activityMap.set(key, new Map());
                     }
 
                     const guestRow: GuestActivityRow = {
@@ -253,7 +253,8 @@ export default function Summary() {
                       dayNumber: dayIndex,
                     };
 
-                    activityMap.get(key)!.push(guestRow);
+                    // Use tour name as key to deduplicate - only one entry per guest per activity
+                    activityMap.get(key)!.set(tour.name, guestRow);
                     break;
                   }
                 }
