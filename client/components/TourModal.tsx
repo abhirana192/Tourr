@@ -90,6 +90,7 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
   const [departureDate, setDepartureDate] = useState<string>("");
   const [departureTime, setDepartureTime] = useState<string>("");
   const [departureFlight, setDepartureFlight] = useState<string>("");
+  const [activityNotes, setActivityNotes] = useState<{ [key: string]: string }>({});
 
   const parseArrivalDeparture = (str: string) => {
     if (!str) return { date: "", time: "", flight: "" };
