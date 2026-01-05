@@ -1419,7 +1419,7 @@ export default function Arrival() {
                             ))}
                           </div>
                         )}
-                        {idx > 0 && idx < dayItinerary.length - 1 && isEditMode && (
+                        {idx > 0 && isEditMode && (
                           <button
                             onClick={() => handleAddActivity(idx, "arrival")}
                             className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-green-50 text-gray-600 font-medium"
@@ -1461,7 +1461,7 @@ export default function Arrival() {
                                 )}
                               </div>
                             ))}
-                            {idx > 0 && idx < dayItinerary.length - 1 && isEditMode && (
+                            {idx > 0 && isEditMode && (
                               <button
                                 onClick={() => handleAddActivity(idx, "planned")}
                                 className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-gray-100 text-gray-600"
@@ -1471,7 +1471,7 @@ export default function Arrival() {
                             )}
                           </div>
                         )}
-                        {idx > 0 && idx < dayItinerary.length - 1 && (day.plannedActivities?.length ?? 0) === 0 && isEditMode && (
+                        {idx > 0 && (day.plannedActivities?.length ?? 0) === 0 && isEditMode && (
                           <button
                             onClick={() => handleAddActivity(idx, "planned")}
                             className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-gray-100 text-gray-600"
