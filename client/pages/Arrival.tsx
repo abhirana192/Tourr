@@ -661,6 +661,62 @@ export default function Arrival() {
     toast.success("Changes saved and schedule locked");
   };
 
+  const collectNotesFromSchedule = (): string[] => {
+    if (!selectedTour || !schedules[selectedTour.id]) return [];
+
+    const notes: string[] = [];
+    const schedule = schedules[selectedTour.id];
+
+    Object.values(schedule).forEach((dayData: any) => {
+      // Collect day notes
+      if (dayData.note && dayData.note.trim()) {
+        notes.push(dayData.note);
+      }
+
+      // Collect activity notes from all columns
+      [...(dayData.plannedActivities || []), ...(dayData.arrivalActivities || []), ...(dayData.hotelActivities || [])].forEach(
+        (activity: any) => {
+          if (activity.notes && activity.notes.trim()) {
+            notes.push(activity.notes);
+          }
+        }
+      );
+    });
+
+    return [...new Set(notes)]; // Remove duplicates
+  };
+
+  const translateNotes = async (notes: string[], targetLanguage: "zh" | "ja"): Promise<{ [key: string]: string }> => {
+    const translations: { [key: string]: string } = {};
+
+    if (notes.length === 0) return translations;
+
+    try {
+      for (const note of notes) {
+        try {
+          const response = await fetch("/api/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: note, targetLanguage }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            translations[note] = data.translated || note;
+          } else {
+            translations[note] = note;
+          }
+        } catch {
+          translations[note] = note;
+        }
+      }
+    } catch (error) {
+      console.error("Error translating notes:", error);
+    }
+
+    return translations;
+  };
+
   const handlePrint = () => {
     setShowPrintLanguageDialog(true);
   };
