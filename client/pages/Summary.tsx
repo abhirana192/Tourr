@@ -874,8 +874,13 @@ export default function Summary() {
                     <p className="text-sm text-purple-700 mt-1">{dateItem.activities.length} activity{dateItem.activities.length !== 1 ? "ies" : ""} scheduled</p>
                   </div>
 
-                  {/* Date Activities Table */}
-                  <div className="overflow-x-auto">
+                  {/* Date Activities Table or Empty Message */}
+                  {dateItem.activities.length === 0 ? (
+                    <div className="p-8 text-center text-gray-500">
+                      <p>No activities scheduled for this date</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
                       <thead>
                         <tr className="bg-gray-100 border-b border-gray-200">
@@ -987,6 +992,7 @@ export default function Summary() {
                       </tbody>
                     </table>
                   </div>
+                  )}
                 </div>
               ))}
           </div>
