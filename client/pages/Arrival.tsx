@@ -523,10 +523,17 @@ export default function Arrival() {
   };
 
   const handleSelectActivity = (activityKey: string) => {
-    if (!selectedTour || selectedDayForActivity === null || !selectedColumnForActivity) return;
+    console.log("Selected activity:", activityKey, "Day:", selectedDayForActivity, "Column:", selectedColumnForActivity);
+    if (!selectedTour || selectedDayForActivity === null || !selectedColumnForActivity) {
+      console.log("Missing required data - Tour:", !!selectedTour, "Day:", selectedDayForActivity, "Column:", selectedColumnForActivity);
+      return;
+    }
 
     const activityData = ACTIVITY_TIMINGS[activityKey];
-    if (!activityData) return;
+    if (!activityData) {
+      console.log("Activity not found:", activityKey);
+      return;
+    }
 
     const newActivity: Activity = {
       name: activityData.name,
