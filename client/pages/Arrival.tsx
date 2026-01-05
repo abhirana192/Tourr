@@ -832,11 +832,16 @@ export default function Arrival() {
         const allTextDivs = cell.querySelectorAll("div");
         allTextDivs.forEach((elem) => {
           const text = elem.textContent?.trim();
-          if (text && text.startsWith("Note:") && noteTranslations[text.replace("Note: ", "")]) {
-            const noteText = text.replace("Note: ", "");
-            const translated = noteTranslations[noteText];
-            if (translated) {
-              elem.textContent = `Note: ${translated}`;
+          if (text) {
+            // Handle "Note: ..." format
+            if (text.startsWith("Note: ")) {
+              const noteText = text.replace("Note: ", "");
+              if (noteTranslations[noteText]) {
+                elem.textContent = `Note: ${noteTranslations[noteText]}`;
+              }
+            } else if (noteTranslations[text]) {
+              // Handle direct note text (for day notes, etc.)
+              elem.textContent = noteTranslations[text];
             }
           }
         });
