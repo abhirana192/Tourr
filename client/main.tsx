@@ -76,25 +76,25 @@ const App = () => (
 
 declare global {
   interface Window {
-    __reactRoot?: any;
+    __viteReactRoot?: any;
   }
 }
 
-function renderApp() {
-  const container = document.getElementById("root");
-  if (!container) return;
+const container = document.getElementById("root");
 
-  if (!window.__reactRoot) {
-    window.__reactRoot = createRoot(container);
+if (container) {
+  let root = window.__viteReactRoot;
+
+  if (!root) {
+    root = createRoot(container);
+    window.__viteReactRoot = root;
   }
-  window.__reactRoot.render(<App />);
+
+  root.render(<App />);
 }
 
-renderApp();
-
-// Handle HMR updates
 if (import.meta.hot) {
-  import.meta.hot.accept([], () => {
-    renderApp();
+  import.meta.hot.dispose(() => {
+    // Don't unmount on HMR, just let the root update
   });
 }
