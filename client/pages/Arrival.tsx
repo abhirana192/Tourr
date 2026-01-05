@@ -1117,8 +1117,10 @@ export default function Arrival() {
           </style>
         </head>
         <body>
-          <div class="logo-section">
-            <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F490934e205af421d8f25ac51d3ee565b?format=webp&width=800" alt="Jiguang Tour Logo" class="logo-image" />
+          <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 30px;">
+            <div class="logo-section">
+              <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F490934e205af421d8f25ac51d3ee565b?format=webp&width=800" alt="Jiguang Tour Logo" class="logo-image" />
+            </div>
           </div>
           <div class="welcome-header">
             <div class="header-content">
