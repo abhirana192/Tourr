@@ -960,16 +960,6 @@ export default function Arrival() {
               color-adjust: exact;
               print-color-adjust: exact;
             }
-            .welcome-header::before {
-              content: '';
-              position: absolute;
-              top: -50%;
-              right: -10%;
-              width: 400px;
-              height: 400px;
-              background: none;
-              border-radius: 50%;
-            }
             .header-content {
               position: relative;
               z-index: 1;
