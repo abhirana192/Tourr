@@ -214,8 +214,8 @@ export default function Arrival() {
       schedule[i] = { plannedActivities: [], arrivalActivities: [], hotelActivities: [], note: "" };
     }
 
-    // For middle days and last day (excluding only arrival day 0)
-    for (let i = 1; i < dayCount; i++) {
+    // For middle days (excluding arrival day 0 and departure day dayCount-1)
+    for (let i = 1; i < dayCount - 1; i++) {
       const activities: Activity[] = [];
 
       // Randomly select 1-2 activities for each day
