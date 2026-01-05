@@ -382,3 +382,40 @@ export const getTourSchedule: RequestHandler = (req, res) => {
     res.status(500).json({ error: "Failed to fetch schedule" });
   }
 };
+
+export const translateText: RequestHandler = async (req, res) => {
+  try {
+    const { text, targetLanguage } = req.body;
+
+    if (!text || !targetLanguage) {
+      res.status(400).json({ error: "Missing text or targetLanguage" });
+      return;
+    }
+
+    // Map language codes to MyMemory API codes
+    const languageMap: { [key: string]: string } = {
+      zh: "zh-CN",
+      ja: "ja",
+      en: "en",
+    };
+
+    const targetLang = languageMap[targetLanguage] || targetLanguage;
+
+    // Use MyMemory API (free, no authentication required)
+    const encodedText = encodeURIComponent(text);
+    const url = `https://api.mymemory.translated.net/get?q=${encodedText}&langpair=en|${targetLang}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.responseStatus === 200 && data.responseData.translatedText) {
+      res.json({ translated: data.responseData.translatedText });
+    } else {
+      // If translation fails, return original text
+      res.json({ translated: text });
+    }
+  } catch (error) {
+    console.error("Error translating text:", error);
+    res.json({ translated: req.body.text }); // Fallback to original text on error
+  }
+};
