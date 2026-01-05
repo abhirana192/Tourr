@@ -231,6 +231,12 @@ export async function sendNotificationEmail(
   customRecipients?: string[],
 ): Promise<EmailSendResult | null> {
   try {
+    // If customRecipients is an empty array, skip email entirely (user clicked "Skip Email")
+    if (Array.isArray(customRecipients) && customRecipients.length === 0) {
+      console.log("Email sending skipped by user");
+      return null;
+    }
+
     let recipientEmails: string[] = [];
 
     if (customRecipients && customRecipients.length > 0) {
