@@ -721,7 +721,7 @@ export default function Arrival() {
     setShowPrintLanguageDialog(true);
   };
 
-  const handlePrintWithLanguage = (language: LanguageOption) => {
+  const handlePrintWithLanguage = async (language: LanguageOption) => {
     const tableElement = document.querySelector("table");
     if (!tableElement) {
       toast.error("Table not found");
@@ -737,6 +737,16 @@ export default function Arrival() {
     if (!printWindow) {
       toast.error("Failed to open print window");
       return;
+    }
+
+    // Collect and translate notes if needed
+    let noteTranslations: { [key: string]: string } = {};
+    if (language !== "en") {
+      const targetLanguage = language === "en-zh" ? "zh" : "ja";
+      const notes = collectNotesFromSchedule();
+      if (notes.length > 0) {
+        noteTranslations = await translateNotes(notes, targetLanguage);
+      }
     }
 
     // Clone and clean up the table for printing
