@@ -74,16 +74,26 @@ const App = () => (
   </QueryClientProvider>
 );
 
-declare global {
-  interface Window {
-    __reactRoot?: any;
+let root: any = null;
+
+function mountApp() {
+  const container = document.getElementById("root");
+  if (!container) return;
+
+  if (!root) {
+    root = createRoot(container);
   }
+  root.render(<App />);
 }
 
-const container = document.getElementById("root");
-if (container) {
-  if (!window.__reactRoot) {
-    window.__reactRoot = createRoot(container);
-  }
-  window.__reactRoot.render(<App />);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", mountApp);
+} else {
+  mountApp();
+}
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    // Cleanup on HMR
+  });
 }
