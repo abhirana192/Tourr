@@ -276,6 +276,63 @@ export default function Summary() {
 
         result.sort((a, b) => b.guests.length - a.guests.length);
         setActivitiesData(result);
+
+        // Calculate activities by calendar date
+        const dateActivityMap = new Map<string, ActivityByDate["activities"]>();
+        for (const tour of tours) {
+          try {
+            const scheduleResponse = await fetch(`/api/tours/${tour.id}/schedule`);
+            if (!scheduleResponse.ok) continue;
+
+            const scheduleData = await scheduleResponse.json();
+            const schedule: ActivitySchedule = scheduleData.schedule || {};
+            const arrivalData = extractDateAndTime(tour.arrival);
+
+            if (!arrivalData.date) continue;
+
+            for (const [dayIndexStr, dayData] of Object.entries(schedule)) {
+              const dayIndex = parseInt(dayIndexStr);
+              const allActivities = [
+                ...(dayData.plannedActivities || []),
+                ...(dayData.arrivalActivities || []),
+                ...(dayData.hotelActivities || []),
+              ];
+
+              for (const activity of allActivities) {
+                // Calculate actual date: arrival date + day offset
+                const arrivalDate = new Date(arrivalData.date);
+                const activityDate = new Date(arrivalDate);
+                activityDate.setDate(activityDate.getDate() + dayIndex);
+                const activityDateStr = activityDate.toISOString().split("T")[0];
+
+                if (!dateActivityMap.has(activityDateStr)) {
+                  dateActivityMap.set(activityDateStr, []);
+                }
+
+                dateActivityMap.get(activityDateStr)!.push({
+                  guestName: tour.name,
+                  tourName: tour.name,
+                  invoiceNumber: tour.invoice,
+                  language: tour.language,
+                  pax: tour.pax,
+                  agent: tour.agent,
+                  accommodation: tour.accommodation,
+                  activityName: activity.name,
+                  activityTiming: activity.timings?.[0] || "",
+                  dayNumber: dayIndex,
+                });
+              }
+            }
+          } catch (err) {
+            console.warn(`Failed to fetch schedule for tour ${tour.id}:`, err);
+          }
+        }
+
+        const dateActivityList: ActivityByDate[] = Array.from(dateActivityMap.entries())
+          .map(([date, activities]) => ({ date, activities }))
+          .sort((a, b) => a.date.localeCompare(b.date));
+
+        setActivitiesByDate(dateActivityList);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
         setError(errorMessage);
