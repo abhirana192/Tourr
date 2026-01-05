@@ -93,6 +93,39 @@ const ACTIVITY_TIMINGS: { [key: string]: Activity } = {
   },
 };
 
+const ACTIVITY_TRANSLATIONS: { [key: string]: { zh: string; ja: string } } = {
+  "City Tour": { zh: "城市之旅", ja: "シティツアー" },
+  "Ice Fishing": { zh: "冰钓", ja: "アイスフィッシング" },
+  "Dog Sledging": { zh: "狗拉雪橇", ja: "ドッグスレッジング" },
+  "Snowmobile": { zh: "雪地摩托", ja: "スノーモービル" },
+  "Cameron Fall Hiking": { zh: "卡梅伦瀑布徒步", ja: "キャメロンフォールハイキング" },
+  "Ice Lake Tour": { zh: "冰湖之旅", ja: "アイスレイクツアー" },
+  "Aurora Viewing": { zh: "极光观赏", ja: "オーロラ鑑賞" },
+};
+
+const HEADER_TRANSLATIONS: { [key: string]: { zh: string; ja: string } } = {
+  "Basic Info": { zh: "基本信息", ja: "基本情報" },
+  "Arrival Date ARR.": { zh: "到达日期", ja: "到着日" },
+  "Planned Activities": { zh: "计划活动", ja: "予定されたアクティビティ" },
+  "Hotel Stay HOTEL": { zh: "酒店入住", ja: "ホテル滞在" },
+  "People pax": { zh: "人数", ja: "人数" },
+  "Your Itinerary": { zh: "您的行程", ja: "ご旅程" },
+  "WELCOME TO YOUR ARCTIC ADVENTURE": { zh: "欢迎来到北极冒险", ja: "北極の冒険へようこそ" },
+  "Free activity": { zh: "自由活动", ja: "自由活動" },
+};
+
+const getTranslatedText = (text: string, language: LanguageOption): string => {
+  if (language === "en") return text;
+
+  const translations = ACTIVITY_TRANSLATIONS[text] || HEADER_TRANSLATIONS[text];
+  if (!translations) return text;
+
+  if (language === "en-zh") return `${text} / ${translations.zh}`;
+  if (language === "en-ja") return `${text} / ${translations.ja}`;
+
+  return text;
+};
+
 export default function Arrival() {
   const [tours, setTours] = useState<Tour[]>([]);
   const [selectedTour, setSelectedTour] = useState<Tour | null>(null);
