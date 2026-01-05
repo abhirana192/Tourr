@@ -249,11 +249,103 @@ export default function Summary() {
   }
 
 
+  // Get all guests across all activities for Arrival/Departure tables
+  const allGuests = activitiesData.flatMap((activity) => activity.guests);
+  const uniqueGuestsByTour = Array.from(new Map(allGuests.map((g) => [g.tourName + g.invoiceNumber, g])).values());
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 pt-6">
       <div className="max-w-full mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Activity Summary</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Summary</h1>
+          <p className="text-gray-600 mt-1">Complete guest and activity overview</p>
+        </div>
+
+        {/* Arrivals Table */}
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-8">
+          <div className="bg-gradient-to-r from-green-50 to-green-100 border-b border-green-200 px-6 py-4">
+            <h2 className="text-xl font-bold text-green-900">Arrivals</h2>
+            <p className="text-sm text-green-700 mt-1">{uniqueGuestsByTour.length} guest{uniqueGuestsByTour.length !== 1 ? "s" : ""}</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-100 border-b border-gray-200">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Language</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 border-r border-gray-200">Pax</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Tour</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Invoice</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Agent</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Hotel</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Arrival</th>
+                </tr>
+              </thead>
+              <tbody>
+                {uniqueGuestsByTour.map((guest, idx) => {
+                  const arrivalInfo = [guest.arrival, guest.arrivalTime].filter(Boolean).join(" ") + (guest.arrivalFlight ? ` | ${guest.arrivalFlight}` : "");
+                  return (
+                    <tr key={idx} className={`border-b border-gray-200 hover:bg-green-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+                      <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{guest.guestName}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.language}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 text-center border-r border-gray-200 font-medium">{guest.pax}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.tourName}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.invoiceNumber}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.agent}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.accommodation}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{arrivalInfo}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Departures Table */}
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-8">
+          <div className="bg-gradient-to-r from-red-50 to-red-100 border-b border-red-200 px-6 py-4">
+            <h2 className="text-xl font-bold text-red-900">Departures</h2>
+            <p className="text-sm text-red-700 mt-1">{uniqueGuestsByTour.length} guest{uniqueGuestsByTour.length !== 1 ? "s" : ""}</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-100 border-b border-gray-200">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Language</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 border-r border-gray-200">Pax</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Tour</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Invoice</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Agent</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Hotel</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Departure</th>
+                </tr>
+              </thead>
+              <tbody>
+                {uniqueGuestsByTour.map((guest, idx) => {
+                  const departureInfo = [guest.departure, guest.departureTime].filter(Boolean).join(" ") + (guest.departureFlight ? ` | ${guest.departureFlight}` : "");
+                  return (
+                    <tr key={idx} className={`border-b border-gray-200 hover:bg-red-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+                      <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{guest.guestName}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.language}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 text-center border-r border-gray-200 font-medium">{guest.pax}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.tourName}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.invoiceNumber}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.agent}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.accommodation}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{departureInfo}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Activities Section Header */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">Activities by Type</h2>
           <p className="text-gray-600 mt-1">Guest details for all scheduled activities</p>
         </div>
 
