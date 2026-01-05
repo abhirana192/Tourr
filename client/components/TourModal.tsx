@@ -259,10 +259,10 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
     const combinedArrival = combineArrivalDeparture(arrivalDate, arrivalTime, arrivalFlight);
     const combinedDeparture = combineArrivalDeparture(departureDate, departureTime, departureFlight);
 
-    let updatedSchedule = null;
+    let updatedSchedule: string | null = null;
 
-    // Update schedule with notes if there are any
-    if (tour && tour.activity_schedule && Object.values(activityNotes).some(note => note.trim())) {
+    // Update schedule with notes if tour has an existing schedule
+    if (tour?.activity_schedule) {
       try {
         const schedule = JSON.parse(tour.activity_schedule);
 
@@ -272,7 +272,7 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
           keyToActivityName[key] = name;
         });
 
-        // Update notes in the schedule
+        // Update notes in the schedule for all activities
         for (const dayIndex in schedule) {
           const dayData = schedule[dayIndex];
           if (dayData) {
@@ -284,9 +284,15 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
 
             for (const activities of activityArrays) {
               for (const activity of activities) {
-                for (const [key, name] of Object.entries(keyToActivityName)) {
-                  if (activity.name === name && activityNotes[key]) {
-                    activity.notes = activityNotes[key];
+                // Find the key for this activity by name
+                for (const [name, key] of Object.entries(keyToActivityName)) {
+                  if (activity.name === name) {
+                    // Update or clear notes
+                    if (activityNotes[key]) {
+                      activity.notes = activityNotes[key];
+                    } else if (activity.notes) {
+                      delete activity.notes;
+                    }
                     break;
                   }
                 }
