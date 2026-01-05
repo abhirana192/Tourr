@@ -42,7 +42,78 @@ interface Tour {
   payment: string;
   reservation_number: string;
   remarks: string;
+  activity_schedule?: string;
 }
+
+const activityNameToKey: { [key: string]: string } = {
+  "City Tour": "city_tour",
+  "Ice Fishing": "fishing",
+  "Dog Sledging": "dog_sledging",
+  "Snowmobile": "snowmobile_atv",
+  "Cameron Fall Hiking": "hiking",
+  "Ice Lake Tour": "aurora_village",
+  "Aurora Viewing": "nlt",
+};
+
+const getDayLabel = (dayIndex: number): string => {
+  if (dayIndex === 0) return "Arrival";
+  if (dayIndex === 1) return "Day 1";
+  if (dayIndex === 2) return "Day 2";
+  if (dayIndex === 3) return "Day 3";
+  return `Day ${dayIndex}`;
+};
+
+const getActivityDetails = (tour: Tour, activityKey: string): string => {
+  if (!tour.activity_schedule) {
+    return tour[activityKey as keyof Tour] as string || "No";
+  }
+
+  try {
+    const schedule = JSON.parse(tour.activity_schedule);
+    const activityName = Object.keys(activityNameToKey).find(
+      (name) => activityNameToKey[name] === activityKey
+    );
+
+    if (!activityName) {
+      return tour[activityKey as keyof Tour] as string || "No";
+    }
+
+    const dayDetails: string[] = [];
+
+    for (const dayIndex in schedule) {
+      const dayNum = parseInt(dayIndex);
+      const dayData = schedule[dayNum];
+
+      if (!dayData) continue;
+
+      const allActivities = [
+        ...(dayData.plannedActivities || []),
+        ...(dayData.arrivalActivities || []),
+        ...(dayData.hotelActivities || []),
+      ];
+
+      const matchingActivities = allActivities.filter(
+        (activity: any) => activity.name === activityName
+      );
+
+      if (matchingActivities.length > 0) {
+        const dayLabel = getDayLabel(dayNum);
+        for (const activity of matchingActivities) {
+          if (activity.timings && activity.timings.length > 0) {
+            const timing = activity.timings[0];
+            dayDetails.push(`${dayLabel}: ${timing}`);
+          } else {
+            dayDetails.push(dayLabel);
+          }
+        }
+      }
+    }
+
+    return dayDetails.length > 0 ? dayDetails.join(", ") : "No";
+  } catch (error) {
+    return tour[activityKey as keyof Tour] as string || "No";
+  }
+};
 
 export default function Schedule() {
   const [tours, setTours] = useState<Tour[]>([]);
