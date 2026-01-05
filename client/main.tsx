@@ -74,26 +74,6 @@ const App = () => (
   </QueryClientProvider>
 );
 
-let root: any = null;
-
-function mountApp() {
-  const container = document.getElementById("root");
-  if (!container) return;
-
-  if (!root) {
-    root = createRoot(container);
-  }
-  root.render(<App />);
-}
-
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", mountApp);
-} else {
-  mountApp();
-}
-
-if (import.meta.hot) {
-  import.meta.hot.dispose(() => {
-    // Cleanup on HMR
-  });
-}
+const container = document.getElementById("root")!;
+const root = createRoot(container);
+root.render(<App />);
