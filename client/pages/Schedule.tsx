@@ -63,9 +63,9 @@ const getDayLabel = (dayIndex: number): string => {
   return `Day ${dayIndex}`;
 };
 
-const getActivityDetails = (tour: Tour, activityKey: string): string => {
+const getActivityDetails = (tour: Tour, activityKey: string): { text: string; notes?: string } => {
   if (!tour.activity_schedule) {
-    return tour[activityKey as keyof Tour] as string || "No";
+    return { text: tour[activityKey as keyof Tour] as string || "No" };
   }
 
   try {
@@ -75,10 +75,11 @@ const getActivityDetails = (tour: Tour, activityKey: string): string => {
     );
 
     if (!activityName) {
-      return tour[activityKey as keyof Tour] as string || "No";
+      return { text: tour[activityKey as keyof Tour] as string || "No" };
     }
 
     const dayDetails: string[] = [];
+    const allNotes: string[] = [];
 
     for (const dayIndex in schedule) {
       const dayNum = parseInt(dayIndex);
@@ -105,13 +106,19 @@ const getActivityDetails = (tour: Tour, activityKey: string): string => {
           } else {
             dayDetails.push(dayLabel);
           }
+          if (activity.notes) {
+            allNotes.push(activity.notes);
+          }
         }
       }
     }
 
-    return dayDetails.length > 0 ? dayDetails.join(", ") : "No";
+    return {
+      text: dayDetails.length > 0 ? dayDetails.join(", ") : "No",
+      notes: allNotes.length > 0 ? allNotes.join(" | ") : undefined,
+    };
   } catch (error) {
-    return tour[activityKey as keyof Tour] as string || "No";
+    return { text: tour[activityKey as keyof Tour] as string || "No" };
   }
 };
 
