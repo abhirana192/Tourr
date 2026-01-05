@@ -74,13 +74,17 @@ const App = () => (
   </QueryClientProvider>
 );
 
-const container = document.getElementById("root")!;
-
-// Only create root once - reuse existing root on HMR
-let rootInstance = (container as any).__reactRoot;
-if (!rootInstance) {
-  rootInstance = createRoot(container);
-  (container as any).__reactRoot = rootInstance;
+declare global {
+  interface Window {
+    __reactRootInstance?: any;
+  }
 }
 
-rootInstance.render(<App />);
+const container = document.getElementById("root")!;
+
+// Reuse root across HMR updates
+if (!window.__reactRootInstance) {
+  window.__reactRootInstance = createRoot(container);
+}
+
+window.__reactRootInstance.render(<App />);
