@@ -394,7 +394,7 @@ export default function Summary() {
 
   const filteredActivities = activitiesData.map((activity) => ({
     ...activity,
-    guests: activity.guests.filter((guest) => {
+    guests: (activity.guests || []).filter((guest) => {
       if (!guest.arrival) return false;
       return guest.arrival >= filterFromDate && guest.arrival <= filterToDate;
     }),
