@@ -1081,6 +1081,33 @@ export default function Arrival() {
               color-adjust: exact;
               print-color-adjust: exact;
             }
+            .logo-section {
+              position: absolute;
+              top: 10px;
+              left: 15px;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              z-index: 10;
+            }
+            .logo-image {
+              width: 50px;
+              height: 50px;
+              object-fit: contain;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .company-name {
+              font-size: 14px;
+              font-weight: 700;
+              color: #333;
+              margin: 0;
+              padding: 0;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
+            }
           </style>
         </head>
         <body>
