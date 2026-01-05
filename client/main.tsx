@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import Schedule from "./pages/Schedule";
 import MonthlyPlan from "./pages/MonthlyPlan";
 import Arrival from "./pages/Arrival";
+import Summary from "./pages/Summary";
 import StaffManagement from "./pages/StaffManagement";
 import NotFound from "./pages/NotFound";
 
