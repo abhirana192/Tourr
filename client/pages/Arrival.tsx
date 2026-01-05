@@ -1089,11 +1089,23 @@ export default function Arrival() {
                                 <div className="flex-1">
                                   <div className="font-semibold text-gray-900">{activity.name}</div>
                                   <div className="text-xs text-gray-600">{activity.timings[0]}</div>
+                                  {isEditMode && (
+                                    <input
+                                      type="text"
+                                      placeholder="Add notes (optional)"
+                                      value={activity.notes || ""}
+                                      onChange={(e) => handleActivityNoteChange(idx, actIdx, e.target.value, "planned")}
+                                      className="mt-2 w-full text-xs p-1 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                  )}
+                                  {!isEditMode && activity.notes && (
+                                    <div className="text-xs text-gray-700 mt-1 italic">Note: {activity.notes}</div>
+                                  )}
                                 </div>
                                 {isEditMode && (
                                   <button
                                     onClick={() => handleActivityChange(idx, actIdx, null, "planned")}
-                                    className="text-red-500 hover:text-red-700 font-bold text-sm"
+                                    className="text-red-500 hover:text-red-700 font-bold text-sm flex-shrink-0"
                                   >
                                     ✕
                                   </button>
