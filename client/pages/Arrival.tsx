@@ -428,12 +428,16 @@ export default function Arrival() {
         });
       } else if (i === daysDiff - 1) {
         // Departure Day
+        const plannedActivities = daySchedule.plannedActivities || [];
+        const arrivalActivities = daySchedule.arrivalActivities || [];
+        const hotelActivities = daySchedule.hotelActivities || [];
+
         itinerary.push({
           day: dayLabels[i],
           arrivalInfo: "Shuttle service is scheduled 2 hours before the departure flight. Please wait in the lobby of your accommodation.",
-          plannedActivities: [],
-          arrivalActivities: [],
-          hotelActivities: [],
+          plannedActivities,
+          arrivalActivities,
+          hotelActivities,
           hotelInfo: `${departure.date ? departure.date : "-"} ${departure.time ? departure.time : ""}${departure.flight ? ` ${departure.flight}` : ""}\n(Cold-weather gear will be collected)`,
           paymentInfo: "-",
           note: daySchedule.note || "",
