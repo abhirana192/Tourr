@@ -991,7 +991,7 @@ export default function Arrival() {
           <div class="welcome-header">
             <div class="header-content">
               <div class="welcome-text">${welcomeText}</div>
-              <div class="guest-title">${selectedTour.name.replace(/\s*\(\d+\)\s*$/, '')}</div>
+              <div class="guest-title">${guestName}</div>
               <div class="guest-info">
                 <div class="info-item">
                   <div class="info-label">Invoice</div>
@@ -1017,7 +1017,7 @@ export default function Arrival() {
             ${tableClone.outerHTML}
           </div>
           <div class="footer">
-            Welcome to the Arctic! We look forward to making your stay unforgettable with authentic experiences and warm hospitality.
+            ${footerText}
           </div>
         </body>
       </html>
