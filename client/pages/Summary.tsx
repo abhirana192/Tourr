@@ -248,15 +248,6 @@ export default function Summary() {
     );
   }
 
-  if (activitiesData.length === 0) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-          <p className="text-gray-600">No activities have been scheduled yet.</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 pt-6">
