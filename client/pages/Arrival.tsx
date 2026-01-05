@@ -144,7 +144,12 @@ const MESSAGE_TRANSLATIONS: { [key: string]: { zh: string; ja: string } } = {
 const getTranslatedText = (text: string, language: LanguageOption): string => {
   if (language === "en") return text;
 
-  const translations = ACTIVITY_TRANSLATIONS[text] || HEADER_TRANSLATIONS[text];
+  const translations =
+    ACTIVITY_TRANSLATIONS[text] ||
+    HEADER_TRANSLATIONS[text] ||
+    DAY_TRANSLATIONS[text] ||
+    MESSAGE_TRANSLATIONS[text];
+
   if (!translations) return text;
 
   if (language === "en-zh") return `${text} / ${translations.zh}`;
