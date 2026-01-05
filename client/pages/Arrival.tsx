@@ -1137,6 +1137,7 @@ export default function Arrival() {
           </div>
           <div class="welcome-header">
             <div class="header-content" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+              <div class="welcome-text">${welcomeText}</div>
               <div class="guest-title">${guestName}</div>
               <div class="guest-info">
                 <div class="info-item">
