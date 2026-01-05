@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, Edit2, Save, X } from "lucide-react";
 
 interface Tour {
   id: string;
@@ -42,6 +42,14 @@ interface ActivitySchedule {
     hotelActivities: Activity[];
     note: string;
   };
+}
+
+interface Staff {
+  id: string;
+  email: string;
+  name: string;
+  role: "admin" | "staff";
+  created_at: string;
 }
 
 interface GuestActivityRow {
@@ -97,6 +105,13 @@ interface ActivityData {
   activityKey: string;
   activityName: string;
   guests: GuestActivityRow[];
+}
+
+interface ActivityAssignment {
+  activityKey: string;
+  guestIndex: number;
+  van: string;
+  employee: string;
 }
 
 export default function Summary() {
