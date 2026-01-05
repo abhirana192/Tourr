@@ -427,7 +427,7 @@ export default function Summary() {
         </div>
 
         <div className="space-y-8">
-          {activitiesData.map((activityData) => (
+          {filteredActivities.map((activityData) => (
             <div key={activityData.activityKey} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
               {/* Activity Header */}
               <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200 px-6 py-4">
