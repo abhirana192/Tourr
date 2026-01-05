@@ -1184,14 +1184,14 @@ export default function Arrival() {
             .logo-and-qr-wrapper {
               display: flex;
               justify-content: space-between;
-              align-items: flex-start;
-              gap: 20px;
+              align-items: center;
+              gap: 40px;
               margin-bottom: 0;
               margin-top: 0;
               width: 100%;
               flex-wrap: nowrap;
-              padding-bottom: 15px;
-              border-bottom: 1px solid #e0e0e0;
+              padding: 0;
+              border: none;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
