@@ -1146,7 +1146,7 @@ export default function Arrival() {
               box-shadow: none;
               border: none;
               margin-bottom: 0;
-              margin-top: 110px;
+              margin-top: 115px;
               flex-wrap: nowrap;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
