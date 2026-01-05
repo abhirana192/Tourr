@@ -1097,8 +1097,8 @@ export default function Arrival() {
             }
             .logo-section {
               position: absolute;
-              top: 20px;
-              left: 20px;
+              top: 0;
+              left: 0;
               display: flex;
               flex-direction: column;
               align-items: flex-start;
@@ -1106,7 +1106,7 @@ export default function Arrival() {
               gap: 0;
               z-index: 10;
               background: transparent;
-              padding: 0;
+              padding: 20px;
               border-radius: 0;
               box-shadow: none;
               border: none;
