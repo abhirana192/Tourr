@@ -456,18 +456,29 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               />
             </div>
 
+            {/* ACTIVITIES INFO */}
+            <div className="md:col-span-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm font-semibold text-blue-900 mb-2">Activity Details</p>
+              <p className="text-xs text-blue-800">
+                To view and edit detailed activity information (day, time, and notes), please go to the <strong>Guest Arrival Information</strong> page and select this guest.
+              </p>
+            </div>
+
             {/* NLT */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                NLT
+                Aurora Viewing
               </label>
-              <Input
-                type="text"
+              <select
                 name="nlt"
                 value={formData.nlt}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
+              >
+                <option value="">-- Not Assigned --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
             </div>
 
             {/* CITY TOUR */}
@@ -475,41 +486,50 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 City Tour
               </label>
-              <Input
-                type="text"
+              <select
                 name="city_tour"
                 value={formData.city_tour}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
+              >
+                <option value="">-- Not Assigned --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
             </div>
 
             {/* HIKING */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Hiking
+                Cameron Fall Hiking
               </label>
-              <Input
-                type="text"
+              <select
                 name="hiking"
                 value={formData.hiking}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
+              >
+                <option value="">-- Not Assigned --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
             </div>
 
             {/* FISHING */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Fishing
+                Ice Fishing
               </label>
-              <Input
-                type="text"
+              <select
                 name="fishing"
                 value={formData.fishing}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
+              >
+                <option value="">-- Not Assigned --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
             </div>
 
             {/* DOG SLEDGING */}
@@ -517,41 +537,50 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Dog Sledging
               </label>
-              <Input
-                type="text"
+              <select
                 name="dog_sledging"
                 value={formData.dog_sledging}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
+              >
+                <option value="">-- Not Assigned --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
             </div>
 
             {/* SNOWMOBILE/ATV */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Snowmobile/ATV
+                Snowmobile
               </label>
-              <Input
-                type="text"
+              <select
                 name="snowmobile_atv"
                 value={formData.snowmobile_atv}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
+              >
+                <option value="">-- Not Assigned --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
             </div>
 
             {/* AURORA VILLAGE */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Aurora Village
+                Ice Lake Tour
               </label>
-              <Input
-                type="text"
+              <select
                 name="aurora_village"
                 value={formData.aurora_village}
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
+              >
+                <option value="">-- Not Assigned --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
             </div>
 
             {/* PAYMENT */}
