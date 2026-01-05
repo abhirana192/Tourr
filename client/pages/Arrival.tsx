@@ -114,6 +114,33 @@ const HEADER_TRANSLATIONS: { [key: string]: { zh: string; ja: string } } = {
   "Free activity": { zh: "自由活动", ja: "自由活動" },
 };
 
+const DAY_TRANSLATIONS: { [key: string]: { zh: string; ja: string } } = {
+  "Arrival Day": { zh: "到达日", ja: "到着日" },
+  "1st Day": { zh: "第1天", ja: "1日目" },
+  "2nd Day": { zh: "第2天", ja: "2日目" },
+  "3rd Day": { zh: "第3天", ja: "3日目" },
+  "4th Day": { zh: "第4天", ja: "4日目" },
+  "5th Day": { zh: "第5天", ja: "5日目" },
+  "6th Day": { zh: "第6天", ja: "6日目" },
+  "7th Day": { zh: "第7天", ja: "7日目" },
+  "Departure": { zh: "出发日", ja: "出発日" },
+};
+
+const MESSAGE_TRANSLATIONS: { [key: string]: { zh: string; ja: string } } = {
+  "*Free activity": { zh: "*自由活动", ja: "*自由活動" },
+  "Shuttle service is scheduled 2 hours before the departure flight. Please wait in the lobby of your accommodation.": {
+    zh: "班车服务在出发航班前2小时开始。请在您的住处大厅等候。",
+    ja: "シャトルサービスは出発便の2時間前に予定されています。宿泊施設のロビーでお待ちください。",
+  },
+  "(Cold-weather gear will be collected)": { zh: "（冬季装备将被收回）", ja: "（防寒用具は回収されます）" },
+  "*Optional (Self-pay)": { zh: "*可选（自付）", ja: "*オプション（自己負担）" },
+  "Welcome to the Arctic! We look forward to making your stay unforgettable with authentic experiences and warm hospitality.": {
+    zh: "欢迎来到北极！我们期待为您提供真实的体验和温暖的热情款待，使您的住宿难以忘怀。",
+    ja: "北極へようこそ！本物の体験と温かいおもてなしで、お客様のご滞在を忘れられないものにしたいと思います。",
+  },
+  "+ Add Activity": { zh: "+ 添加活动", ja: "+ アクティビティを追加" },
+};
+
 const getTranslatedText = (text: string, language: LanguageOption): string => {
   if (language === "en") return text;
 
