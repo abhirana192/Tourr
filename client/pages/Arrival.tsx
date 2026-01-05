@@ -1084,27 +1084,38 @@ export default function Arrival() {
             }
             .logo-section {
               position: absolute;
-              top: 10px;
-              left: 15px;
+              top: 15px;
+              left: 20px;
               display: flex;
               align-items: center;
-              gap: 10px;
+              gap: 16px;
               z-index: 10;
+              background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 250, 249, 0.95) 100%);
+              padding: 12px 18px 12px 12px;
+              border-radius: 12px;
+              box-shadow: 0 4px 12px rgba(27, 122, 92, 0.15);
+              border: 1px solid rgba(62, 196, 160, 0.2);
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
             }
             .logo-image {
-              width: 50px;
-              height: 50px;
+              width: 90px;
+              height: 90px;
               object-fit: contain;
+              flex-shrink: 0;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
             }
             .company-name {
-              font-size: 14px;
-              font-weight: 700;
-              color: #333;
+              font-size: 22px;
+              font-weight: 800;
+              color: #1b7a5c;
               margin: 0;
               padding: 0;
+              letter-spacing: 0.5px;
+              line-height: 1.2;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
