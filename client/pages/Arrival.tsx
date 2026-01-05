@@ -1489,56 +1489,59 @@ export default function Arrival() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-700 border-r border-gray-400 align-top">
-                        {idx === 0 ? (
-                          <div className="whitespace-normal text-justify leading-relaxed">{day.hotelInfo}</div>
-                        ) : (
-                          <div className="space-y-2">
-                            {(day.hotelActivities?.length ?? 0) > 0 ? (
-                              <>
-                                {(day.hotelActivities || []).map((activity, actIdx) => (
-                                  <div key={actIdx} className="flex items-start justify-between gap-2 p-2 bg-purple-50 rounded border border-purple-200">
-                                    <div className="flex-1">
-                                      <div className="font-semibold text-gray-900">{activity.name}</div>
-                                      <div className="text-xs text-gray-600">{activity.timings[0]}</div>
-                                      {isEditMode && (
-                                        <input
-                                          type="text"
-                                          placeholder="Add notes (optional)"
-                                          value={activity.notes || ""}
-                                          onChange={(e) => handleActivityNoteChange(idx, actIdx, e.target.value, "hotel")}
-                                          className="mt-2 w-full text-xs p-1 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                        />
-                                      )}
-                                      {!isEditMode && activity.notes && (
-                                        <div className="text-xs text-gray-700 mt-1 italic">Note: {activity.notes}</div>
-                                      )}
-                                    </div>
+                        {idx === 0 && (
+                          <div className="whitespace-normal text-justify leading-relaxed mb-2">{day.hotelInfo}</div>
+                        )}
+                        <div className="space-y-2">
+                          {(day.hotelActivities?.length ?? 0) > 0 ? (
+                            <>
+                              {(day.hotelActivities || []).map((activity, actIdx) => (
+                                <div key={actIdx} className="flex items-start justify-between gap-2 p-2 bg-purple-50 rounded border border-purple-200">
+                                  <div className="flex-1">
+                                    <div className="font-semibold text-gray-900">{activity.name}</div>
+                                    <div className="text-xs text-gray-600">{activity.timings[0]}</div>
                                     {isEditMode && (
-                                      <button
-                                        onClick={() => handleActivityChange(idx, actIdx, null, "hotel")}
-                                        className="text-red-500 hover:text-red-700 font-bold text-sm flex-shrink-0"
-                                      >
-                                        ✕
-                                      </button>
+                                      <input
+                                        type="text"
+                                        placeholder="Add notes (optional)"
+                                        value={activity.notes || ""}
+                                        onChange={(e) => handleActivityNoteChange(idx, actIdx, e.target.value, "hotel")}
+                                        className="mt-2 w-full text-xs p-1 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                      />
+                                    )}
+                                    {!isEditMode && activity.notes && (
+                                      <div className="text-xs text-gray-700 mt-1 italic">Note: {activity.notes}</div>
                                     )}
                                   </div>
-                                ))}
-                              </>
-                            ) : (
-                              <div className="whitespace-normal text-gray-500 italic">
-                                *Free activity
-                              </div>
-                            )}
-                            {isEditMode && (
-                              <button
-                                onClick={() => handleAddActivity(idx, "hotel")}
-                                className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-purple-50 text-gray-600 font-medium"
-                              >
-                                + Add Activity
-                              </button>
-                            )}
-                          </div>
-                        )}
+                                  {isEditMode && (
+                                    <button
+                                      onClick={() => handleActivityChange(idx, actIdx, null, "hotel")}
+                                      className="text-red-500 hover:text-red-700 font-bold text-sm flex-shrink-0"
+                                    >
+                                      ✕
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                            </>
+                          ) : (
+                            <>
+                              {idx === dayItinerary.length - 1 ? (
+                                <div className="whitespace-normal text-gray-600 italic text-xs">{day.hotelInfo}</div>
+                              ) : (
+                                <div className="whitespace-normal text-gray-500 italic">*Free activity</div>
+                              )}
+                            </>
+                          )}
+                          {idx > 0 && isEditMode && (
+                            <button
+                              onClick={() => handleAddActivity(idx, "hotel")}
+                              className="w-full text-xs py-1 px-2 border border-dashed border-gray-300 rounded hover:bg-purple-50 text-gray-600 font-medium"
+                            >
+                              + Add Activity
+                            </button>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-900 align-top">
                         <div className="space-y-2">
