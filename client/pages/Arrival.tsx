@@ -919,12 +919,32 @@ export default function Arrival() {
               color-adjust: exact;
               print-color-adjust: exact;
             }
+            .branding-header {
+              background: #ffffff;
+              color: #333333;
+              padding: 30px;
+              margin-bottom: 20px;
+              margin-top: 0;
+              border-radius: 0;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+              position: relative;
+              overflow: visible;
+              border: 1px solid #e0e0e0;
+              min-height: auto;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              justify-content: center;
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+              print-color-adjust: exact;
+            }
             .welcome-header {
               background: #ffffff;
               color: #333333;
-              padding: 20px;
+              padding: 40px;
               margin-bottom: 20px;
-              margin-top: -110px;
+              margin-top: 0;
               border-radius: 0;
               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
               position: relative;
@@ -935,7 +955,7 @@ export default function Arrival() {
               display: flex;
               flex-direction: column;
               align-items: center;
-              justify-content: flex-start;
+              justify-content: center;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
