@@ -110,6 +110,7 @@ export default function Arrival() {
   const [showEditConfirmation, setShowEditConfirmation] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [pendingScheduleData, setPendingScheduleData] = useState<any>(null);
+  const [showPrintLanguageDialog, setShowPrintLanguageDialog] = useState(false);
 
   const extractDateAndTime = (value: any) => {
     if (!value) return { date: "", time: "" };
