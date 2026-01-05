@@ -241,7 +241,11 @@ export default function Arrival() {
   };
 
   useEffect(() => {
-    fetchTours();
+    // Defer initial fetch to ensure the page is fully loaded
+    const timer = setTimeout(() => {
+      fetchTours();
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const migrateScheduleToNewFormat = (schedule: any): ActivitySchedule => {
