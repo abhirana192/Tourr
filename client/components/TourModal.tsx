@@ -276,23 +276,32 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
           ? JSON.parse(tour.activity_schedule)
           : {};
 
+        // Create reverse mapping from activity key to activity name
+        const keyToActivityName: { [key: string]: string } = {};
+        Object.entries(activityNameToKey).forEach(([name, key]) => {
+          keyToActivityName[key] = name;
+        });
+
         // Update notes in the schedule
         for (const dayIndex in schedule) {
           const dayData = schedule[dayIndex];
           if (dayData) {
-            const allActivities = [
-              ...(dayData.plannedActivities || []),
-              ...(dayData.arrivalActivities || []),
-              ...(dayData.hotelActivities || []),
+            // Process all activity arrays
+            const activityArrays = [
+              dayData.plannedActivities || [],
+              dayData.arrivalActivities || [],
+              dayData.hotelActivities || [],
             ];
 
-            for (const activity of allActivities) {
-              const activityKey = Object.entries(activityNameToKey).find(
-                ([name]) => name === activity.name
-              )?.[1];
-
-              if (activityKey && activityNotes[activityKey]) {
-                activity.notes = activityNotes[activityKey];
+            for (const activities of activityArrays) {
+              for (const activity of activities) {
+                // Find matching activity key by name
+                for (const [key, name] of Object.entries(keyToActivityName)) {
+                  if (activity.name === name && activityNotes[key]) {
+                    activity.notes = activityNotes[key];
+                    break;
+                  }
+                }
               }
             }
           }
