@@ -379,7 +379,7 @@ export default function Summary() {
 
 
   // Filter guests based on date range
-  const allGuests = activitiesData.flatMap((activity) => activity.guests);
+  const allGuests = activitiesData.flatMap((activity) => activity.guests || []);
   const uniqueGuestsByTour = Array.from(new Map(allGuests.map((g) => [g.tourName + g.invoiceNumber, g])).values());
 
   const arrivals = uniqueGuestsByTour.filter((guest) => {
