@@ -237,6 +237,47 @@ function analyzeScheduleChanges(oldScheduleJson: string | null, newSchedule: any
   }
 }
 
+function extractActivitiesFromSchedule(schedule: any): Set<string> {
+  const activityNameToKey: { [key: string]: string } = {
+    "City Tour": "city_tour",
+    "Ice Fishing": "fishing",
+    "Dog Sledging": "dog_sledging",
+    "Snowmobile": "snowmobile_atv",
+    "Cameron Fall Hiking": "hiking",
+    "Ice Lake Tour": "aurora_village",
+    "Aurora Viewing": "nlt",
+  };
+
+  const presentActivities = new Set<string>();
+
+  try {
+    for (const dayIndex in schedule) {
+      const dayData = schedule[dayIndex];
+
+      if (!dayData) continue;
+
+      // Check all activity types (planned, arrival, hotel)
+      const allActivities = [
+        ...(dayData.plannedActivities || []),
+        ...(dayData.arrivalActivities || []),
+        ...(dayData.hotelActivities || []),
+      ];
+
+      for (const activity of allActivities) {
+        const activityName = activity.name;
+        const activityKey = activityNameToKey[activityName];
+        if (activityKey) {
+          presentActivities.add(activityKey);
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error extracting activities from schedule:", error);
+  }
+
+  return presentActivities;
+}
+
 export const saveTourSchedule: RequestHandler = async (req, res) => {
   try {
     const currentUser = getSessionFromRequest(req);
