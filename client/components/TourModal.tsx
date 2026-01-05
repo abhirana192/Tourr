@@ -284,16 +284,16 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
 
             for (const activities of activityArrays) {
               for (const activity of activities) {
-                // Find the key for this activity by name
-                for (const [name, key] of Object.entries(keyToActivityName)) {
-                  if (activity.name === name) {
-                    // Update or clear notes
-                    if (activityNotes[key]) {
-                      activity.notes = activityNotes[key];
-                    } else if (activity.notes) {
-                      delete activity.notes;
-                    }
-                    break;
+                // Find the key for this activity by name and update notes
+                const matchingKey = Object.entries(keyToActivityName).find(
+                  ([, name]) => activity.name === name
+                )?.[0];
+
+                if (matchingKey) {
+                  if (activityNotes[matchingKey]) {
+                    activity.notes = activityNotes[matchingKey];
+                  } else if (activity.notes) {
+                    delete activity.notes;
                   }
                 }
               }
