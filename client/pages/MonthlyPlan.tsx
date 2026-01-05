@@ -523,8 +523,6 @@ export default function MonthlyPlan() {
                   <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Snowmobile</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Ice Lake Tour</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">City Tour</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Snowshoe</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Gears</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Aurora Viewing</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300">Arrival</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Departure</th>
