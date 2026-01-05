@@ -1102,7 +1102,7 @@ export default function Arrival() {
               display: flex;
               flex-direction: column;
               align-items: center;
-              justify-content: center;
+              justify-content: flex-start;
               gap: 0;
               z-index: 10;
               background: transparent;
