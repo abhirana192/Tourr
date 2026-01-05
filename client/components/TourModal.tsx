@@ -254,27 +254,17 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const combinedArrival = combineArrivalDeparture(arrivalDate, arrivalTime, arrivalFlight);
     const combinedDeparture = combineArrivalDeparture(departureDate, departureTime, departureFlight);
 
-    const updatedTourData = {
-      ...formData,
-      arrival: combinedArrival,
-      departure: combinedDeparture,
-    };
+    let updatedSchedule = null;
 
-    // First save the tour info
-    onSubmit(updatedTourData);
-
-    // Then save activity notes to the schedule if there are any notes
-    if (tour && Object.values(activityNotes).some(note => note.trim())) {
+    // Update schedule with notes if there are any
+    if (tour && tour.activity_schedule && Object.values(activityNotes).some(note => note.trim())) {
       try {
-        // Parse existing activity schedule
-        const schedule = tour.activity_schedule
-          ? JSON.parse(tour.activity_schedule)
-          : {};
+        const schedule = JSON.parse(tour.activity_schedule);
 
         // Create reverse mapping from activity key to activity name
         const keyToActivityName: { [key: string]: string } = {};
@@ -286,7 +276,6 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
         for (const dayIndex in schedule) {
           const dayData = schedule[dayIndex];
           if (dayData) {
-            // Process all activity arrays
             const activityArrays = [
               dayData.plannedActivities || [],
               dayData.arrivalActivities || [],
@@ -295,7 +284,6 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
 
             for (const activities of activityArrays) {
               for (const activity of activities) {
-                // Find matching activity key by name
                 for (const [key, name] of Object.entries(keyToActivityName)) {
                   if (activity.name === name && activityNotes[key]) {
                     activity.notes = activityNotes[key];
@@ -307,25 +295,20 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
           }
         }
 
-        // Save the updated schedule
-        const sessionToken = localStorage.getItem("sessionToken");
-        const headers: HeadersInit = { "Content-Type": "application/json" };
-        if (sessionToken) {
-          headers["Authorization"] = `Bearer ${sessionToken}`;
-        }
-
-        await fetch(`/api/tours/${tour.id}/schedule`, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            schedule,
-            customRecipients: [],
-          }),
-        });
+        updatedSchedule = JSON.stringify(schedule);
       } catch (error) {
-        console.error("Error saving activity notes:", error);
+        console.error("Error updating schedule with notes:", error);
       }
     }
+
+    const updatedTourData = {
+      ...formData,
+      arrival: combinedArrival,
+      departure: combinedDeparture,
+      ...(updatedSchedule && { activity_schedule: updatedSchedule }),
+    };
+
+    onSubmit(updatedTourData);
   };
 
   if (!isOpen) return null;
