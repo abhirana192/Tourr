@@ -392,6 +392,10 @@ export default function Summary() {
     return guest.departure >= filterFromDate && guest.departure <= filterToDate;
   });
 
+  console.log("Date filter:", { filterFromDate, filterToDate });
+  console.log("Arrivals:", arrivals.length);
+  console.log("Departures:", departures.length);
+
   const filteredActivities = activitiesData.map((activity) => ({
     ...activity,
     guests: (activity.guests || []).filter((guest) => {
