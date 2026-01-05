@@ -944,7 +944,7 @@ export default function Arrival() {
               color: #333333;
               padding: 40px;
               margin-bottom: 20px;
-              margin-top: 0;
+              margin-top: -100px;
               border-radius: 0;
               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
               position: relative;
@@ -956,6 +956,7 @@ export default function Arrival() {
               flex-direction: column;
               align-items: center;
               justify-content: center;
+              z-index: 10;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
