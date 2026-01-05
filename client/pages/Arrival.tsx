@@ -702,20 +702,82 @@ export default function Arrival() {
       }
     });
 
-    // Translate activity names in table cells
+    // Translate all text in table cells
     const cells = tableClone.querySelectorAll("td");
     cells.forEach((cell) => {
+      // Translate day labels (first column)
+      const dayLabel = cell.querySelector("div.whitespace-normal");
+      if (dayLabel && dayLabel.textContent) {
+        const originalDay = dayLabel.textContent.trim();
+        if (DAY_TRANSLATIONS[originalDay]) {
+          dayLabel.textContent = getTranslatedText(originalDay, language);
+        }
+      }
+
+      // Translate activity names
       const activityNameElements = cell.querySelectorAll("div.font-semibold");
       activityNameElements.forEach((elem) => {
         const originalText = elem.textContent?.trim();
-        if (originalText && ACTIVITY_TRANSLATIONS[originalText]) {
+        if (originalText) {
           elem.textContent = getTranslatedText(originalText, language);
+        }
+      });
+
+      // Translate italic text (like *Free activity messages)
+      const italicElements = cell.querySelectorAll("div.italic");
+      italicElements.forEach((elem) => {
+        const originalText = elem.textContent?.trim();
+        if (originalText) {
+          const translated = getTranslatedText(originalText, language);
+          if (translated !== originalText) {
+            elem.textContent = translated;
+          }
+        }
+      });
+
+      // Translate regular text (arrival info, hotel info)
+      const textDivs = cell.querySelectorAll("div.whitespace-normal.text-justify, div.text-justify");
+      textDivs.forEach((elem) => {
+        const originalText = elem.textContent?.trim();
+        if (originalText) {
+          const translated = getTranslatedText(originalText, language);
+          if (translated !== originalText) {
+            elem.textContent = translated;
+          }
+        }
+      });
+
+      // Translate text nodes that contain messages
+      const allDivs = cell.querySelectorAll("div");
+      allDivs.forEach((elem) => {
+        if (elem.childNodes.length === 1 && elem.childNodes[0].nodeType === 3) {
+          const originalText = elem.textContent?.trim();
+          if (originalText) {
+            const translated = getTranslatedText(originalText, language);
+            if (translated !== originalText) {
+              elem.textContent = translated;
+            }
+          }
         }
       });
     });
 
+    // Translate day labels in first column
+    const dayColumns = tableClone.querySelectorAll("td:first-child");
+    dayColumns.forEach((col) => {
+      const dayText = col.textContent?.trim();
+      if (dayText && DAY_TRANSLATIONS[dayText]) {
+        col.textContent = getTranslatedText(dayText, language);
+      }
+    });
+
+    const guestName = selectedTour.name.replace(/\s*\(\d+\)\s*$/, "");
     const welcomeText = getTranslatedText("WELCOME TO YOUR ARCTIC ADVENTURE", language);
     const itineraryText = getTranslatedText("Your Itinerary", language);
+    const footerText = getTranslatedText(
+      "Welcome to the Arctic! We look forward to making your stay unforgettable with authentic experiences and warm hospitality.",
+      language
+    );
 
     const htmlContent = `
       <!DOCTYPE html>
