@@ -158,6 +158,20 @@ export default function Summary() {
   };
 
   useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        const response = await fetch("/api/staff");
+        if (!response.ok) throw new Error("Failed to fetch staff");
+        const data = await response.json();
+        setStaffList(data || []);
+      } catch (err) {
+        console.warn("Failed to fetch staff:", err);
+      }
+    };
+    fetchStaff();
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
