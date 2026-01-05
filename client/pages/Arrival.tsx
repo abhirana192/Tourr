@@ -698,16 +698,14 @@ export default function Arrival() {
               letter-spacing: 1px;
             }
             .guest-title {
-              font-size: 32px;
+              font-size: 48px;
               font-weight: 700;
               margin-bottom: 20px;
               text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+              text-align: center;
             }
             .guest-info {
-              display: grid;
-              grid-template-columns: repeat(4, 1fr);
-              gap: 20px;
-              margin-top: 15px;
+              display: none;
             }
             .info-item {
               background: rgba(255, 255, 255, 0.15);
