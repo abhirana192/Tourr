@@ -278,7 +278,7 @@ export default function Summary() {
         setActivitiesData(result);
 
         // Calculate activities by calendar date
-        const dateActivityMap = new Map<string, ActivityByDate["activities"]>();
+        const dateActivityMap = new Map<string, Map<string, ActivityByDate["activities"][0]>>();
         for (const tour of tours) {
           try {
             const scheduleResponse = await fetch(`/api/tours/${tour.id}/schedule`);
@@ -306,10 +306,12 @@ export default function Summary() {
                 const activityDateStr = activityDate.toISOString().split("T")[0];
 
                 if (!dateActivityMap.has(activityDateStr)) {
-                  dateActivityMap.set(activityDateStr, []);
+                  dateActivityMap.set(activityDateStr, new Map());
                 }
 
-                dateActivityMap.get(activityDateStr)!.push({
+                // Create unique key to deduplicate: guest_name|activity_name
+                const dedupeKey = `${tour.name}|${activity.name}`;
+                const activityObj = {
                   guestName: tour.name,
                   tourName: tour.name,
                   invoiceNumber: tour.invoice,
@@ -320,7 +322,10 @@ export default function Summary() {
                   activityName: activity.name,
                   activityTiming: activity.timings?.[0] || "",
                   dayNumber: dayIndex,
-                });
+                };
+
+                // Only add if this guest+activity combination doesn't exist for this date
+                dateActivityMap.get(activityDateStr)!.set(dedupeKey, activityObj);
               }
             }
           } catch (err) {
@@ -329,7 +334,7 @@ export default function Summary() {
         }
 
         const dateActivityList: ActivityByDate[] = Array.from(dateActivityMap.entries())
-          .map(([date, activities]) => ({ date, activities }))
+          .map(([date, activityMap]) => ({ date, activities: Array.from(activityMap.values()) }))
           .sort((a, b) => a.date.localeCompare(b.date));
 
         setActivitiesByDate(dateActivityList);
