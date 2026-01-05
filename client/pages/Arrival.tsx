@@ -557,7 +557,6 @@ export default function Arrival() {
     };
 
     setSchedules((prev) => {
-      console.log("Current schedules before update:", prev);
       const tourSchedule = { ...prev[selectedTour.id] };
       const dayData = tourSchedule[selectedDayForActivity] || { plannedActivities: [], arrivalActivities: [], hotelActivities: [], note: "" };
 
@@ -569,7 +568,6 @@ export default function Arrival() {
         ...dayData,
         [columnKey]: dayActivities,
       };
-      console.log("Updated tour schedule:", tourSchedule);
       return {
         ...prev,
         [selectedTour.id]: tourSchedule,
