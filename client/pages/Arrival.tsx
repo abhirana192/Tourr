@@ -1092,13 +1092,13 @@ export default function Arrival() {
               print-color-adjust: exact;
             }
             .logo-section {
-              position: relative;
-              top: 0;
-              left: 0;
+              position: absolute;
+              top: 20px;
+              left: 20px;
               display: flex;
               flex-direction: column;
-              align-items: center;
-              justify-content: center;
+              align-items: flex-start;
+              justify-content: flex-start;
               gap: 0;
               z-index: 10;
               background: transparent;
@@ -1112,11 +1112,11 @@ export default function Arrival() {
               print-color-adjust: exact;
             }
             .logo-image {
-              width: 280px;
-              height: 280px;
+              width: 150px;
+              height: 150px;
               object-fit: contain;
               flex-shrink: 0;
-              margin-bottom: 30px;
+              margin-bottom: 0;
               -webkit-print-color-adjust: exact;
               color-adjust: exact;
               print-color-adjust: exact;
@@ -1128,10 +1128,10 @@ export default function Arrival() {
         </head>
         <body>
           <div class="welcome-header">
-            <div class="header-content" style="display: flex; flex-direction: column; align-items: center;">
-              <div class="logo-section">
-                <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F490934e205af421d8f25ac51d3ee565b?format=webp&width=800" alt="Jiguang Tour Logo" class="logo-image" />
-              </div>
+            <div class="logo-section">
+              <img src="https://cdn.builder.io/api/v1/image/assets%2F009a270434b94ee6bd377e5857c4f325%2F490934e205af421d8f25ac51d3ee565b?format=webp&width=800" alt="Jiguang Tour Logo" class="logo-image" />
+            </div>
+            <div class="header-content" style="display: flex; flex-direction: column; align-items: center; margin-left: 180px;">
               <div class="welcome-text">${welcomeText}</div>
               <div class="guest-title">${guestName}</div>
               <div class="guest-info">
