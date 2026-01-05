@@ -105,11 +105,17 @@ export default function Summary() {
   const [activitiesData, setActivitiesData] = useState<ActivityData[]>([]);
   const [filterFromDate, setFilterFromDate] = useState(() => {
     const today = new Date();
-    return today.toISOString().split("T")[0];
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const date = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${date}`;
   });
   const [filterToDate, setFilterToDate] = useState(() => {
     const today = new Date();
-    return today.toISOString().split("T")[0];
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const date = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${date}`;
   });
 
   const extractDateAndTime = (value: any) => {
