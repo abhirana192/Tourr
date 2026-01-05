@@ -75,10 +75,12 @@ const App = () => (
 );
 
 const container = document.getElementById("root")!;
-const root = createRoot(container);
-root.render(<App />);
 
-// Prevent HMR from reloading the entire app
-if (import.meta.hot) {
-  import.meta.hot.accept();
+// Only create root once - reuse existing root on HMR
+let rootInstance = (container as any).__reactRoot;
+if (!rootInstance) {
+  rootInstance = createRoot(container);
+  (container as any).__reactRoot = rootInstance;
 }
+
+rootInstance.render(<App />);
