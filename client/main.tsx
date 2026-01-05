@@ -76,15 +76,25 @@ const App = () => (
 
 declare global {
   interface Window {
-    __reactRootInstance?: any;
+    __reactRoot?: any;
   }
 }
 
-const container = document.getElementById("root")!;
+function renderApp() {
+  const container = document.getElementById("root");
+  if (!container) return;
 
-// Reuse root across HMR updates
-if (!window.__reactRootInstance) {
-  window.__reactRootInstance = createRoot(container);
+  if (!window.__reactRoot) {
+    window.__reactRoot = createRoot(container);
+  }
+  window.__reactRoot.render(<App />);
 }
 
-window.__reactRootInstance.render(<App />);
+renderApp();
+
+// Handle HMR updates
+if (import.meta.hot) {
+  import.meta.hot.accept([], () => {
+    renderApp();
+  });
+}
