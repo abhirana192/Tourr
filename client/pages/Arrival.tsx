@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ActivityPickerModal } from "./ActivityPickerModal";
 import { EmailRecipientsDialog } from "@/components/EmailRecipientsDialog";
+import { PrintLanguageDialog, type LanguageOption } from "@/components/PrintLanguageDialog";
 
 interface Tour {
   id: string;
