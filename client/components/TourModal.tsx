@@ -548,131 +548,69 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               />
             </div>
 
-            {/* ACTIVITIES INFO */}
-            <div className="md:col-span-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm font-semibold text-blue-900 mb-2">Activity Details</p>
-              <p className="text-xs text-blue-800">
-                To view and edit detailed activity information (day, time, and notes), please go to the <strong>Guest Arrival Information</strong> page and select this guest.
-              </p>
-            </div>
-
-            {/* NLT */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Aurora Viewing
+            {/* ACTIVITIES SECTION */}
+            <div className="md:col-span-3">
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                Activities
               </label>
-              <select
-                name="nlt"
-                value={formData.nlt}
-                onChange={handleChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">-- Not Assigned --</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-            </div>
+              <div className="space-y-3 border-t border-gray-200 pt-3">
+                {[
+                  { key: "nlt", label: "Aurora Viewing" },
+                  { key: "city_tour", label: "City Tour" },
+                  { key: "hiking", label: "Cameron Fall Hiking" },
+                  { key: "fishing", label: "Ice Fishing" },
+                  { key: "dog_sledging", label: "Dog Sledging" },
+                  { key: "snowmobile_atv", label: "Snowmobile" },
+                  { key: "aurora_village", label: "Ice Lake Tour" },
+                ].map(({ key, label }) => {
+                  const activityDetail = getActivityDetailsForModal(key as keyof typeof activityNameToKey);
+                  const hasSchedule = activityDetail.details !== "";
 
-            {/* CITY TOUR */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                City Tour
-              </label>
-              <select
-                name="city_tour"
-                value={formData.city_tour}
-                onChange={handleChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">-- Not Assigned --</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-            </div>
-
-            {/* HIKING */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Cameron Fall Hiking
-              </label>
-              <select
-                name="hiking"
-                value={formData.hiking}
-                onChange={handleChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">-- Not Assigned --</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-            </div>
-
-            {/* FISHING */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Ice Fishing
-              </label>
-              <select
-                name="fishing"
-                value={formData.fishing}
-                onChange={handleChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">-- Not Assigned --</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-            </div>
-
-            {/* DOG SLEDGING */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Dog Sledging
-              </label>
-              <select
-                name="dog_sledging"
-                value={formData.dog_sledging}
-                onChange={handleChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">-- Not Assigned --</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-            </div>
-
-            {/* SNOWMOBILE/ATV */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Snowmobile
-              </label>
-              <select
-                name="snowmobile_atv"
-                value={formData.snowmobile_atv}
-                onChange={handleChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">-- Not Assigned --</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-            </div>
-
-            {/* AURORA VILLAGE */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Ice Lake Tour
-              </label>
-              <select
-                name="aurora_village"
-                value={formData.aurora_village}
-                onChange={handleChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">-- Not Assigned --</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
+                  return (
+                    <div
+                      key={key}
+                      className={`p-3 rounded border ${
+                        hasSchedule
+                          ? "bg-green-50 border-green-200"
+                          : "bg-gray-50 border-gray-200"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">{label}</p>
+                          {hasSchedule && (
+                            <p className="text-xs text-gray-600 mt-1">
+                              {activityDetail.details}
+                            </p>
+                          )}
+                        </div>
+                        <select
+                          name={key}
+                          value={formData[key as keyof typeof formData] as string}
+                          onChange={handleChange}
+                          className="text-xs border border-gray-300 rounded px-2 py-1"
+                        >
+                          <option value="">Not Assigned</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                        </select>
+                      </div>
+                      <Input
+                        type="text"
+                        placeholder="Add notes (optional)"
+                        value={activityNotes[key] || ""}
+                        onChange={(e) =>
+                          setActivityNotes((prev) => ({
+                            ...prev,
+                            [key]: e.target.value,
+                          }))
+                        }
+                        className="text-xs border border-gray-300 rounded px-2 py-1 w-full"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* PAYMENT */}
