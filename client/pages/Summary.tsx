@@ -153,6 +153,7 @@ export default function Summary() {
   const [staffList, setStaffList] = useState<Staff[]>([]);
   const [assignments, setAssignments] = useState<Map<string, ActivityAssignment>>(new Map());
   const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [activitiesByDate, setActivitiesByDate] = useState<ActivityByDate[]>([]);
 
   const extractDateAndTime = (value: any) => {
     if (!value) return { date: "", time: "", flight: "" };
