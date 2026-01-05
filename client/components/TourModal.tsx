@@ -254,15 +254,69 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const combinedArrival = combineArrivalDeparture(arrivalDate, arrivalTime, arrivalFlight);
     const combinedDeparture = combineArrivalDeparture(departureDate, departureTime, departureFlight);
-    onSubmit({
+
+    const updatedTourData = {
       ...formData,
       arrival: combinedArrival,
       departure: combinedDeparture,
-    });
+    };
+
+    // First save the tour info
+    onSubmit(updatedTourData);
+
+    // Then save activity notes to the schedule if there are any notes
+    if (tour && Object.values(activityNotes).some(note => note.trim())) {
+      try {
+        // Parse existing activity schedule
+        const schedule = tour.activity_schedule
+          ? JSON.parse(tour.activity_schedule)
+          : {};
+
+        // Update notes in the schedule
+        for (const dayIndex in schedule) {
+          const dayData = schedule[dayIndex];
+          if (dayData) {
+            const allActivities = [
+              ...(dayData.plannedActivities || []),
+              ...(dayData.arrivalActivities || []),
+              ...(dayData.hotelActivities || []),
+            ];
+
+            for (const activity of allActivities) {
+              const activityKey = Object.entries(activityNameToKey).find(
+                ([name]) => name === activity.name
+              )?.[1];
+
+              if (activityKey && activityNotes[activityKey]) {
+                activity.notes = activityNotes[activityKey];
+              }
+            }
+          }
+        }
+
+        // Save the updated schedule
+        const sessionToken = localStorage.getItem("sessionToken");
+        const headers: HeadersInit = { "Content-Type": "application/json" };
+        if (sessionToken) {
+          headers["Authorization"] = `Bearer ${sessionToken}`;
+        }
+
+        await fetch(`/api/tours/${tour.id}/schedule`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            schedule,
+            customRecipients: [],
+          }),
+        });
+      } catch (error) {
+        console.error("Error saving activity notes:", error);
+      }
+    }
   };
 
   if (!isOpen) return null;
