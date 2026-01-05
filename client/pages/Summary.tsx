@@ -849,9 +849,24 @@ export default function Summary() {
           </div>
 
           <div className="space-y-6">
-            {activitiesByDate
-              .filter((item) => item.date >= filterFromDate && item.date <= filterToDate)
-              .map((dateItem) => (
+            {(() => {
+              // Generate all dates in range
+              const allDatesInRange: ActivityByDate[] = [];
+              const currentDate = new Date(filterFromDate);
+              const endDate = new Date(filterToDate);
+
+              while (currentDate <= endDate) {
+                const dateStr = currentDate.toISOString().split("T")[0];
+                const existingActivities = activitiesByDate.find((item) => item.date === dateStr);
+                allDatesInRange.push({
+                  date: dateStr,
+                  activities: existingActivities?.activities || [],
+                });
+                currentDate.setDate(currentDate.getDate() + 1);
+              }
+
+              return allDatesInRange;
+            })().map((dateItem) => (
                 <div key={dateItem.date} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                   {/* Date Header */}
                   <div className="bg-gradient-to-r from-purple-50 to-purple-100 border-b border-purple-200 px-6 py-4">
