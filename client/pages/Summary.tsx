@@ -202,13 +202,11 @@ export default function Summary() {
         const result: ActivityData[] = [];
         for (const [key, timingData] of Object.entries(ACTIVITY_TIMINGS)) {
           const guests = activityMap.get(key) || [];
-          if (guests.length > 0) {
-            result.push({
-              activityKey: key,
-              activityName: timingData.name,
-              guests,
-            });
-          }
+          result.push({
+            activityKey: key,
+            activityName: timingData.name,
+            guests,
+          });
         }
 
         result.sort((a, b) => b.guests.length - a.guests.length);
