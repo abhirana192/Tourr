@@ -630,6 +630,10 @@ export default function Arrival() {
   };
 
   const handlePrint = () => {
+    setShowPrintLanguageDialog(true);
+  };
+
+  const handlePrintWithLanguage = (language: LanguageOption) => {
     const tableElement = document.querySelector("table");
     if (!tableElement) {
       toast.error("Table not found");
@@ -657,11 +661,36 @@ export default function Arrival() {
       }
     });
 
+    // Translate table headers
+    const headers = tableClone.querySelectorAll("th");
+    headers.forEach((header) => {
+      const originalText = header.textContent?.trim();
+      if (originalText) {
+        header.textContent = getTranslatedText(originalText, language);
+      }
+    });
+
+    // Translate activity names in table cells
+    const cells = tableClone.querySelectorAll("td");
+    cells.forEach((cell) => {
+      const activityNameElements = cell.querySelectorAll("div.font-semibold");
+      activityNameElements.forEach((elem) => {
+        const originalText = elem.textContent?.trim();
+        if (originalText && ACTIVITY_TRANSLATIONS[originalText]) {
+          elem.textContent = getTranslatedText(originalText, language);
+        }
+      });
+    });
+
+    const welcomeText = getTranslatedText("WELCOME TO YOUR ARCTIC ADVENTURE", language);
+    const itineraryText = getTranslatedText("Your Itinerary", language);
+
     const htmlContent = `
       <!DOCTYPE html>
       <html>
         <head>
           <title>Guest Arrival Schedule</title>
+          <meta charset="UTF-8">
           <style>
             @page {
               size: landscape;
@@ -867,7 +896,7 @@ export default function Arrival() {
         <body>
           <div class="welcome-header">
             <div class="header-content">
-              <div class="welcome-text">WELCOME TO YOUR ARCTIC ADVENTURE</div>
+              <div class="welcome-text">${welcomeText}</div>
               <div class="guest-title">${selectedTour.name.replace(/\s*\(\d+\)\s*$/, '')}</div>
               <div class="guest-info">
                 <div class="info-item">
@@ -890,7 +919,7 @@ export default function Arrival() {
             </div>
           </div>
           <div class="schedule-section">
-            <div class="section-title">Your Itinerary</div>
+            <div class="section-title">${itineraryText}</div>
             ${tableClone.outerHTML}
           </div>
           <div class="footer">
