@@ -884,7 +884,7 @@ export default function Arrival() {
           <style>
             @page {
               size: landscape;
-              margin: 10mm;
+              margin: 0mm 10mm 10mm 10mm;
               @top-left {
                 content: '';
               }
