@@ -924,7 +924,7 @@ export default function Arrival() {
               color: #333333;
               padding: 20px;
               margin-bottom: 20px;
-              margin-top: -80px;
+              margin-top: -110px;
               border-radius: 0;
               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
               position: relative;
