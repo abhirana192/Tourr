@@ -924,7 +924,7 @@ export default function Arrival() {
               color: #333333;
               padding: 50px 50px 50px 50px;
               margin-bottom: 20px;
-              margin-top: -30px;
+              margin-top: -45px;
               border-radius: 0;
               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
               position: relative;
@@ -1117,8 +1117,8 @@ export default function Arrival() {
               print-color-adjust: exact;
             }
             .logo-image {
-              width: 220px;
-              height: 220px;
+              width: 310px;
+              height: 310px;
               object-fit: contain;
               flex-shrink: 0;
               margin-bottom: 0;
