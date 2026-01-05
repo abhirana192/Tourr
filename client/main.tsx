@@ -75,7 +75,9 @@ const App = () => (
 );
 
 const container = document.getElementById("root");
-if (container && !container.hasChildNodes()) {
-  const root = createRoot(container);
-  root.render(<App />);
+if (container && !(window as any).__reactRoot) {
+  (window as any).__reactRoot = createRoot(container);
+}
+if ((window as any).__reactRoot) {
+  (window as any).__reactRoot.render(<App />);
 }
