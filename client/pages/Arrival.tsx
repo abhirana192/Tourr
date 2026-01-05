@@ -826,6 +826,21 @@ export default function Arrival() {
           }
         }
       });
+
+      // Translate custom notes if language is not English
+      if (language !== "en") {
+        const allTextDivs = cell.querySelectorAll("div");
+        allTextDivs.forEach((elem) => {
+          const text = elem.textContent?.trim();
+          if (text && text.startsWith("Note:") && noteTranslations[text.replace("Note: ", "")]) {
+            const noteText = text.replace("Note: ", "");
+            const translated = noteTranslations[noteText];
+            if (translated) {
+              elem.textContent = `Note: ${translated}`;
+            }
+          }
+        });
+      }
     });
 
     // Translate day labels in first column
