@@ -837,11 +837,21 @@ export default function Arrival() {
             if (text.startsWith("Note: ")) {
               const noteText = text.replace("Note: ", "");
               if (noteTranslations[noteText]) {
-                elem.textContent = `Note: ${noteTranslations[noteText]}`;
+                const translated = noteTranslations[noteText];
+                if (language === "en-zh") {
+                  elem.textContent = `Note: ${noteText} / ${translated}`;
+                } else if (language === "en-ja") {
+                  elem.textContent = `Note: ${noteText} / ${translated}`;
+                }
               }
             } else if (noteTranslations[text]) {
               // Handle direct note text (for day notes, etc.)
-              elem.textContent = noteTranslations[text];
+              const translated = noteTranslations[text];
+              if (language === "en-zh") {
+                elem.textContent = `${text} / ${translated}`;
+              } else if (language === "en-ja") {
+                elem.textContent = `${text} / ${translated}`;
+              }
             }
           }
         });
