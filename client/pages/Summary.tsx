@@ -704,7 +704,7 @@ export default function Summary() {
               </div>
               <div className="flex gap-4 items-end">
                 {editingTableKey === "departure" ? (
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 flex-wrap">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">Van</label>
                       <input
@@ -715,7 +715,7 @@ export default function Summary() {
                           const newAssignments = new Map(tableAssignments);
                           newAssignments.set(key, {
                             van: e.target.value,
-                            employee: newAssignments.get(key)?.employee || "",
+                            employees: newAssignments.get(key)?.employees || [],
                           });
                           setTableAssignments(newAssignments);
                         }}
@@ -723,34 +723,50 @@ export default function Summary() {
                         className="px-2 py-1 border border-gray-300 rounded text-sm w-32"
                       />
                     </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Employee</label>
-                      <select
-                        value={tableAssignments.get("departure-departure-" + filterToDate)?.employee || ""}
-                        onChange={(e) => {
-                          const key = "departure-departure-" + filterToDate;
-                          const newAssignments = new Map(tableAssignments);
-                          newAssignments.set(key, {
-                            van: newAssignments.get(key)?.van || "",
-                            employee: e.target.value,
-                          });
-                          setTableAssignments(newAssignments);
-                        }}
-                        className="px-2 py-1 border border-gray-300 rounded text-sm w-40"
-                      >
-                        <option value="">Select Employee</option>
-                        {staffList.map((staff) => (
-                          <option key={staff.id} value={staff.name}>
-                            {staff.name}
-                          </option>
-                        ))}
-                      </select>
+                    <div className="flex-1 min-w-[300px]">
+                      <label className="block text-xs font-medium text-gray-700 mb-2">Staff (select one or more)</label>
+                      <div className="border border-gray-300 rounded p-2 bg-white max-h-32 overflow-y-auto">
+                        {staffList.length === 0 ? (
+                          <p className="text-xs text-gray-500">No staff available</p>
+                        ) : (
+                          staffList.map((staff) => {
+                            const key = "departure-departure-" + filterToDate;
+                            const selectedEmployees = tableAssignments.get(key)?.employees || [];
+                            const isSelected = selectedEmployees.includes(staff.name);
+                            return (
+                              <label key={staff.id} className="flex items-center gap-2 p-1 hover:bg-gray-100 cursor-pointer text-sm">
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={(e) => {
+                                    const newAssignments = new Map(tableAssignments);
+                                    const currentEmployees = newAssignments.get(key)?.employees || [];
+                                    if (e.target.checked) {
+                                      currentEmployees.push(staff.name);
+                                    } else {
+                                      const index = currentEmployees.indexOf(staff.name);
+                                      if (index > -1) currentEmployees.splice(index, 1);
+                                    }
+                                    newAssignments.set(key, {
+                                      van: newAssignments.get(key)?.van || "",
+                                      employees: currentEmployees,
+                                    });
+                                    setTableAssignments(newAssignments);
+                                  }}
+                                  className="w-4 h-4"
+                                />
+                                <span>{staff.name}</span>
+                              </label>
+                            );
+                          })
+                        )}
+                      </div>
                     </div>
                     <button
                       onClick={async () => {
                         const key = "departure-departure-" + filterToDate;
-                        const assignment = tableAssignments.get(key) || { van: "", employee: "" };
-                        await saveTableAssignment("departure", "departure", filterToDate, assignment.van, assignment.employee);
+                        const assignment = tableAssignments.get(key) || { van: "", employees: [] };
+                        await saveTableAssignment("departure", "departure", filterToDate, assignment.van, assignment.employees);
                         setEditingTableKey(null);
                       }}
                       disabled={isSaving}
@@ -773,8 +789,12 @@ export default function Summary() {
                         <span className="font-medium text-gray-900">{tableAssignments.get("departure-departure-" + filterToDate)?.van || "-"}</span>
                       </div>
                       <div>
-                        <span className="text-gray-600">Employee: </span>
-                        <span className="font-medium text-gray-900">{tableAssignments.get("departure-departure-" + filterToDate)?.employee || "-"}</span>
+                        <span className="text-gray-600">Staff: </span>
+                        <span className="font-medium text-gray-900">
+                          {(tableAssignments.get("departure-departure-" + filterToDate)?.employees || []).length > 0
+                            ? (tableAssignments.get("departure-departure-" + filterToDate)?.employees || []).join(", ")
+                            : "-"}
+                        </span>
                       </div>
                     </div>
                     <button
