@@ -211,7 +211,7 @@ export default function Arrival() {
   };
 
   const getAvailableActivities = (tour: Tour): string[] => {
-    return ["city_tour", "fishing", "dog_sledging", "snowmobile_atv", "hiking", "aurora_village", "nlt"];
+    return ["city_tour", "fishing", "dog_sledging", "snowmobile_atv", "hiking", "aurora_village", "nlt", "aurora_village_activity", "snowmobile_atv_activity"];
   };
 
   const generateRandomSchedule = (tour: Tour, dayCount: number): ActivitySchedule => {
