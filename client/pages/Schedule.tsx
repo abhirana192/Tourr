@@ -69,7 +69,11 @@ const getDayLabel = (dayIndex: number): string => {
 
 const getActivityDetails = (tour: Tour, activityKey: string): { text: string; notes?: string } => {
   if (!tour.activity_schedule) {
-    return { text: tour[activityKey as keyof Tour] as string || "No" };
+    const value = tour[activityKey as keyof Tour] as string;
+    if (value === "Yes") {
+      return { text: "Activity scheduled (timing not fixed)" };
+    }
+    return { text: value || "-" };
   }
 
   try {
@@ -79,7 +83,11 @@ const getActivityDetails = (tour: Tour, activityKey: string): { text: string; no
     );
 
     if (!activityName) {
-      return { text: tour[activityKey as keyof Tour] as string || "No" };
+      const value = tour[activityKey as keyof Tour] as string;
+      if (value === "Yes") {
+        return { text: "Activity scheduled (timing not fixed)" };
+      }
+      return { text: value || "-" };
     }
 
     const dayDetails: string[] = [];
@@ -118,11 +126,15 @@ const getActivityDetails = (tour: Tour, activityKey: string): { text: string; no
     }
 
     return {
-      text: dayDetails.length > 0 ? dayDetails.join(", ") : "No",
+      text: dayDetails.length > 0 ? dayDetails.join(", ") : "-",
       notes: allNotes.length > 0 ? allNotes.join(" | ") : undefined,
     };
   } catch (error) {
-    return { text: tour[activityKey as keyof Tour] as string || "No" };
+    const value = tour[activityKey as keyof Tour] as string;
+    if (value === "Yes") {
+      return { text: "Activity scheduled (timing not fixed)" };
+    }
+    return { text: value || "-" };
   }
 };
 
