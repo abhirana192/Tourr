@@ -808,9 +808,6 @@ export default function Summary() {
                       {activityData.guests.map((guest, idx) => {
                         const arrivalInfo = [guest.arrival, guest.arrivalTime].filter(Boolean).join(" ") + (guest.arrivalFlight ? ` | ${guest.arrivalFlight}` : "");
                         const departureInfo = [guest.departure, guest.departureTime].filter(Boolean).join(" ") + (guest.departureFlight ? ` | ${guest.departureFlight}` : "");
-                        const assignmentKey = `${activityData.activityKey}-${idx}`;
-                        const assignment = assignments.get(assignmentKey) || { van: "", employee: "" };
-                        const isEditing = editingKey === assignmentKey;
                         return (
                           <tr key={idx} className={`border-b border-gray-200 hover:bg-blue-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
                             <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{guest.guestName}</td>
