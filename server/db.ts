@@ -414,6 +414,7 @@ export async function updateTour(id: string, updates: any) {
     "dog_sledging",
     "snowmobile_atv",
     "aurora_village",
+    "aurora_village_activity",
     "payment",
     "reservation_number",
     "remarks",
