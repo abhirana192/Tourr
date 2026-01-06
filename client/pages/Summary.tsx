@@ -161,6 +161,44 @@ export default function Summary() {
   const [activitiesByDate, setActivitiesByDate] = useState<ActivityByDate[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
+  const saveTableAssignment = async (
+    assignmentType: "arrival" | "departure" | "activity",
+    assignmentKey: string,
+    activityDate: string,
+    van: string,
+    employee: string
+  ) => {
+    try {
+      setIsSaving(true);
+      const response = await fetch("/api/assignments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          assignmentType,
+          assignmentKey,
+          activityDate,
+          van,
+          employee,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save assignment");
+      }
+
+      const savedAssignment: ActivityAssignment = await response.json();
+      const key = `${assignmentType}-${assignmentKey}-${activityDate}`;
+      const newTableAssignments = new Map(tableAssignments);
+      newTableAssignments.set(key, { van, employee });
+      setTableAssignments(newTableAssignments);
+    } catch (err) {
+      console.error("Error saving assignment:", err);
+      alert("Failed to save assignment");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const extractDateAndTime = (value: any) => {
     if (!value) return { date: "", time: "", flight: "" };
     const str = String(value).trim();
