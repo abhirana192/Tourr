@@ -77,6 +77,7 @@ function initializeSchema() {
       dog_sledging TEXT,
       snowmobile_atv TEXT,
       aurora_village TEXT,
+      aurora_village_activity TEXT,
       payment TEXT,
       reservation_number TEXT,
       remarks TEXT,
