@@ -242,6 +242,7 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
         dog_sledging: "",
         snowmobile_atv: "",
         aurora_village: "",
+        aurora_village_activity: "",
         payment: "",
         reservation_number: "",
         remarks: "",
