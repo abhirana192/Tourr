@@ -429,6 +429,47 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               />
             </div>
 
+            {/* LEADER NAME */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Leader Name <span className="text-red-500">*</span>
+              </label>
+              <Input
+                type="text"
+                name="leader"
+                value={formData.leader}
+                onChange={handleChange}
+                placeholder="Enter leader name"
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+                required
+              />
+            </div>
+
+            {/* MEMBERS */}
+            {formData.pax > 1 && (
+              <div className="md:col-span-2 lg:col-span-3">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Member Names (Optional) - {formData.pax - 1} more member{formData.pax - 1 !== 1 ? "s" : ""}
+                </label>
+                <div className="space-y-2">
+                  {Array.from({ length: formData.pax - 1 }).map((_, idx) => (
+                    <Input
+                      key={idx}
+                      type="text"
+                      placeholder={`Member ${idx + 1}`}
+                      value={members[idx] || ""}
+                      onChange={(e) => {
+                        const newMembers = [...members];
+                        newMembers[idx] = e.target.value;
+                        setMembers(newMembers);
+                      }}
+                      className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* GROUP ID */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
