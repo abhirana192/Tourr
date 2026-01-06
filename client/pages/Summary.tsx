@@ -349,10 +349,17 @@ export default function Summary() {
                         activityMap.set(key, new Map());
                       }
 
+                      // Calculate the actual activity date
+                      const [year, month, day] = arrivalData.date.split('-').map(Number);
+                      const activityDate = new Date(year, month - 1, day + dayIndex);
+                      const activityDateStr = `${activityDate.getFullYear()}-${String(activityDate.getMonth() + 1).padStart(2, '0')}-${String(activityDate.getDate()).padStart(2, '0')}`;
+
                       const guestRow: GuestActivityRow = {
                         ...guestBaseRow,
+                        arrival: activityDateStr,
                         activityTiming: activity.timings?.[0] || "",
                         dayNumber: dayIndex,
+                        activityDate: activityDateStr,
                       };
 
                       // Use tour name as key to deduplicate - only one entry per guest per activity
