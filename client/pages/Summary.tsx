@@ -936,8 +936,12 @@ export default function Summary() {
                 <div key={dateItem.date} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                   {/* Date Header */}
                   <div className="bg-gradient-to-r from-purple-50 to-purple-100 border-b border-purple-200 px-6 py-4">
-                    <h3 className="text-lg font-bold text-purple-900">{dateItem.date}</h3>
-                    <p className="text-sm text-purple-700 mt-1">{dateItem.activities.length} activity{dateItem.activities.length !== 1 ? "ies" : ""} scheduled</p>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-lg font-bold text-purple-900">{dateItem.date}</h3>
+                        <p className="text-sm text-purple-700 mt-1">{dateItem.activities.length} activity{dateItem.activities.length !== 1 ? "ies" : ""} scheduled</p>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Date Activities Table or Empty Message */}
