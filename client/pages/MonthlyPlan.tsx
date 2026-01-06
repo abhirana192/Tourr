@@ -48,6 +48,7 @@ interface DailyActivityCount {
   dog_sledging: number;
   snowmobile_atv: number;
   aurora_village: number;
+  aurora_village_activity: number;
   city_tour: number;
   snowshoe: number;
   dnr: number;
