@@ -155,6 +155,7 @@ export default function Summary() {
   const [isSaving, setIsSaving] = useState(false);
   const [allTourGuests, setAllTourGuests] = useState<GuestActivityRow[]>([]);
   const [editingNotes, setEditingNotes] = useState<Map<string, { arrival_notes: string; departure_notes: string }>>(new Map());
+  const [editingActivityNotes, setEditingActivityNotes] = useState<Map<string, string>>(new Map());
 
   const saveTableAssignment = async (
     assignmentType: "arrival" | "departure" | "activity",
