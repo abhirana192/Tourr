@@ -126,7 +126,7 @@ const getActivityDetails = (tour: Tour, activityKey: string): { text: string; no
     }
 
     return {
-      text: dayDetails.length > 0 ? dayDetails.join(", ") : "-",
+      text: dayDetails.length > 0 ? dayDetails.join(", ") : "No",
       notes: allNotes.length > 0 ? allNotes.join(" | ") : undefined,
     };
   } catch (error) {
