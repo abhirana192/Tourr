@@ -1257,7 +1257,7 @@ export default function Summary() {
                             <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.accommodation}</td>
                             <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{arrivalInfo}</td>
                             <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{departureInfo}</td>
-                            <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.activityTiming}</td>
+                            <td className="px-4 py-3 text-sm text-gray-600">{guest.arrival_notes || guest.departure_notes || "-"}</td>
                           </tr>
                         );
                       })}
