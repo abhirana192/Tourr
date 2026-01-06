@@ -488,6 +488,12 @@ export default function Summary() {
             >
               Reset to Today
             </button>
+            <button
+              onClick={handlePrint}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium flex items-center gap-2"
+            >
+              <Printer size={16} /> Print
+            </button>
           </div>
           <p className="text-xs text-gray-500 mt-2">Showing data from {filterFromDate} to {filterToDate}</p>
         </div>
