@@ -161,8 +161,7 @@ const getTranslatedText = (text: string, language: LanguageOption): string => {
 export default function Arrival() {
   const [tours, setTours] = useState<Tour[]>([]);
   const [selectedTour, setSelectedTour] = useState<Tour | null>(null);
-  const [searchDateFrom, setSearchDateFrom] = useState("");
-  const [searchDateTo, setSearchDateTo] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [schedules, setSchedules] = useState<{ [tourId: string]: ActivitySchedule }>({});
@@ -339,15 +338,12 @@ export default function Arrival() {
     initializeSchedule();
   }, [selectedTour?.id]);
 
-  const fetchTours = async (dateFrom = "", dateTo = "", retries = 3) => {
+  const fetchTours = async (retries = 3) => {
     try {
       setLoading(true);
       setError("");
-      const params = new URLSearchParams();
-      if (dateFrom) params.append("dateFrom", dateFrom);
-      if (dateTo) params.append("dateTo", dateTo);
 
-      const url = `/api/tours${params.toString() ? `?${params.toString()}` : ""}`;
+      const url = `/api/tours`;
       console.log(`[Arrival] Fetching tours from: ${url}`);
 
       let lastError: Error | null = null;
@@ -386,22 +382,19 @@ export default function Arrival() {
     }
   };
 
-  const handleDateFromChange = (value: string) => {
-    setSearchDateFrom(value);
-    fetchTours(value, searchDateTo);
-  };
-
-  const handleDateToChange = (value: string) => {
-    setSearchDateTo(value);
-    fetchTours(searchDateFrom, value);
-  };
-
   const handleReset = () => {
-    setSearchDateFrom("");
-    setSearchDateTo("");
+    setSearchQuery("");
     setSelectedTour(null);
-    fetchTours("", "");
   };
+
+  const filteredTours = tours.filter((tour) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      tour.name.toLowerCase().includes(query) ||
+      tour.invoice.toLowerCase().includes(query) ||
+      tour.group_id.toLowerCase().includes(query)
+    );
+  });
 
   const generateDayItinerary = (tour: Tour): DayItinerary[] => {
     const arrival = extractDateAndTime(tour.arrival);
@@ -1257,54 +1250,53 @@ export default function Arrival() {
           <h1 className="text-2xl font-bold text-gray-900">Guest Arrival Information</h1>
         </div>
 
-        {/* Filters */}
+        {/* Search Filter */}
         <div className="mb-4 bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">From Date</label>
+            <div className="lg:col-span-3">
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Search Guest (by Name, Invoice, or Group ID)</label>
               <Input
-                type="date"
-                value={searchDateFrom}
-                onChange={(e) => handleDateFromChange(e.target.value)}
+                type="text"
+                placeholder="Enter name, invoice, or group ID..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">To Date</label>
-              <Input
-                type="date"
-                value={searchDateTo}
-                onChange={(e) => handleDateToChange(e.target.value)}
-                className="py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Select Guest</label>
-              <select
-                value={selectedTour?.id || ""}
-                onChange={(e) => {
-                  const tour = tours.find((t) => t.id === e.target.value);
-                  setSelectedTour(tour || null);
-                }}
-                className="w-full py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-              >
-                <option value="">Select a guest...</option>
-                {tours.map((tour) => (
-                  <option key={tour.id} value={tour.id}>
-                    {tour.name} ({tour.pax} pax) - {tour.start_date}
-                  </option>
-                ))}
-              </select>
             </div>
             <div className="flex items-end">
               <Button
                 onClick={handleReset}
                 className="w-full bg-gray-500 hover:bg-gray-600 text-white text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 font-medium"
               >
-                <RotateCcw size={14} /> Reset
+                <RotateCcw size={14} /> Clear
               </Button>
             </div>
           </div>
+          {searchQuery && (
+            <div className="mt-3 max-h-64 overflow-y-auto border border-gray-200 rounded-lg">
+              {filteredTours.length === 0 ? (
+                <div className="p-3 text-xs text-gray-500 text-center">No guests found matching your search</div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {filteredTours.map((tour) => (
+                    <button
+                      key={tour.id}
+                      onClick={() => {
+                        setSelectedTour(tour);
+                        setSearchQuery("");
+                      }}
+                      className="w-full text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-50 transition-colors text-xs"
+                    >
+                      <div className="font-semibold text-gray-900">{tour.name}</div>
+                      <div className="text-gray-600 mt-0.5">
+                        Invoice: {tour.invoice} | Group: {tour.group_id} | {tour.pax} pax | {tour.start_date}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Error Message */}
