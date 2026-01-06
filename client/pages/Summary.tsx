@@ -161,6 +161,7 @@ export default function Summary() {
   const [editingTableKey, setEditingTableKey] = useState<string | null>(null);
   const [activitiesByDate, setActivitiesByDate] = useState<ActivityByDate[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [allTourGuests, setAllTourGuests] = useState<GuestActivityRow[]>([]);
 
   const saveTableAssignment = async (
     assignmentType: "arrival" | "departure" | "activity",
