@@ -1103,7 +1103,7 @@ export default function Summary() {
                 <div className="flex justify-between items-start">
                   <div>
                     <h2 className="text-xl font-bold text-blue-900">{activityData.activityName}</h2>
-                    <p className="text-sm text-blue-700 mt-1">{activityData.guests.length} guest{activityData.guests.length !== 1 ? "s" : ""} scheduled</p>
+                    <p className="text-sm text-blue-700 mt-1">{activityData.guests.reduce((sum, guest) => sum + (guest.pax || 0), 0)} guest{activityData.guests.reduce((sum, guest) => sum + (guest.pax || 0), 0) !== 1 ? "s" : ""} scheduled</p>
                   </div>
                   <div className="flex gap-4 items-end">
                     {editingTableKey === `activity-${activityData.activityKey}` ? (
