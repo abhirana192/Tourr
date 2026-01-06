@@ -352,8 +352,8 @@ export async function createTour(data: any) {
   database.run(
     `INSERT INTO tours (id, invoice, language, name, pax, group_id, dnr, td, agent, arrival, departure,
                         accommodation, gears, snowshoe, nlt, city_tour, hiking, fishing, dog_sledging,
-                        snowmobile_atv, aurora_village, payment, reservation_number, remarks, start_date, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                        snowmobile_atv, aurora_village, aurora_village_activity, payment, reservation_number, remarks, start_date, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.id,
       data.invoice,
@@ -376,6 +376,7 @@ export async function createTour(data: any) {
       data.dog_sledging,
       data.snowmobile_atv,
       data.aurora_village,
+      data.aurora_village_activity,
       data.payment,
       data.reservation_number,
       data.remarks,
