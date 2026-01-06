@@ -537,7 +537,7 @@ export default function MonthlyPlan() {
               <tbody>
                 {activities.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="px-4 py-8 text-center text-gray-500">
+                    <td colSpan={11} className="px-4 py-8 text-center text-gray-500">
                       No activities found for this month
                     </td>
                   </tr>
