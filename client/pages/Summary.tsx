@@ -594,6 +594,7 @@ export default function Summary() {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Agent</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arrival Time</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Flight No.</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Notes</th>
                 </tr>
               </thead>
               <tbody>
