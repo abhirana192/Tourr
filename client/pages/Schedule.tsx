@@ -624,6 +624,18 @@ export default function Schedule() {
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.language}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 font-semibold min-w-20 whitespace-nowrap">{tour.name}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-8 whitespace-nowrap">{tour.pax}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-20 whitespace-nowrap font-semibold">{tour.leader || "-"}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-32 whitespace-normal">
+                        {tour.members ? (
+                          <div className="text-[9px]">
+                            {JSON.parse(tour.members || "[]").map((member: string, idx: number) => (
+                              <div key={idx}>{member}</div>
+                            ))}
+                          </div>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.group_id}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-10 whitespace-nowrap">{tour.dnr}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-10 whitespace-nowrap">{tour.td}</td>
