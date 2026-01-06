@@ -59,6 +59,7 @@ interface GuestActivityRow {
   tourName: string;
   invoiceNumber: string;
   agent: string;
+  tourDuration: string;
   arrival: string;
   arrivalTime: string;
   arrivalFlight: string;
