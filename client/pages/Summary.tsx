@@ -448,16 +448,7 @@ export default function Summary() {
     ...activity,
     guests: (activity.guests || []).filter((guest) => {
       if (!guest.arrival) return false;
-
-      // Calculate the actual activity date based on arrival date + day number
-      let activityDateStr = guest.arrival;
-      if (guest.dayNumber !== undefined && guest.dayNumber > 0) {
-        const [year, month, day] = guest.arrival.split('-').map(Number);
-        const activityDate = new Date(year, month - 1, day + guest.dayNumber);
-        activityDateStr = `${activityDate.getFullYear()}-${String(activityDate.getMonth() + 1).padStart(2, '0')}-${String(activityDate.getDate()).padStart(2, '0')}`;
-      }
-
-      return activityDateStr >= filterFromDate && activityDateStr <= filterToDate;
+      return guest.arrival >= filterFromDate && guest.arrival <= filterToDate;
     }),
   }));
 
