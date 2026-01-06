@@ -189,6 +189,43 @@ export default function Summary() {
     }
   };
 
+  const saveGuestNotes = async (tourId: string, arrival_notes: string, departure_notes: string) => {
+    try {
+      setIsSaving(true);
+      const response = await fetch(`/api/tours/${tourId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          arrival_notes,
+          departure_notes,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save notes");
+      }
+
+      // Update the allTourGuests with new notes
+      setAllTourGuests((prev) =>
+        prev.map((guest) =>
+          guest.tourId === tourId
+            ? { ...guest, arrival_notes, departure_notes }
+            : guest
+        )
+      );
+
+      // Clear editing state for this guest
+      const newEditingNotes = new Map(editingNotes);
+      newEditingNotes.delete(tourId);
+      setEditingNotes(newEditingNotes);
+    } catch (err) {
+      console.error("Error saving notes:", err);
+      alert("Failed to save notes");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const extractDateAndTime = (value: any) => {
     if (!value) return { date: "", time: "", flight: "" };
     const str = String(value).trim();
