@@ -1331,6 +1331,8 @@ export default function Summary() {
                       {activityData.guests.map((guest, idx) => {
                         const arrivalInfo = [guest.arrival, guest.arrivalTime].filter(Boolean).join(" ") + (guest.arrivalFlight ? ` | ${guest.arrivalFlight}` : "");
                         const departureInfo = [guest.departure, guest.departureTime].filter(Boolean).join(" ") + (guest.departureFlight ? ` | ${guest.departureFlight}` : "");
+                        const noteKey = `${guest.tourId}-${activityData.activityName}`;
+                        const isEditingActivityNote = editingActivityNotes.has(noteKey);
 
                         if (activityData.activityKey === "aurora_village_activity") {
                           return (
@@ -1345,7 +1347,51 @@ export default function Summary() {
                               <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrivalFlight || "-"}</td>
                               <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.departureTime || "-"}</td>
                               <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.departureFlight || "-"}</td>
-                              <td className="px-4 py-3 text-sm text-gray-600">{guest.arrival_notes || guest.departure_notes || "-"}</td>
+                              <td className="px-4 py-3 text-sm border-r border-gray-200">
+                                {isEditingActivityNote ? (
+                                  <div className="flex gap-1 items-center">
+                                    <input
+                                      type="text"
+                                      value={editingActivityNotes.get(noteKey) || ""}
+                                      onChange={(e) => {
+                                        const updated = new Map(editingActivityNotes);
+                                        updated.set(noteKey, e.target.value);
+                                        setEditingActivityNotes(updated);
+                                      }}
+                                      placeholder="Add note..."
+                                      className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                    <button
+                                      onClick={() => saveActivityNotes(guest.tourId, activityData.activityName, editingActivityNotes.get(noteKey) || "")}
+                                      disabled={isSaving}
+                                      className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 disabled:bg-gray-400"
+                                    >
+                                      ✓
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        const updated = new Map(editingActivityNotes);
+                                        updated.delete(noteKey);
+                                        setEditingActivityNotes(updated);
+                                      }}
+                                      className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => {
+                                      const updated = new Map(editingActivityNotes);
+                                      updated.set(noteKey, guest.activityNotes || "");
+                                      setEditingActivityNotes(updated);
+                                    }}
+                                    className="text-xs text-gray-600 hover:text-gray-900 hover:underline cursor-pointer"
+                                  >
+                                    {guest.activityNotes ? "✎ " + guest.activityNotes.substring(0, 30) + (guest.activityNotes.length > 30 ? "..." : "") : "Add note"}
+                                  </button>
+                                )}
+                              </td>
                             </tr>
                           );
                         }
@@ -1361,7 +1407,51 @@ export default function Summary() {
                             <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.accommodation}</td>
                             <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{arrivalInfo}</td>
                             <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{departureInfo}</td>
-                            <td className="px-4 py-3 text-sm text-gray-600">{guest.arrival_notes || guest.departure_notes || "-"}</td>
+                            <td className="px-4 py-3 text-sm border-r border-gray-200">
+                              {isEditingActivityNote ? (
+                                <div className="flex gap-1 items-center">
+                                  <input
+                                    type="text"
+                                    value={editingActivityNotes.get(noteKey) || ""}
+                                    onChange={(e) => {
+                                      const updated = new Map(editingActivityNotes);
+                                      updated.set(noteKey, e.target.value);
+                                      setEditingActivityNotes(updated);
+                                    }}
+                                    placeholder="Add note..."
+                                    className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  />
+                                  <button
+                                    onClick={() => saveActivityNotes(guest.tourId, activityData.activityName, editingActivityNotes.get(noteKey) || "")}
+                                    disabled={isSaving}
+                                    className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 disabled:bg-gray-400"
+                                  >
+                                    ✓
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      const updated = new Map(editingActivityNotes);
+                                      updated.delete(noteKey);
+                                      setEditingActivityNotes(updated);
+                                    }}
+                                    className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    const updated = new Map(editingActivityNotes);
+                                    updated.set(noteKey, guest.activityNotes || "");
+                                    setEditingActivityNotes(updated);
+                                  }}
+                                  className="text-xs text-gray-600 hover:text-gray-900 hover:underline cursor-pointer"
+                                >
+                                  {guest.activityNotes ? "✎ " + guest.activityNotes.substring(0, 30) + (guest.activityNotes.length > 30 ? "..." : "") : "Add note"}
+                                </button>
+                              )}
+                            </td>
                           </tr>
                         );
                       })}
