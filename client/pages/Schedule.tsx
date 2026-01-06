@@ -456,6 +456,8 @@ export default function Schedule() {
                 <th>LANG</th>
                 <th>NAME</th>
                 <th>PAX</th>
+                <th>LEADER</th>
+                <th>MEMBERS</th>
                 <th>GRP</th>
                 <th>DNR</th>
                 <th>T/D</th>
