@@ -950,118 +950,144 @@ export default function Summary() {
                       <p>No activities scheduled for this date</p>
                     </div>
                   ) : (
-                    <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="bg-gray-100 border-b border-gray-200">
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Activity</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Guest Name</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Language</th>
-                          <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 border-r border-gray-200">Pax</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Tour</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Invoice</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Agent</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Hotel</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Timing</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Day</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Van</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Employee</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {dateItem.activities.map((activity, idx) => {
-                          const assignmentKey = `date-${dateItem.date}-${idx}`;
-                          const assignment = assignments.get(assignmentKey) || { van: "", employee: "" };
-                          const isEditing = editingKey === assignmentKey;
+                    <div>
+                      {(() => {
+                        // Group activities by activity name
+                        const activitiesByName = new Map<string, typeof dateItem.activities>();
+                        for (const activity of dateItem.activities) {
+                          if (!activitiesByName.has(activity.activityName)) {
+                            activitiesByName.set(activity.activityName, []);
+                          }
+                          activitiesByName.get(activity.activityName)!.push(activity);
+                        }
+
+                        return Array.from(activitiesByName.entries()).map(([activityName, activities]) => {
+                          const assignmentKey = `activity-${activityName}-${dateItem.date}`;
+                          const currentAssignment = tableAssignments.get(assignmentKey) || { van: "", employee: "" };
+                          const isEditing = editingTableKey === assignmentKey;
+
                           return (
-                            <tr key={idx} className={`border-b border-gray-200 hover:bg-purple-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
-                              <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{activity.activityName}</td>
-                              <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{activity.guestName}</td>
-                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.language}</td>
-                              <td className="px-4 py-3 text-sm text-gray-900 text-center border-r border-gray-200 font-medium">{activity.pax}</td>
-                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.tourName}</td>
-                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.invoiceNumber}</td>
-                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.agent}</td>
-                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.accommodation}</td>
-                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.activityTiming}</td>
-                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">Day {activity.dayNumber}</td>
-                              <td className="px-4 py-3 text-sm border-r border-gray-200">
-                                {isEditing ? (
-                                  <input
-                                    type="text"
-                                    value={assignment.van}
-                                    onChange={(e) => {
-                                      const newAssignments = new Map(assignments);
-                                      newAssignments.set(assignmentKey, { ...assignment, van: e.target.value });
-                                      setAssignments(newAssignments);
-                                    }}
-                                    placeholder="e.g., Van A"
-                                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                                  />
-                                ) : (
-                                  <span className="text-gray-600">{assignment.van || "-"}</span>
-                                )}
-                              </td>
-                              <td className="px-4 py-3 text-sm border-r border-gray-200">
-                                {isEditing ? (
-                                  <select
-                                    value={assignment.employee}
-                                    onChange={(e) => {
-                                      const newAssignments = new Map(assignments);
-                                      newAssignments.set(assignmentKey, { ...assignment, employee: e.target.value });
-                                      setAssignments(newAssignments);
-                                    }}
-                                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                                  >
-                                    <option value="">Select Employee</option>
-                                    {staffList.map((staff) => (
-                                      <option key={staff.id} value={staff.name}>
-                                        {staff.name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                ) : (
-                                  <span className="text-gray-600">{assignment.employee || "-"}</span>
-                                )}
-                              </td>
-                              <td className="px-4 py-3 text-sm">
-                                {isEditing ? (
-                                  <div className="flex gap-2">
-                                    <button
-                                      onClick={() => setEditingKey(null)}
-                                      className="text-green-600 hover:text-green-700 flex items-center gap-1"
-                                      title="Save"
-                                    >
-                                      <Save className="w-4 h-4" />
-                                    </button>
-                                    <button
-                                      onClick={() => {
-                                        setAssignments(new Map(assignments));
-                                        setEditingKey(null);
-                                      }}
-                                      className="text-red-600 hover:text-red-700 flex items-center gap-1"
-                                      title="Cancel"
-                                    >
-                                      <X className="w-4 h-4" />
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <button
-                                    onClick={() => setEditingKey(assignmentKey)}
-                                    className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
-                                    title="Edit"
-                                  >
-                                    <Edit2 className="w-4 h-4" />
-                                  </button>
-                                )}
-                              </td>
-                            </tr>
+                            <div key={activityName} className="overflow-x-auto border-t border-gray-200">
+                              {/* Activity Sub-header with Van/Employee Assignment */}
+                              <div className="bg-gray-50 px-6 py-3 border-b border-gray-200 flex justify-between items-center">
+                                <div>
+                                  <h4 className="font-semibold text-gray-900 text-sm">{activityName}</h4>
+                                  <p className="text-xs text-gray-600 mt-0.5">{activities.length} guest{activities.length !== 1 ? "s" : ""}</p>
+                                </div>
+                                <div className="flex gap-4 items-end">
+                                  {isEditing ? (
+                                    <div className="flex gap-2">
+                                      <div>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Van</label>
+                                        <input
+                                          type="text"
+                                          value={currentAssignment.van}
+                                          onChange={(e) => {
+                                            const newAssignments = new Map(tableAssignments);
+                                            newAssignments.set(assignmentKey, {
+                                              van: e.target.value,
+                                              employee: currentAssignment.employee,
+                                            });
+                                            setTableAssignments(newAssignments);
+                                          }}
+                                          placeholder="e.g., Van A"
+                                          className="px-2 py-1 border border-gray-300 rounded text-sm w-28"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Employee</label>
+                                        <select
+                                          value={currentAssignment.employee}
+                                          onChange={(e) => {
+                                            const newAssignments = new Map(tableAssignments);
+                                            newAssignments.set(assignmentKey, {
+                                              van: currentAssignment.van,
+                                              employee: e.target.value,
+                                            });
+                                            setTableAssignments(newAssignments);
+                                          }}
+                                          className="px-2 py-1 border border-gray-300 rounded text-sm w-36"
+                                        >
+                                          <option value="">Select Employee</option>
+                                          {staffList.map((staff) => (
+                                            <option key={staff.id} value={staff.name}>
+                                              {staff.name}
+                                            </option>
+                                          ))}
+                                        </select>
+                                      </div>
+                                      <button
+                                        onClick={async () => {
+                                          await saveTableAssignment("activity", `${activityName}`, dateItem.date, currentAssignment.van, currentAssignment.employee);
+                                          setEditingTableKey(null);
+                                        }}
+                                        disabled={isSaving}
+                                        className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 disabled:bg-gray-400"
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={() => setEditingTableKey(null)}
+                                        className="px-3 py-1 bg-gray-400 text-white rounded text-xs hover:bg-gray-500"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <div className="flex gap-3 items-center text-sm">
+                                      <div>
+                                        <span className="text-gray-600">Van: <span className="font-medium">{currentAssignment.van || "-"}</span></span>
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-600">Employee: <span className="font-medium">{currentAssignment.employee || "-"}</span></span>
+                                      </div>
+                                      <button
+                                        onClick={() => setEditingTableKey(assignmentKey)}
+                                        className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                                      >
+                                        Assign
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Activity Table */}
+                              <table className="w-full border-collapse">
+                                <thead>
+                                  <tr className="bg-gray-100 border-b border-gray-200">
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Guest Name</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Language</th>
+                                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 border-r border-gray-200">Pax</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Tour</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Invoice</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Agent</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Hotel</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Timing</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Day</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {activities.map((activity, idx) => (
+                                    <tr key={idx} className={`border-b border-gray-200 hover:bg-purple-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+                                      <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{activity.guestName}</td>
+                                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.language}</td>
+                                      <td className="px-4 py-3 text-sm text-gray-900 text-center border-r border-gray-200 font-medium">{activity.pax}</td>
+                                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.tourName}</td>
+                                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.invoiceNumber}</td>
+                                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.agent}</td>
+                                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.accommodation}</td>
+                                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{activity.activityTiming}</td>
+                                      <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">Day {activity.dayNumber}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
                           );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
+                        });
+                      })()}
+                    </div>
                   )}
                 </div>
               ))}
