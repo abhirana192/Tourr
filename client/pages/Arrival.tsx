@@ -91,6 +91,14 @@ const ACTIVITY_TIMINGS: { [key: string]: Activity } = {
     name: "Aurora Viewing",
     timings: ["9:30~9:50 PM - 1:30 AM", "10:00~10:15 PM - 2:00 AM"],
   },
+  aurora_village_activity: {
+    name: "Aurora Village",
+    timings: [],
+  },
+  snowmobile_atv_activity: {
+    name: "Snowmobile/ATV",
+    timings: [],
+  },
 };
 
 const ACTIVITY_TRANSLATIONS: { [key: string]: { zh: string; ja: string } } = {
@@ -101,6 +109,8 @@ const ACTIVITY_TRANSLATIONS: { [key: string]: { zh: string; ja: string } } = {
   "Cameron Fall Hiking": { zh: "卡梅伦瀑布徒步", ja: "キャメロンフォールハイキング" },
   "Ice Lake Tour": { zh: "冰湖之旅", ja: "アイスレイクツアー" },
   "Aurora Viewing": { zh: "极光观赏", ja: "オーロラ鑑賞" },
+  "Aurora Village": { zh: "极光村", ja: "オーロラビレッジ" },
+  "Snowmobile/ATV": { zh: "雪地摩托/全地形车", ja: "スノーモービル/ATV" },
 };
 
 const HEADER_TRANSLATIONS: { [key: string]: { zh: string; ja: string } } = {
