@@ -527,6 +527,7 @@ export default function Summary() {
                 let activitiesSections = "";
                 filteredActivities.forEach((activity) => {
                   if (activity.guests.length === 0) return;
+                  const activityPaxCount = activity.guests.reduce((sum, guest) => sum + (guest.pax || 0), 0);
                   const isAuroraVillage = activity.activityKey === "aurora_village_activity";
                   let tableHeaders = "";
                   let tableRows = "";
