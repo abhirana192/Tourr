@@ -69,6 +69,8 @@ let tours: Tour[] = [
     reservation_number: "RES001",
     remarks: "VIP Group",
     activity_schedule: undefined,
+    leader: "John Smith",
+    members: '["Sarah Smith", "Emily Smith", "Tom Smith", "Lucy Smith"]',
   },
 ];
 
