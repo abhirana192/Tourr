@@ -266,6 +266,7 @@ export default function Summary() {
 
           // Add to all guests list for arrivals/departures
           const guestBaseRow: GuestActivityRow = {
+            tourId: tour.id,
             guestName: tour.name,
             language: tour.language,
             pax: tour.pax,
@@ -277,9 +278,11 @@ export default function Summary() {
             arrivalTime: arrivalData.time,
             arrivalFlight: arrivalData.flight,
             departure: departureData.date,
-            departureTime: departureData.time,
+            departureTime: departureTime.time,
             departureFlight: departureData.flight,
             accommodation: tour.accommodation,
+            arrival_notes: tour.arrival_notes || "",
+            departure_notes: tour.departure_notes || "",
           };
           allTourGuests.push(guestBaseRow);
 
