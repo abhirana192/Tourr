@@ -38,7 +38,7 @@ export interface ActivityAssignment {
   assignment_key: string;
   activity_date: string;
   van: string;
-  employee: string;
+  employees: string;
   created_at: string;
   updated_at: string;
 }
@@ -134,7 +134,7 @@ export const db = {
     assignmentKey: string,
     activityDate: string,
     van: string,
-    employee: string
+    employees: string
   ) => {
     const existingIndex = assignments.findIndex(
       (a) =>
@@ -149,7 +149,7 @@ export const db = {
       assignments[existingIndex] = {
         ...assignments[existingIndex],
         van,
-        employee,
+        employees,
         updated_at: now,
       };
       return assignments[existingIndex];
@@ -161,7 +161,7 @@ export const db = {
       assignment_key: assignmentKey,
       activity_date: activityDate,
       van,
-      employee,
+      employees,
       created_at: now,
       updated_at: now,
     };
