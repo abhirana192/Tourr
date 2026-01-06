@@ -411,6 +411,7 @@ export default function Summary() {
           .sort((a, b) => a.date.localeCompare(b.date));
 
         setActivitiesByDate(dateActivityList);
+        setAllTourGuests(allTourGuests);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
         setError(errorMessage);
