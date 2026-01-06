@@ -149,7 +149,7 @@ export default function Summary() {
   });
   const [staffList, setStaffList] = useState<Staff[]>([]);
   const [assignments, setAssignments] = useState<Map<string, ActivityAssignment>>(new Map());
-  const [tableAssignments, setTableAssignments] = useState<Map<string, { van: string; employees: string[] }>>(new Map());
+  const [tableAssignments, setTableAssignments] = useState<Map<string, { van: string; employees: string[]; notes: string }>>(new Map());
   const [editingTableKey, setEditingTableKey] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [allTourGuests, setAllTourGuests] = useState<GuestActivityRow[]>([]);
