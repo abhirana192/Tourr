@@ -1125,6 +1125,7 @@ export default function Summary() {
                                         newAssignments.set(key, {
                                           van: newAssignments.get(key)?.van || "",
                                           employees: currentEmployees,
+                                          notes: newAssignments.get(key)?.notes || "",
                                         });
                                         setTableAssignments(newAssignments);
                                       }}
