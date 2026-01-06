@@ -389,6 +389,10 @@ export default function Schedule() {
           <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.language}</td>
           <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.name}</td>
           <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; text-align: center;">${tour.pax}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; font-weight: bold;">${tour.leader || "-"}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${
+            tour.members ? JSON.parse(tour.members).join(", ") : "-"
+          }</td>
           <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.group_id}</td>
           <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.dnr}</td>
           <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.td}</td>
