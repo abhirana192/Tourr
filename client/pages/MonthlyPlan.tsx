@@ -116,11 +116,6 @@ export default function MonthlyPlan() {
         rangeEndStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
       }
 
-      // Filter tours within the date range
-      const filteredTours = tours.filter((tour) => {
-        return tour.start_date >= rangeStartStr && tour.start_date <= rangeEndStr;
-      });
-
       // Helper to extract date from formatted string
       const extractDateFromValue = (val: any) => {
         if (!val) return null;
@@ -137,54 +132,19 @@ export default function MonthlyPlan() {
       // Group tours by date and count activities
       const dateMap = new Map<string, DailyActivityCount>();
 
-      // First pass: Initialize all days in range and count activities
-      filteredTours.forEach((tour) => {
-        if (!dateMap.has(tour.start_date)) {
-          dateMap.set(tour.start_date, {
-            date: tour.start_date,
-            count: 0,
-            hiking: 0,
-            fishing: 0,
-            dog_sledging: 0,
-            snowmobile_atv: 0,
-            aurora_village: 0,
-            aurora_village_activity: 0,
-            city_tour: 0,
-            snowshoe: 0,
-            dnr: 0,
-            nlt: 0,
-            arrival: 0,
-            departure: 0,
-          });
-        }
+      const isYes = (val: any) => val && String(val).toLowerCase().trim() === "yes";
 
-        const dayData = dateMap.get(tour.start_date)!;
+      // Process all tours to count activities at their actual dates
+      for (const tour of tours) {
+        const arrivalData = extractDateFromValue(tour.arrival);
 
-        // Count activities (Yes values) - treat empty/null fields as 0
-        const isYes = (val: any) => val && String(val).toLowerCase().trim() === "yes";
-
-        if (isYes(tour.hiking)) dayData.hiking += 1;
-        if (isYes(tour.fishing)) dayData.fishing += 1;
-        if (isYes(tour.dog_sledging)) dayData.dog_sledging += 1;
-        if (isYes(tour.snowmobile_atv)) dayData.snowmobile_atv += 1;
-        if (isYes(tour.aurora_village)) dayData.aurora_village += 1;
-        if (isYes(tour.aurora_village_activity)) dayData.aurora_village_activity += 1;
-        if (isYes(tour.city_tour)) dayData.city_tour += 1;
-        if (isYes(tour.snowshoe)) dayData.snowshoe += 1;
-        if (isYes(tour.dnr)) dayData.dnr += 1;
-        if (isYes(tour.nlt)) dayData.nlt += 1;
-      });
-
-      // Second pass: Count arrivals and departures by their actual dates
-      tours.forEach((tour) => {
-        const arrivalDate = extractDateFromValue(tour.arrival);
-        const departureDate = extractDateFromValue(tour.departure);
+        if (!arrivalData) continue;
 
         // Count arrival on its actual date
-        if (arrivalDate && arrivalDate >= rangeStartStr && arrivalDate <= rangeEndStr) {
-          if (!dateMap.has(arrivalDate)) {
-            dateMap.set(arrivalDate, {
-              date: arrivalDate,
+        if (arrivalData >= rangeStartStr && arrivalData <= rangeEndStr) {
+          if (!dateMap.has(arrivalData)) {
+            dateMap.set(arrivalData, {
+              date: arrivalData,
               count: 0,
               hiking: 0,
               fishing: 0,
@@ -200,14 +160,15 @@ export default function MonthlyPlan() {
               departure: 0,
             });
           }
-          dateMap.get(arrivalDate)!.arrival += 1;
+          dateMap.get(arrivalData)!.arrival += 1;
         }
 
         // Count departure on its actual date
-        if (departureDate && departureDate >= rangeStartStr && departureDate <= rangeEndStr) {
-          if (!dateMap.has(departureDate)) {
-            dateMap.set(departureDate, {
-              date: departureDate,
+        const departureData = extractDateFromValue(tour.departure);
+        if (departureData && departureData >= rangeStartStr && departureData <= rangeEndStr) {
+          if (!dateMap.has(departureData)) {
+            dateMap.set(departureData, {
+              date: departureData,
               count: 0,
               hiking: 0,
               fishing: 0,
@@ -223,9 +184,83 @@ export default function MonthlyPlan() {
               departure: 0,
             });
           }
-          dateMap.get(departureDate)!.departure += 1;
+          dateMap.get(departureData)!.departure += 1;
         }
-      });
+
+        // Fetch the schedule to calculate actual activity dates
+        try {
+          const scheduleResponse = await fetch(`/api/tours/${tour.id}/schedule`);
+          if (scheduleResponse.ok) {
+            const scheduleData = await scheduleResponse.json();
+            const schedule = scheduleData.schedule || {};
+
+            // Check if any scheduled activities exist
+            for (const [dayIndexStr, dayData] of Object.entries(schedule)) {
+              const dayIndex = parseInt(dayIndexStr);
+              const allActivities = [
+                ...(dayData.plannedActivities || []),
+                ...(dayData.arrivalActivities || []),
+                ...(dayData.hotelActivities || []),
+              ];
+
+              for (const activity of allActivities) {
+                const activityName = activity.name;
+                let activityKey: string | null = null;
+
+                // Map activity name to activity key
+                if (activityName === "Cameron Fall Hiking") activityKey = "hiking";
+                else if (activityName === "Ice Fishing") activityKey = "fishing";
+                else if (activityName === "Dog Sledging") activityKey = "dog_sledging";
+                else if (activityName === "Snowmobile") activityKey = "snowmobile_atv";
+                else if (activityName === "Ice Lake Tour") activityKey = "aurora_village";
+                else if (activityName === "City Tour") activityKey = "city_tour";
+                else if (activityName === "Aurora Viewing") activityKey = "nlt";
+                else if (activityName === "Aurora Village") activityKey = "aurora_village_activity";
+
+                if (activityKey) {
+                  // Calculate the actual activity date
+                  const [year, month, day] = arrivalData.split('-').map(Number);
+                  const activityDate = new Date(year, month - 1, day + dayIndex - 1);
+                  const activityDateStr = `${activityDate.getFullYear()}-${String(activityDate.getMonth() + 1).padStart(2, '0')}-${String(activityDate.getDate()).padStart(2, '0')}`;
+
+                  // Only count if activity date is within range
+                  if (activityDateStr >= rangeStartStr && activityDateStr <= rangeEndStr) {
+                    if (!dateMap.has(activityDateStr)) {
+                      dateMap.set(activityDateStr, {
+                        date: activityDateStr,
+                        count: 0,
+                        hiking: 0,
+                        fishing: 0,
+                        dog_sledging: 0,
+                        snowmobile_atv: 0,
+                        aurora_village: 0,
+                        aurora_village_activity: 0,
+                        city_tour: 0,
+                        snowshoe: 0,
+                        dnr: 0,
+                        nlt: 0,
+                        arrival: 0,
+                        departure: 0,
+                      });
+                    }
+                    const dayActivityData = dateMap.get(activityDateStr)!;
+                    if (activityKey === "hiking") dayActivityData.hiking += 1;
+                    else if (activityKey === "fishing") dayActivityData.fishing += 1;
+                    else if (activityKey === "dog_sledging") dayActivityData.dog_sledging += 1;
+                    else if (activityKey === "snowmobile_atv") dayActivityData.snowmobile_atv += 1;
+                    else if (activityKey === "aurora_village") dayActivityData.aurora_village += 1;
+                    else if (activityKey === "city_tour") dayActivityData.city_tour += 1;
+                    else if (activityKey === "nlt") dayActivityData.nlt += 1;
+                    else if (activityKey === "aurora_village_activity") dayActivityData.aurora_village_activity += 1;
+                  }
+                }
+              }
+            }
+          }
+        } catch (err) {
+          console.warn(`Failed to fetch schedule for tour ${tour.id}:`, err);
+        }
+      }
 
       // Generate all dates for the range
       const allDates: DailyActivityCount[] = [];
