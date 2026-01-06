@@ -204,6 +204,10 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
       setDepartureTime(departureParsed.time);
       setDepartureFlight(departureParsed.flight);
 
+      // Parse members from JSON
+      const membersList = rest.members ? JSON.parse(rest.members) : [];
+      setMembers(membersList);
+
       // Initialize activity notes from tour
       const notes: { [key: string]: string } = {};
       Object.keys(activityNameToKey).forEach((activityName) => {
@@ -238,7 +242,10 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
         payment: "",
         reservation_number: "",
         remarks: "",
+        leader: "",
+        members: "",
       });
+      setMembers([]);
       setAgentType("predefined");
       setArrivalDate("");
       setArrivalTime("");
