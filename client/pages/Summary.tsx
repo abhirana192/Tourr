@@ -278,7 +278,7 @@ export default function Summary() {
             arrivalTime: arrivalData.time,
             arrivalFlight: arrivalData.flight,
             departure: departureData.date,
-            departureTime: departureTime.time,
+            departureTime: departureData.time,
             departureFlight: departureData.flight,
             accommodation: tour.accommodation,
             arrival_notes: tour.arrival_notes || "",
