@@ -727,8 +727,96 @@ export default function Summary() {
             <div key={activityData.activityKey} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
               {/* Activity Header */}
               <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200 px-6 py-4">
-                <h2 className="text-xl font-bold text-blue-900">{activityData.activityName}</h2>
-                <p className="text-sm text-blue-700 mt-1">{activityData.guests.length} guest{activityData.guests.length !== 1 ? "s" : ""} scheduled</p>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h2 className="text-xl font-bold text-blue-900">{activityData.activityName}</h2>
+                    <p className="text-sm text-blue-700 mt-1">{activityData.guests.length} guest{activityData.guests.length !== 1 ? "s" : ""} scheduled</p>
+                  </div>
+                  <div className="flex gap-4 items-end">
+                    {editingTableKey === `activity-${activityData.activityKey}` ? (
+                      <div className="flex gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Van</label>
+                          <input
+                            type="text"
+                            value={tableAssignments.get(`activity-${activityData.activityKey}`)?.van || ""}
+                            onChange={(e) => {
+                              const key = `activity-${activityData.activityKey}`;
+                              const newAssignments = new Map(tableAssignments);
+                              newAssignments.set(key, {
+                                van: e.target.value,
+                                employee: newAssignments.get(key)?.employee || "",
+                              });
+                              setTableAssignments(newAssignments);
+                            }}
+                            placeholder="e.g., Van A"
+                            className="px-2 py-1 border border-gray-300 rounded text-sm w-32"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Employee</label>
+                          <select
+                            value={tableAssignments.get(`activity-${activityData.activityKey}`)?.employee || ""}
+                            onChange={(e) => {
+                              const key = `activity-${activityData.activityKey}`;
+                              const newAssignments = new Map(tableAssignments);
+                              newAssignments.set(key, {
+                                van: newAssignments.get(key)?.van || "",
+                                employee: e.target.value,
+                              });
+                              setTableAssignments(newAssignments);
+                            }}
+                            className="px-2 py-1 border border-gray-300 rounded text-sm w-40"
+                          >
+                            <option value="">Select Employee</option>
+                            {staffList.map((staff) => (
+                              <option key={staff.id} value={staff.name}>
+                                {staff.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <button
+                          onClick={async () => {
+                            const key = `activity-${activityData.activityKey}`;
+                            const assignment = tableAssignments.get(key) || { van: "", employee: "" };
+                            await saveTableAssignment("activity", activityData.activityKey, filterFromDate, assignment.van, assignment.employee);
+                            setEditingTableKey(null);
+                          }}
+                          disabled={isSaving}
+                          className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:bg-gray-400"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingTableKey(null)}
+                          className="px-3 py-1 bg-gray-400 text-white rounded text-sm hover:bg-gray-500"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-4 items-center">
+                        <div className="flex gap-6 text-sm">
+                          <div>
+                            <span className="text-gray-600">Van: </span>
+                            <span className="font-medium text-gray-900">{tableAssignments.get(`activity-${activityData.activityKey}`)?.van || "-"}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Employee: </span>
+                            <span className="font-medium text-gray-900">{tableAssignments.get(`activity-${activityData.activityKey}`)?.employee || "-"}</span>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setEditingTableKey(`activity-${activityData.activityKey}`)}
+                          className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                        >
+                          Assign
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Table or No Participants Message */}
