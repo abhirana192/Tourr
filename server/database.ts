@@ -70,6 +70,8 @@ let tours: Tour[] = [
   },
 ];
 
+let assignments: ActivityAssignment[] = [];
+
 export const db = {
   getTours: () => tours,
   getTourById: (id: string) => tours.find((t) => t.id === id),
