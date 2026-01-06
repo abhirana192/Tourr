@@ -95,6 +95,7 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
   const [departureTime, setDepartureTime] = useState<string>("");
   const [departureFlight, setDepartureFlight] = useState<string>("");
   const [activityNotes, setActivityNotes] = useState<{ [key: string]: string }>({});
+  const [members, setMembers] = useState<string[]>([]);
 
   const activityNameToKey: { [key: string]: string } = {
     "Aurora Viewing": "nlt",
