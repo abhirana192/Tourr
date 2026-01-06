@@ -114,4 +114,59 @@ export const db = {
       return dateFromMatch && dateToMatch && invoiceMatch && nameMatch;
     });
   },
+  getAssignments: () => assignments,
+  getAssignmentByKey: (assignmentType: string, assignmentKey: string, activityDate: string) => {
+    return assignments.find(
+      (a) =>
+        a.assignment_type === assignmentType &&
+        a.assignment_key === assignmentKey &&
+        a.activity_date === activityDate
+    );
+  },
+  saveAssignment: (
+    assignmentType: "arrival" | "departure" | "activity",
+    assignmentKey: string,
+    activityDate: string,
+    van: string,
+    employee: string
+  ) => {
+    const existingIndex = assignments.findIndex(
+      (a) =>
+        a.assignment_type === assignmentType &&
+        a.assignment_key === assignmentKey &&
+        a.activity_date === activityDate
+    );
+
+    const now = new Date().toISOString();
+
+    if (existingIndex !== -1) {
+      assignments[existingIndex] = {
+        ...assignments[existingIndex],
+        van,
+        employee,
+        updated_at: now,
+      };
+      return assignments[existingIndex];
+    }
+
+    const newAssignment: ActivityAssignment = {
+      id: Date.now().toString(),
+      assignment_type: assignmentType,
+      assignment_key: assignmentKey,
+      activity_date: activityDate,
+      van,
+      employee,
+      created_at: now,
+      updated_at: now,
+    };
+
+    assignments.push(newAssignment);
+    return newAssignment;
+  },
+  deleteAssignment: (id: string) => {
+    const index = assignments.findIndex((a) => a.id === id);
+    if (index === -1) return false;
+    assignments.splice(index, 1);
+    return true;
+  },
 };
