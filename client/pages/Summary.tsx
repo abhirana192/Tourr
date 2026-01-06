@@ -641,7 +641,7 @@ export default function Summary() {
                         <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{guest.guestName}</td>
                         <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.language}</td>
                         <td className="px-4 py-3 text-sm text-gray-900 text-center border-r border-gray-200 font-medium">{guest.pax}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{""}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.tourDuration}</td>
                         <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.accommodation}</td>
                         <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.agent}</td>
                         <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrivalTime || "-"}</td>
