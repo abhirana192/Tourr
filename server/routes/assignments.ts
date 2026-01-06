@@ -18,7 +18,7 @@ export const saveAssignment: RequestHandler = (req, res) => {
       assignmentKey,
       activityDate,
       van,
-      employee,
+      employees,
     } = req.body;
 
     if (!assignmentType || !assignmentKey || !activityDate) {
@@ -33,7 +33,7 @@ export const saveAssignment: RequestHandler = (req, res) => {
       assignmentKey,
       activityDate,
       van || "",
-      employee || ""
+      employees || ""
     );
 
     res.json(assignment);
