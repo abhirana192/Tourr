@@ -883,6 +883,7 @@ export default function Summary() {
                           newAssignments.set(key, {
                             van: e.target.value,
                             employees: newAssignments.get(key)?.employees || [],
+                            notes: newAssignments.get(key)?.notes || "",
                           });
                           setTableAssignments(newAssignments);
                         }}
