@@ -445,6 +445,277 @@ export default function Summary() {
     }),
   }));
 
+  const handlePrint = () => {
+    const printWindow = window.open("", "", "height=900,width=1200");
+    if (!printWindow) {
+      alert("Failed to open print window");
+      return;
+    }
+
+    // Generate arrivals table rows
+    const arrivalsTableRows = arrivals
+      .map(
+        (guest) => `
+        <tr>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.guestName}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.language}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd; text-align: center;">${guest.pax}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.tourDuration || "-"}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.accommodation}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.agent}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.arrivalTime || "-"}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.arrivalFlight || "-"}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.arrival_notes || "-"}</td>
+        </tr>
+      `
+      )
+      .join("");
+
+    // Generate departures table rows
+    const departuresTableRows = departures
+      .map(
+        (guest) => `
+        <tr>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.guestName}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.language}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd; text-align: center;">${guest.pax}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.tourDuration || "-"}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.accommodation}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.agent}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.departureTime || "-"}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.departureFlight || "-"}</td>
+          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.departure_notes || "-"}</td>
+        </tr>
+      `
+      )
+      .join("");
+
+    // Generate activities sections
+    let activitiesSections = "";
+    filteredActivities.forEach((activity) => {
+      if (activity.guests.length === 0) return;
+
+      const isAuroraVillage = activity.activityKey === "aurora_village_activity";
+      let tableHeaders = "";
+      let tableRows = "";
+
+      if (isAuroraVillage) {
+        tableHeaders = `
+          <tr style="background-color: #f3f4f6; border: 1px solid #ddd;">
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Name</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Language</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd; text-align: center;">Pax</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">T/D</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Hotel</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Agent</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Arrival Time</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Arrival Flight</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Departure Time</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Departure Flight</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Notes</th>
+          </tr>
+        `;
+
+        tableRows = activity.guests
+          .map(
+            (guest) => `
+          <tr>
+            <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.guestName}</td>
+            <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.language}</td>
+            <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd; text-align: center;">${guest.pax}</td>
+            <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.tourDuration || "-"}</td>
+            <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.accommodation}</td>
+            <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.agent}</td>
+            <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.arrivalTime || "-"}</td>
+            <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.arrivalFlight || "-"}</td>
+            <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.departureTime || "-"}</td>
+            <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.departureFlight || "-"}</td>
+            <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.arrival_notes || guest.departure_notes || "-"}</td>
+          </tr>
+        `
+          )
+          .join("");
+      } else {
+        tableHeaders = `
+          <tr style="background-color: #f3f4f6; border: 1px solid #ddd;">
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Name</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Language</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd; text-align: center;">Pax</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Tour</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Invoice</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Agent</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Hotel</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Arrival</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Departure</th>
+            <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Activity Timing</th>
+          </tr>
+        `;
+
+        tableRows = activity.guests
+          .map(
+            (guest) => {
+              const arrivalInfo = [guest.arrival, guest.arrivalTime].filter(Boolean).join(" ") + (guest.arrivalFlight ? ` | ${guest.arrivalFlight}` : "");
+              const departureInfo = [guest.departure, guest.departureTime].filter(Boolean).join(" ") + (guest.departureFlight ? ` | ${guest.departureFlight}` : "");
+              return `
+            <tr>
+              <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.guestName}</td>
+              <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.language}</td>
+              <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd; text-align: center;">${guest.pax}</td>
+              <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.tourName}</td>
+              <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.invoiceNumber}</td>
+              <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.agent}</td>
+              <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.accommodation}</td>
+              <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${arrivalInfo}</td>
+              <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${departureInfo}</td>
+              <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.activityTiming || "-"}</td>
+            </tr>
+          `;
+            }
+          )
+          .join("");
+      }
+
+      activitiesSections += `
+        <div style="margin-top: 30px; page-break-inside: avoid;">
+          <h3 style="font-size: 14px; font-weight: bold; color: #1e40af; margin-bottom: 12px; border-bottom: 2px solid #1e40af; padding-bottom: 8px;">${activity.activityName}</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px;">
+            <thead>
+              ${tableHeaders}
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+          </table>
+        </div>
+      `;
+    });
+
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Summary Report</title>
+          <style>
+            @page { size: landscape; margin: 10mm; }
+            body {
+              font-family: 'Segoe UI', Arial, sans-serif;
+              margin: 20px;
+              background: white;
+              color: #333;
+            }
+            h1 {
+              font-size: 24px;
+              margin-bottom: 8px;
+              color: #1e40af;
+              text-align: center;
+              font-weight: bold;
+            }
+            .date-range {
+              color: #666;
+              font-size: 12px;
+              margin-bottom: 20px;
+              text-align: center;
+              font-style: italic;
+            }
+            h2 {
+              font-size: 16px;
+              font-weight: bold;
+              color: #047857;
+              margin-top: 30px;
+              margin-bottom: 15px;
+              border-bottom: 2px solid #047857;
+              padding-bottom: 8px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 20px;
+              font-size: 11px;
+            }
+            th {
+              background: #f3f4f6;
+              color: #1f2937;
+              font-weight: bold;
+              padding: 8px;
+              text-align: left;
+              border: 1px solid #ddd;
+            }
+            td {
+              border: 1px solid #ddd;
+              padding: 8px;
+            }
+            tr:nth-child(even) {
+              background-color: #f9fafb;
+            }
+            @media print {
+              body { margin: 0; padding: 10mm; }
+              h2 { page-break-after: avoid; }
+              table { page-break-inside: avoid; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Summary Report</h1>
+          <p class="date-range">Period: ${filterFromDate} to ${filterToDate}</p>
+
+          <h2>Arrivals (${arrivals.length} guests)</h2>
+          ${arrivals.length === 0 ? '<p style="color: #999; font-style: italic;">No arrivals in this period</p>' : `
+            <table>
+              <thead>
+                <tr style="background-color: #f3f4f6; border: 1px solid #ddd;">
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Name</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Language</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd; text-align: center;">Pax</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">T/D</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Hotel</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Agent</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Arrival Time</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Arrival Flight</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${arrivalsTableRows}
+              </tbody>
+            </table>
+          `}
+
+          <h2>Departures (${departures.length} guests)</h2>
+          ${departures.length === 0 ? '<p style="color: #999; font-style: italic;">No departures in this period</p>' : `
+            <table>
+              <thead>
+                <tr style="background-color: #f3f4f6; border: 1px solid #ddd;">
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Name</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Language</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd; text-align: center;">Pax</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">T/D</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Hotel</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Agent</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Departure Time</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Departure Flight</th>
+                  <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${departuresTableRows}
+              </tbody>
+            </table>
+          `}
+
+          <div style="margin-top: 40px;">
+            <h2 style="margin-top: 0;">Activities by Type</h2>
+            ${filteredActivities.every((a) => a.guests.length === 0) ? '<p style="color: #999; font-style: italic;">No activities scheduled in this period</p>' : activitiesSections}
+          </div>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 pt-6">
       <div className="max-w-full mx-auto">
