@@ -1176,24 +1176,32 @@ export default function Summary() {
                         </button>
                       </div>
                     ) : (
-                      <div className="flex gap-4 items-center">
-                        <div className="flex gap-6 text-sm">
-                          <div>
-                            <span className="text-gray-600">Van: </span>
-                            <span className="font-medium text-gray-900">{tableAssignments.get(`activity-${activityData.activityKey}`)?.van || "-"}</span>
+                      <div className="flex gap-4 items-start">
+                        <div className="flex flex-col gap-3 flex-1">
+                          <div className="flex gap-6 text-sm">
+                            <div>
+                              <span className="text-gray-600">Van: </span>
+                              <span className="font-medium text-gray-900">{tableAssignments.get(`activity-${activityData.activityKey}`)?.van || "-"}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Staff: </span>
+                              <span className="font-medium text-gray-900">
+                                {(tableAssignments.get(`activity-${activityData.activityKey}`)?.employees || []).length > 0
+                                  ? (tableAssignments.get(`activity-${activityData.activityKey}`)?.employees || []).join(", ")
+                                  : "-"}
+                              </span>
+                            </div>
                           </div>
-                          <div>
-                            <span className="text-gray-600">Staff: </span>
-                            <span className="font-medium text-gray-900">
-                              {(tableAssignments.get(`activity-${activityData.activityKey}`)?.employees || []).length > 0
-                                ? (tableAssignments.get(`activity-${activityData.activityKey}`)?.employees || []).join(", ")
-                                : "-"}
-                            </span>
-                          </div>
+                          {(tableAssignments.get(`activity-${activityData.activityKey}`)?.notes || "").trim() && (
+                            <div className="text-sm bg-yellow-50 border border-yellow-200 rounded p-2">
+                              <span className="text-gray-600">Notes: </span>
+                              <span className="text-gray-900">{tableAssignments.get(`activity-${activityData.activityKey}`)?.notes}</span>
+                            </div>
+                          )}
                         </div>
                         <button
                           onClick={() => setEditingTableKey(`activity-${activityData.activityKey}`)}
-                          className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                          className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 flex-shrink-0"
                         >
                           Assign
                         </button>
