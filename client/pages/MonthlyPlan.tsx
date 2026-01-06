@@ -34,6 +34,7 @@ interface Tour {
   dog_sledging: string;
   snowmobile_atv: string;
   aurora_village: string;
+  aurora_village_activity: string;
   payment: string;
   reservation_number: string;
   remarks: string;
