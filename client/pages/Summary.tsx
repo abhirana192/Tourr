@@ -1218,7 +1218,7 @@ export default function Summary() {
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Hotel</th>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Arr</th>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Dep</th>
-                            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Activity Timing</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Notes</th>
                           </>
                         )}
                       </tr>
