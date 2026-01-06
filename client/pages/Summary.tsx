@@ -53,6 +53,7 @@ interface Staff {
 }
 
 interface GuestActivityRow {
+  tourId: string;
   guestName: string;
   language: string;
   pax: number;
@@ -67,6 +68,8 @@ interface GuestActivityRow {
   departureTime: string;
   departureFlight: string;
   accommodation: string;
+  arrival_notes?: string;
+  departure_notes?: string;
   activityTiming?: string;
   dayNumber?: number;
   activityDate?: string;
