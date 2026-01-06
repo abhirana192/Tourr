@@ -28,6 +28,8 @@ export interface Tour {
   activity_schedule?: string;
   leader: string;
   members?: string;
+  arrival_notes?: string;
+  departure_notes?: string;
 }
 
 export interface ActivityAssignment {
