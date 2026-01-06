@@ -126,10 +126,14 @@ interface ActivityData {
 }
 
 interface ActivityAssignment {
-  activityKey: string;
-  guestIndex: number;
+  id: string;
+  assignment_type: "arrival" | "departure" | "activity";
+  assignment_key: string;
+  activity_date: string;
   van: string;
   employee: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export default function Summary() {
