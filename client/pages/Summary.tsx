@@ -120,7 +120,7 @@ interface ActivityAssignment {
   assignment_key: string;
   activity_date: string;
   van: string;
-  employee: string;
+  employees: string;
   created_at: string;
   updated_at: string;
 }
@@ -145,7 +145,7 @@ export default function Summary() {
   });
   const [staffList, setStaffList] = useState<Staff[]>([]);
   const [assignments, setAssignments] = useState<Map<string, ActivityAssignment>>(new Map());
-  const [tableAssignments, setTableAssignments] = useState<Map<string, { van: string; employee: string }>>(new Map());
+  const [tableAssignments, setTableAssignments] = useState<Map<string, { van: string; employees: string[] }>>(new Map());
   const [editingTableKey, setEditingTableKey] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [allTourGuests, setAllTourGuests] = useState<GuestActivityRow[]>([]);
@@ -156,7 +156,7 @@ export default function Summary() {
     assignmentKey: string,
     activityDate: string,
     van: string,
-    employee: string
+    employees: string[]
   ) => {
     try {
       setIsSaving(true);
@@ -168,7 +168,7 @@ export default function Summary() {
           assignmentKey,
           activityDate,
           van,
-          employee,
+          employees: employees.join(","),
         }),
       });
 
@@ -179,7 +179,7 @@ export default function Summary() {
       const savedAssignment: ActivityAssignment = await response.json();
       const key = `${assignmentType}-${assignmentKey}-${activityDate}`;
       const newTableAssignments = new Map(tableAssignments);
-      newTableAssignments.set(key, { van, employee });
+      newTableAssignments.set(key, { van, employees });
       setTableAssignments(newTableAssignments);
     } catch (err) {
       console.error("Error saving assignment:", err);
