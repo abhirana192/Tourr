@@ -263,13 +263,13 @@ export default function Summary() {
         const assignmentsResponse = await fetch("/api/assignments");
         if (assignmentsResponse.ok) {
           const assignmentsData: ActivityAssignment[] = await assignmentsResponse.json();
-          const assignmentMap = new Map<string, { van: string; employee: string }>();
+          const assignmentMap = new Map<string, { van: string; employees: string[] }>();
 
           for (const assignment of assignmentsData) {
             const key = `${assignment.assignment_type}-${assignment.assignment_key}-${assignment.activity_date}`;
             assignmentMap.set(key, {
               van: assignment.van,
-              employee: assignment.employee,
+              employees: assignment.employees ? assignment.employees.split(",") : [],
             });
           }
 
