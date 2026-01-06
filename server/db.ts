@@ -338,11 +338,12 @@ export async function getTourById(id: string) {
     dog_sledging: row[18],
     snowmobile_atv: row[19],
     aurora_village: row[20],
-    payment: row[21],
-    reservation_number: row[22],
-    remarks: row[23],
-    start_date: row[24],
-    created_at: row[25],
+    aurora_village_activity: row[21],
+    payment: row[22],
+    reservation_number: row[23],
+    remarks: row[24],
+    start_date: row[25],
+    created_at: row[26],
   };
 }
 
