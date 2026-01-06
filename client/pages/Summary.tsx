@@ -1138,10 +1138,28 @@ export default function Summary() {
                             )}
                           </div>
                         </div>
+                        <div className="flex-1 min-w-[300px]">
+                          <label className="block text-xs font-medium text-gray-700 mb-2">Notes</label>
+                          <textarea
+                            value={tableAssignments.get(`activity-${activityData.activityKey}`)?.notes || ""}
+                            onChange={(e) => {
+                              const key = `activity-${activityData.activityKey}`;
+                              const newAssignments = new Map(tableAssignments);
+                              newAssignments.set(key, {
+                                van: newAssignments.get(key)?.van || "",
+                                employees: newAssignments.get(key)?.employees || [],
+                                notes: e.target.value,
+                              });
+                              setTableAssignments(newAssignments);
+                            }}
+                            placeholder="Add notes for this activity..."
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm h-20"
+                          />
+                        </div>
                         <button
                           onClick={async () => {
                             const key = `activity-${activityData.activityKey}`;
-                            const assignment = tableAssignments.get(key) || { van: "", employees: [] };
+                            const assignment = tableAssignments.get(key) || { van: "", employees: [], notes: "" };
                             await saveTableAssignment("activity", activityData.activityKey, filterFromDate, assignment.van, assignment.employees);
                             setEditingTableKey(null);
                           }}
