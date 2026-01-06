@@ -445,7 +445,7 @@ export default function Summary() {
     }),
   }));
 
-  const handlePrint = () => {
+  const handlePrint = function() {
     const printWindow = window.open("", "", "height=900,width=1200");
     if (!printWindow) {
       alert("Failed to open print window");
