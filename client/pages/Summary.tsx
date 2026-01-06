@@ -144,7 +144,6 @@ export default function Summary() {
   const [assignments, setAssignments] = useState<Map<string, ActivityAssignment>>(new Map());
   const [tableAssignments, setTableAssignments] = useState<Map<string, { van: string; employee: string }>>(new Map());
   const [editingTableKey, setEditingTableKey] = useState<string | null>(null);
-  const [activitiesByDate, setActivitiesByDate] = useState<ActivityByDate[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [allTourGuests, setAllTourGuests] = useState<GuestActivityRow[]>([]);
 
