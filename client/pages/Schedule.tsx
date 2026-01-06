@@ -592,6 +592,8 @@ export default function Schedule() {
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-12 whitespace-nowrap">LANG</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-20 whitespace-nowrap">NAME</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-8 whitespace-nowrap">PAX</th>
+                    <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-orange-100 border-r border-gray-400 min-w-20 whitespace-nowrap">LEADER</th>
+                    <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-orange-100 border-r border-gray-400 min-w-32 whitespace-nowrap">MEMBERS</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-12 whitespace-nowrap">GRP</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-10 whitespace-nowrap">DNR</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-10 whitespace-nowrap">T/D</th>
