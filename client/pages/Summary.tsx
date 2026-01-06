@@ -110,10 +110,6 @@ const ACTIVITY_TIMINGS: { [key: string]: Activity } = {
     name: "Aurora Village",
     timings: [],
   },
-  snowmobile_atv_activity: {
-    name: "Snowmobile/ATV",
-    timings: [],
-  },
 };
 
 interface ActivityData {

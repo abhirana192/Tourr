@@ -95,10 +95,6 @@ const ACTIVITY_TIMINGS: { [key: string]: Activity } = {
     name: "Aurora Village",
     timings: [],
   },
-  snowmobile_atv_activity: {
-    name: "Snowmobile/ATV",
-    timings: [],
-  },
 };
 
 const ACTIVITY_TRANSLATIONS: { [key: string]: { zh: string; ja: string } } = {
@@ -110,7 +106,6 @@ const ACTIVITY_TRANSLATIONS: { [key: string]: { zh: string; ja: string } } = {
   "Ice Lake Tour": { zh: "冰湖之旅", ja: "アイスレイクツアー" },
   "Aurora Viewing": { zh: "极光观赏", ja: "オーロラ鑑賞" },
   "Aurora Village": { zh: "极光村", ja: "オーロラビレッジ" },
-  "Snowmobile/ATV": { zh: "雪地摩托/全地形车", ja: "スノーモービル/ATV" },
 };
 
 const HEADER_TRANSLATIONS: { [key: string]: { zh: string; ja: string } } = {
@@ -211,7 +206,7 @@ export default function Arrival() {
   };
 
   const getAvailableActivities = (tour: Tour): string[] => {
-    return ["city_tour", "fishing", "dog_sledging", "snowmobile_atv", "hiking", "aurora_village", "nlt", "aurora_village_activity", "snowmobile_atv_activity"];
+    return ["city_tour", "fishing", "dog_sledging", "snowmobile_atv", "hiking", "aurora_village", "nlt", "aurora_village_activity"];
   };
 
   const generateRandomSchedule = (tour: Tour, dayCount: number): ActivitySchedule => {
