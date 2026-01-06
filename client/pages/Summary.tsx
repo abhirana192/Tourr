@@ -574,7 +574,7 @@ export default function Summary() {
                         <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Hotel</th>
                         <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Arrival</th>
                         <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Departure</th>
-                        <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Activity Timing</th>
+                        <th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Notes</th>
                       </tr>
                     `;
                     tableRows = activity.guests.map((guest) => {
@@ -591,7 +591,7 @@ export default function Summary() {
                           <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.accommodation}</td>
                           <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${arrivalInfo}</td>
                           <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${departureInfo}</td>
-                          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.activityTiming || "-"}</td>
+                          <td style="padding: 8px; font-size: 11px; border: 1px solid #ddd;">${guest.arrival_notes || guest.departure_notes || "-"}</td>
                         </tr>
                       `;
                     }).join("");
