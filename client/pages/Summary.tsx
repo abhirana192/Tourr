@@ -351,7 +351,7 @@ export default function Summary() {
 
                       // Calculate the actual activity date
                       const [year, month, day] = arrivalData.date.split('-').map(Number);
-                      const activityDate = new Date(year, month - 1, day + dayIndex);
+                      const activityDate = new Date(year, month - 1, day + dayIndex - 1);
                       const activityDateStr = `${activityDate.getFullYear()}-${String(activityDate.getMonth() + 1).padStart(2, '0')}-${String(activityDate.getDate()).padStart(2, '0')}`;
 
                       const guestRow: GuestActivityRow = {
