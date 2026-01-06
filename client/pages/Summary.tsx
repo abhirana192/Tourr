@@ -270,10 +270,30 @@ export default function Summary() {
         const tours: Tour[] = await toursResponse.json();
 
         const activityMap = new Map<string, Map<string, GuestActivityRow>>();
+        const allTourGuests: GuestActivityRow[] = [];
 
         for (const tour of tours) {
           const arrivalData = extractDateAndTime(tour.arrival);
           const departureData = extractDateAndTime(tour.departure);
+
+          // Add to all guests list for arrivals/departures
+          const guestBaseRow: GuestActivityRow = {
+            guestName: tour.name,
+            language: tour.language,
+            pax: tour.pax,
+            tourName: tour.name,
+            invoiceNumber: tour.invoice,
+            agent: tour.agent,
+            tourDuration: tour.td,
+            arrival: arrivalData.date,
+            arrivalTime: arrivalData.time,
+            arrivalFlight: arrivalData.flight,
+            departure: departureData.date,
+            departureTime: departureData.time,
+            departureFlight: departureData.flight,
+            accommodation: tour.accommodation,
+          };
+          allTourGuests.push(guestBaseRow);
 
           try {
             const scheduleResponse = await fetch(`/api/tours/${tour.id}/schedule`);
@@ -297,20 +317,7 @@ export default function Summary() {
                       }
 
                       const guestRow: GuestActivityRow = {
-                        guestName: tour.name,
-                        language: tour.language,
-                        pax: tour.pax,
-                        tourName: tour.name,
-                        invoiceNumber: tour.invoice,
-                        agent: tour.agent,
-                        tourDuration: tour.td,
-                        arrival: arrivalData.date,
-                        arrivalTime: arrivalData.time,
-                        arrivalFlight: arrivalData.flight,
-                        departure: departureData.date,
-                        departureTime: departureData.time,
-                        departureFlight: departureData.flight,
-                        accommodation: tour.accommodation,
+                        ...guestBaseRow,
                         activityTiming: activity.timings?.[0] || "",
                         dayNumber: dayIndex,
                       };
