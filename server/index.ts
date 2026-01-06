@@ -10,6 +10,7 @@ import { getTours, createTour, updateTour, deleteTour, saveTourSchedule, getTour
 import { getAllStaff, createStaff, updateStaff, deleteStaff } from "./routes/staff";
 import { login, logout, getSession } from "./routes/auth";
 import { initializeDemo, initializePasswords } from "./routes/setup";
+import { getAssignments, saveAssignment, deleteAssignment } from "./routes/assignments";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
