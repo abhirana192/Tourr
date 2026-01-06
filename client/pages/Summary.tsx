@@ -645,7 +645,16 @@ export default function Summary() {
                         `;
                       })()}
                       <h2>Departures (${departures.length} guests)</h2>
-                      ${departures.length === 0 ? '<p style="color: #999; font-style: italic;">No departures in this period</p>' : `<table><thead><tr style="background-color: #f3f4f6; border: 1px solid #ddd;"><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Name</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Language</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd; text-align: center;">Pax</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">T/D</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Hotel</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Agent</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Departure Time</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Departure Flight</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Notes</th></tr></thead><tbody>${departuresTableRows}</tbody></table>`}
+                      ${(() => {
+                        const departureAssignment = tableAssignments.get(`departure-departure-${filterToDate}`) || { van: "", employees: [], notes: "" };
+                        return departures.length === 0 ? '<p style="color: #999; font-style: italic;">No departures in this period</p>' : `
+                          <div style="margin-bottom: 12px; font-size: 11px; color: #666;">
+                            <div><strong>Van:</strong> ${departureAssignment.van || "-"}</div>
+                            <div><strong>Staff:</strong> ${departureAssignment.employees.length > 0 ? departureAssignment.employees.join(", ") : "-"}</div>
+                          </div>
+                          <table><thead><tr style="background-color: #f3f4f6; border: 1px solid #ddd;"><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Name</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Language</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd; text-align: center;">Pax</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">T/D</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Hotel</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Agent</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Departure Time</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Departure Flight</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Notes</th></tr></thead><tbody>${departuresTableRows}</tbody></table>
+                        `;
+                      })()}
                       <div style="margin-top: 40px;"><h2 style="margin-top: 0;">Activities by Type</h2>${filteredActivities.every((a) => a.guests.length === 0) ? '<p style="color: #999; font-style: italic;">No activities scheduled in this period</p>' : activitiesSections}</div>
                     </body>
                   </html>
