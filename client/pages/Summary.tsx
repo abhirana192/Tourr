@@ -596,9 +596,15 @@ export default function Summary() {
                       `;
                     }).join("");
                   }
+                  const activityAssignment = tableAssignments.get(`activity-${activity.activityKey}`) || { van: "", employees: [], notes: "" };
                   activitiesSections += `
                     <div style="margin-top: 30px; page-break-inside: avoid;">
                       <h3 style="font-size: 14px; font-weight: bold; color: #1e40af; margin-bottom: 12px; border-bottom: 2px solid #1e40af; padding-bottom: 8px;">${activity.activityName}</h3>
+                      <div style="margin-bottom: 12px; font-size: 11px; color: #666;">
+                        <div><strong>Van:</strong> ${activityAssignment.van || "-"}</div>
+                        <div><strong>Staff:</strong> ${activityAssignment.employees.length > 0 ? activityAssignment.employees.join(", ") : "-"}</div>
+                        ${activityAssignment.notes ? `<div><strong>Notes:</strong> ${activityAssignment.notes}</div>` : ""}
+                      </div>
                       <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px;">
                         <thead>${tableHeaders}</thead>
                         <tbody>${tableRows}</tbody>
