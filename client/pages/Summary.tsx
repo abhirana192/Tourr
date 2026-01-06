@@ -600,12 +600,13 @@ export default function Summary() {
               <tbody>
                 {arrivals.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                    <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
                       No arrivals scheduled for this date range
                     </td>
                   </tr>
                 ) : (
                   arrivals.map((guest, idx) => {
+                    const isEditing = editingNotes.get(guest.tourId);
                     return (
                       <tr key={idx} className={`border-b border-gray-200 hover:bg-green-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
                         <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{guest.guestName}</td>
@@ -616,6 +617,54 @@ export default function Summary() {
                         <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.agent}</td>
                         <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrivalTime || "-"}</td>
                         <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.arrivalFlight || "-"}</td>
+                        <td className="px-4 py-3 text-sm border-r border-gray-200">
+                          {isEditing ? (
+                            <div className="flex gap-1 items-center">
+                              <input
+                                type="text"
+                                value={isEditing.arrival_notes}
+                                onChange={(e) => {
+                                  const updated = new Map(editingNotes);
+                                  updated.set(guest.tourId, { ...isEditing, arrival_notes: e.target.value });
+                                  setEditingNotes(updated);
+                                }}
+                                placeholder="Add note..."
+                                className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                              />
+                              <button
+                                onClick={() => saveGuestNotes(guest.tourId, isEditing.arrival_notes, isEditing.departure_notes)}
+                                disabled={isSaving}
+                                className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:bg-gray-400"
+                              >
+                                ✓
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const updated = new Map(editingNotes);
+                                  updated.delete(guest.tourId);
+                                  setEditingNotes(updated);
+                                }}
+                                className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                const updated = new Map(editingNotes);
+                                updated.set(guest.tourId, {
+                                  arrival_notes: guest.arrival_notes || "",
+                                  departure_notes: guest.departure_notes || "",
+                                });
+                                setEditingNotes(updated);
+                              }}
+                              className="text-xs text-gray-600 hover:text-gray-900 hover:underline cursor-pointer"
+                            >
+                              {guest.arrival_notes ? "✎ " + guest.arrival_notes.substring(0, 30) + (guest.arrival_notes.length > 30 ? "..." : "") : "Add note"}
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     );
                   })
