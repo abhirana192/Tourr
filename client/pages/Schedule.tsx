@@ -73,7 +73,7 @@ const getActivityDetails = (tour: Tour, activityKey: string): { text: string; no
     if (value === "Yes") {
       return { text: "Activity scheduled (timing not fixed)" };
     }
-    return { text: value || "-" };
+    return { text: value || "No" };
   }
 
   try {
