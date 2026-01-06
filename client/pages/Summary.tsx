@@ -239,11 +239,29 @@ export default function Summary() {
   const saveActivityNotes = async (tourId: string, activityName: string, notes: string) => {
     try {
       setIsSaving(true);
+
+      // Get current activity notes to preserve other activities' notes
+      const tour = allTourGuests.find(g => g.tourId === tourId);
+      let currentActivityNotes: { [key: string]: string } = {};
+
+      if (tour && tour.tourId === tourId) {
+        // Fetch the full activity notes for this tour
+        const existingGuests = allTourGuests.filter(g => g.tourId === tourId);
+        existingGuests.forEach(g => {
+          if (g.activityName && g.activityNotes) {
+            currentActivityNotes[g.activityName] = g.activityNotes;
+          }
+        });
+      }
+
+      // Update or add the note for this activity
+      currentActivityNotes[activityName] = notes;
+
       const response = await fetch(`/api/tours/${tourId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          activity_notes: JSON.stringify({ [activityName]: notes }),
+          activity_notes: JSON.stringify(currentActivityNotes),
         }),
       });
 
