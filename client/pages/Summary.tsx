@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AlertCircle, Loader2, Edit2, Save, X } from "lucide-react";
+import { AlertCircle, Loader2, Edit2, Save, X, Printer } from "lucide-react";
 
 interface Tour {
   id: string;
