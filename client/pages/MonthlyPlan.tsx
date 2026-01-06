@@ -585,6 +585,9 @@ export default function MonthlyPlan() {
                         {day.nlt}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
+                        {day.aurora_village_activity}
+                      </td>
+                      <td className="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                         {day.arrival}
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
