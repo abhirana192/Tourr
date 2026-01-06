@@ -272,58 +272,53 @@ export default function Summary() {
         const activityMap = new Map<string, Map<string, GuestActivityRow>>();
 
         for (const tour of tours) {
+          const arrivalData = extractDateAndTime(tour.arrival);
+          const departureData = extractDateAndTime(tour.departure);
+
           try {
             const scheduleResponse = await fetch(`/api/tours/${tour.id}/schedule`);
-            if (!scheduleResponse.ok) continue;
+            if (scheduleResponse.ok) {
+              const scheduleData = await scheduleResponse.json();
+              const schedule: ActivitySchedule = scheduleData.schedule || {};
 
-            const scheduleData = await scheduleResponse.json();
-            const schedule: ActivitySchedule = scheduleData.schedule || {};
+              for (const [dayIndexStr, dayData] of Object.entries(schedule)) {
+                const dayIndex = parseInt(dayIndexStr);
+                const allActivities = [
+                  ...(dayData.plannedActivities || []),
+                  ...(dayData.arrivalActivities || []),
+                  ...(dayData.hotelActivities || []),
+                ];
 
-            const arrivalData = extractDateAndTime(tour.arrival);
-            const departureData = extractDateAndTime(tour.departure);
+                for (const activity of allActivities) {
+                  for (const [key, timingData] of Object.entries(ACTIVITY_TIMINGS)) {
+                    if (timingData.name === activity.name) {
+                      if (!activityMap.has(key)) {
+                        activityMap.set(key, new Map());
+                      }
 
-            // Track which activities are present in this tour (to deduplicate guests)
-            const activitiesInTour = new Set<string>();
+                      const guestRow: GuestActivityRow = {
+                        guestName: tour.name,
+                        language: tour.language,
+                        pax: tour.pax,
+                        tourName: tour.name,
+                        invoiceNumber: tour.invoice,
+                        agent: tour.agent,
+                        tourDuration: tour.td,
+                        arrival: arrivalData.date,
+                        arrivalTime: arrivalData.time,
+                        arrivalFlight: arrivalData.flight,
+                        departure: departureData.date,
+                        departureTime: departureData.time,
+                        departureFlight: departureData.flight,
+                        accommodation: tour.accommodation,
+                        activityTiming: activity.timings?.[0] || "",
+                        dayNumber: dayIndex,
+                      };
 
-            for (const [dayIndexStr, dayData] of Object.entries(schedule)) {
-              const dayIndex = parseInt(dayIndexStr);
-              const allActivities = [
-                ...(dayData.plannedActivities || []),
-                ...(dayData.arrivalActivities || []),
-                ...(dayData.hotelActivities || []),
-              ];
-
-              for (const activity of allActivities) {
-                for (const [key, timingData] of Object.entries(ACTIVITY_TIMINGS)) {
-                  if (timingData.name === activity.name) {
-                    activitiesInTour.add(key);
-
-                    if (!activityMap.has(key)) {
-                      activityMap.set(key, new Map());
+                      // Use tour name as key to deduplicate - only one entry per guest per activity
+                      activityMap.get(key)!.set(tour.name, guestRow);
+                      break;
                     }
-
-                    const guestRow: GuestActivityRow = {
-                      guestName: tour.name,
-                      language: tour.language,
-                      pax: tour.pax,
-                      tourName: tour.name,
-                      invoiceNumber: tour.invoice,
-                      agent: tour.agent,
-                      tourDuration: tour.td,
-                      arrival: arrivalData.date,
-                      arrivalTime: arrivalData.time,
-                      arrivalFlight: arrivalData.flight,
-                      departure: departureData.date,
-                      departureTime: departureData.time,
-                      departureFlight: departureData.flight,
-                      accommodation: tour.accommodation,
-                      activityTiming: activity.timings?.[0] || "",
-                      dayNumber: dayIndex,
-                    };
-
-                    // Use tour name as key to deduplicate - only one entry per guest per activity
-                    activityMap.get(key)!.set(tour.name, guestRow);
-                    break;
                   }
                 }
               }
