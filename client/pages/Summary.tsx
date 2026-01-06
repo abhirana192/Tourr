@@ -726,12 +726,24 @@ export default function Summary() {
                     </button>
                   </div>
                 ) : (
-                  <button
-                    onClick={() => setEditingTableKey("departure")}
-                    className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 text-xs"
-                  >
-                    Assign Van & Employee
-                  </button>
+                  <div className="flex gap-4 items-center">
+                    <div className="flex gap-6 text-sm">
+                      <div>
+                        <span className="text-gray-600">Van: </span>
+                        <span className="font-medium text-gray-900">{tableAssignments.get("departure-departure-" + filterToDate)?.van || "-"}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Employee: </span>
+                        <span className="font-medium text-gray-900">{tableAssignments.get("departure-departure-" + filterToDate)?.employee || "-"}</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setEditingTableKey("departure")}
+                      className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                    >
+                      Assign
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
