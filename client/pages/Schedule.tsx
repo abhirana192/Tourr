@@ -112,7 +112,7 @@ const getActivityDetails = (tour: Tour, activityKey: string): { text: string; no
       if (matchingActivities.length > 0) {
         const dayLabel = getDayLabel(dayNum);
         for (const activity of matchingActivities) {
-          if (activity.timings && activity.timings.length > 0) {
+          if (activity.timings && activity.timings.length > 0 && activity.timings[0]) {
             const timing = activity.timings[0];
             dayDetails.push(`${dayLabel}: ${timing}`);
           } else {
