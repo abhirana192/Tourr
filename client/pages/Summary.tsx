@@ -633,7 +633,7 @@ export default function Summary() {
                     <body>
                       <h1>Summary Report</h1>
                       <p class="date-range">Period: ${filterFromDate} to ${filterToDate}</p>
-                      <h2>Arrivals (${arrivals.length} guests)</h2>
+                      ${(() => { const arrivalPaxCount = arrivals.reduce((sum, guest) => sum + (guest.pax || 0), 0); return `<h2>Arrivals (${arrivalPaxCount} guest${arrivalPaxCount !== 1 ? 's' : ''})</h2>`; })()}
                       ${(() => {
                         const arrivalAssignment = tableAssignments.get(`arrival-arrival-${filterFromDate}`) || { van: "", employees: [], notes: "" };
                         return arrivals.length === 0 ? '<p style="color: #999; font-style: italic;">No arrivals in this period</p>' : `
@@ -644,7 +644,7 @@ export default function Summary() {
                           <table><thead><tr style="background-color: #f3f4f6; border: 1px solid #ddd;"><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Name</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Language</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd; text-align: center;">Pax</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">T/D</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Hotel</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Agent</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Arrival Time</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Arrival Flight</th><th style="padding: 8px; font-size: 11px; font-weight: bold; border: 1px solid #ddd;">Notes</th></tr></thead><tbody>${arrivalsTableRows}</tbody></table>
                         `;
                       })()}
-                      <h2>Departures (${departures.length} guests)</h2>
+                      ${(() => { const departurePaxCount = departures.reduce((sum, guest) => sum + (guest.pax || 0), 0); return `<h2>Departures (${departurePaxCount} guest${departurePaxCount !== 1 ? 's' : ''})</h2>`; })()}
                       ${(() => {
                         const departureAssignment = tableAssignments.get(`departure-departure-${filterToDate}`) || { van: "", employees: [], notes: "" };
                         return departures.length === 0 ? '<p style="color: #999; font-style: italic;">No departures in this period</p>' : `
