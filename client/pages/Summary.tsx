@@ -309,6 +309,7 @@ export default function Summary() {
                       tourName: tour.name,
                       invoiceNumber: tour.invoice,
                       agent: tour.agent,
+                      tourDuration: tour.td,
                       arrival: arrivalData.date,
                       arrivalTime: arrivalData.time,
                       arrivalFlight: arrivalData.flight,
