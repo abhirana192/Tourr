@@ -214,6 +214,7 @@ export default function MonthlyPlan() {
               dog_sledging: 0,
               snowmobile_atv: 0,
               aurora_village: 0,
+              aurora_village_activity: 0,
               city_tour: 0,
               snowshoe: 0,
               dnr: 0,
@@ -239,6 +240,7 @@ export default function MonthlyPlan() {
           dog_sledging: 0,
           snowmobile_atv: 0,
           aurora_village: 0,
+          aurora_village_activity: 0,
           city_tour: 0,
           snowshoe: 0,
           dnr: 0,
@@ -248,7 +250,7 @@ export default function MonthlyPlan() {
         };
 
         // Calculate total as sum of all activities including arrival and departure
-        dayData.count = dayData.hiking + dayData.fishing + dayData.dog_sledging + dayData.snowmobile_atv + dayData.aurora_village + dayData.city_tour + dayData.snowshoe + dayData.dnr + dayData.nlt + dayData.arrival + dayData.departure;
+        dayData.count = dayData.hiking + dayData.fishing + dayData.dog_sledging + dayData.snowmobile_atv + dayData.aurora_village + dayData.aurora_village_activity + dayData.city_tour + dayData.snowshoe + dayData.dnr + dayData.nlt + dayData.arrival + dayData.departure;
 
         allDates.push(dayData);
 
