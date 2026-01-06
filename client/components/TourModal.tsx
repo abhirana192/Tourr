@@ -83,6 +83,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
     payment: "",
     reservation_number: "",
     remarks: "",
+    leader: "",
+    members: "",
   });
 
   const [agentType, setAgentType] = useState<"predefined" | "other">("predefined");
