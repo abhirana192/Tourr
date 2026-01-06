@@ -183,17 +183,39 @@ export default function Summary() {
   };
 
   useEffect(() => {
-    const fetchStaff = async () => {
+    const fetchStaffAndAssignments = async () => {
       try {
-        const response = await fetch("/api/staff");
-        if (!response.ok) throw new Error("Failed to fetch staff");
-        const data = await response.json();
-        setStaffList(data || []);
+        const staffResponse = await fetch("/api/staff");
+        if (staffResponse.ok) {
+          const staffData = await staffResponse.json();
+          setStaffList(staffData || []);
+        }
       } catch (err) {
         console.warn("Failed to fetch staff:", err);
       }
+
+      try {
+        const assignmentsResponse = await fetch("/api/assignments");
+        if (assignmentsResponse.ok) {
+          const assignmentsData: ActivityAssignment[] = await assignmentsResponse.json();
+          const assignmentMap = new Map<string, { van: string; employee: string }>();
+
+          for (const assignment of assignmentsData) {
+            const key = `${assignment.assignment_type}-${assignment.assignment_key}-${assignment.activity_date}`;
+            assignmentMap.set(key, {
+              van: assignment.van,
+              employee: assignment.employee,
+            });
+          }
+
+          setTableAssignments(assignmentMap);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch assignments:", err);
+      }
     };
-    fetchStaff();
+
+    fetchStaffAndAssignments();
   }, []);
 
   useEffect(() => {
