@@ -268,6 +268,12 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.leader.trim()) {
+      alert("Leader name is required");
+      return;
+    }
+
     const combinedArrival = combineArrivalDeparture(arrivalDate, arrivalTime, arrivalFlight);
     const combinedDeparture = combineArrivalDeparture(departureDate, departureTime, departureFlight);
 
@@ -314,10 +320,14 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
       }
     }
 
+    // Filter members to only include non-empty values
+    const filteredMembers = members.filter((m) => m.trim());
+
     const updatedTourData = {
       ...formData,
       arrival: combinedArrival,
       departure: combinedDeparture,
+      members: filteredMembers.length > 0 ? JSON.stringify(filteredMembers) : "",
       ...(updatedSchedule && { activity_schedule: updatedSchedule }),
     };
 
