@@ -26,6 +26,7 @@ interface Tour {
   dog_sledging: string;
   snowmobile_atv: string;
   aurora_village: string;
+  aurora_village_activity: string;
   payment: string;
   reservation_number: string;
   remarks: string;
@@ -80,6 +81,7 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
     dog_sledging: "",
     snowmobile_atv: "",
     aurora_village: "",
+    aurora_village_activity: "",
     payment: "",
     reservation_number: "",
     remarks: "",
@@ -105,6 +107,7 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
     "Dog Sledging": "dog_sledging",
     "Snowmobile": "snowmobile_atv",
     "Ice Lake Tour": "aurora_village",
+    "Aurora Village": "aurora_village_activity",
   };
 
   const getDayLabel = (dayIndex: number): string => {
@@ -672,6 +675,7 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
                   { key: "dog_sledging", label: "Dog Sledging" },
                   { key: "snowmobile_atv", label: "Snowmobile" },
                   { key: "aurora_village", label: "Ice Lake Tour" },
+                  { key: "aurora_village_activity", label: "Aurora Village" },
                 ].map(({ key, label }) => {
                   const activityDetail = getActivityDetailsForModal(key as keyof typeof activityNameToKey);
                   const hasSchedule = activityDetail.details !== "";
