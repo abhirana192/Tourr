@@ -168,6 +168,7 @@ export default function MonthlyPlan() {
         if (isYes(tour.dog_sledging)) dayData.dog_sledging += 1;
         if (isYes(tour.snowmobile_atv)) dayData.snowmobile_atv += 1;
         if (isYes(tour.aurora_village)) dayData.aurora_village += 1;
+        if (isYes(tour.aurora_village_activity)) dayData.aurora_village_activity += 1;
         if (isYes(tour.city_tour)) dayData.city_tour += 1;
         if (isYes(tour.snowshoe)) dayData.snowshoe += 1;
         if (isYes(tour.dnr)) dayData.dnr += 1;
