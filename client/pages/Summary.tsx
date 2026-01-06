@@ -356,7 +356,6 @@ export default function Summary() {
 
                       const guestRow: GuestActivityRow = {
                         ...guestBaseRow,
-                        arrival: activityDateStr,
                         activityTiming: activity.timings?.[0] || "",
                         dayNumber: dayIndex,
                         activityDate: activityDateStr,
