@@ -28,6 +28,17 @@ export interface Tour {
   activity_schedule?: string;
 }
 
+export interface ActivityAssignment {
+  id: string;
+  assignment_type: "arrival" | "departure" | "activity";
+  assignment_key: string;
+  activity_date: string;
+  van: string;
+  employee: string;
+  created_at: string;
+  updated_at: string;
+}
+
 let tours: Tour[] = [
   {
     id: "1",
