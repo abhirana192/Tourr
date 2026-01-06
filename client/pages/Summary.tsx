@@ -345,6 +345,21 @@ export default function Summary() {
         const activityMap = new Map<string, Map<string, GuestActivityRow>>();
         const allTourGuests: GuestActivityRow[] = [];
 
+        // Parse activity notes if they exist
+        const activityNotesMap = new Map<string, { [key: string]: string }>();
+
+        for (const tour of tours) {
+          if (tour.activity_notes) {
+            try {
+              activityNotesMap.set(tour.id, JSON.parse(tour.activity_notes));
+            } catch {
+              activityNotesMap.set(tour.id, {});
+            }
+          } else {
+            activityNotesMap.set(tour.id, {});
+          }
+        }
+
         for (const tour of tours) {
           const arrivalData = extractDateAndTime(tour.arrival);
           const departureData = extractDateAndTime(tour.departure);
@@ -397,11 +412,16 @@ export default function Summary() {
                       const activityDate = new Date(year, month - 1, day + dayIndex - 1);
                       const activityDateStr = `${activityDate.getFullYear()}-${String(activityDate.getMonth() + 1).padStart(2, '0')}-${String(activityDate.getDate()).padStart(2, '0')}`;
 
+                      const tourActivityNotes = activityNotesMap.get(tour.id) || {};
+                      const activityNote = tourActivityNotes[timingData.name] || "";
+
                       const guestRow: GuestActivityRow = {
                         ...guestBaseRow,
                         activityTiming: activity.timings?.[0] || "",
                         dayNumber: dayIndex,
                         activityDate: activityDateStr,
+                        activityName: timingData.name,
+                        activityNotes: activityNote,
                       };
 
                       // Use tour name as key to deduplicate - only one entry per guest per activity
