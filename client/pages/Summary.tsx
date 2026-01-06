@@ -612,7 +612,7 @@ export default function Summary() {
                     <head>
                       <title>Summary Report</title>
                       <style>
-                        @page { size: landscape; margin: 10mm; }
+                        @page { size: portrait; margin: 10mm; }
                         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: white; color: #333; }
                         h1 { font-size: 24px; margin-bottom: 8px; color: #1e40af; text-align: center; font-weight: bold; }
                         .date-range { color: #666; font-size: 12px; margin-bottom: 20px; text-align: center; font-style: italic; }
