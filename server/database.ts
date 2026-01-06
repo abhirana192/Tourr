@@ -68,6 +68,7 @@ let tours: Tour[] = [
     dog_sledging: "Yes",
     snowmobile_atv: "Yes",
     aurora_village: "Yes",
+    aurora_village_activity: "Yes",
     payment: "Paid",
     reservation_number: "RES001",
     remarks: "VIP Group",
