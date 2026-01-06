@@ -39,6 +39,7 @@ interface Tour {
   dog_sledging: string;
   snowmobile_atv: string;
   aurora_village: string;
+  aurora_village_activity: string;
   payment: string;
   reservation_number: string;
   remarks: string;
@@ -55,6 +56,7 @@ const activityNameToKey: { [key: string]: string } = {
   "Cameron Fall Hiking": "hiking",
   "Ice Lake Tour": "aurora_village",
   "Aurora Viewing": "nlt",
+  "Aurora Village": "aurora_village_activity",
 };
 
 const getDayLabel = (dayIndex: number): string => {
@@ -616,6 +618,7 @@ export default function Schedule() {
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-purple-100 border-r border-gray-400 min-w-16 whitespace-nowrap">Dog Sledging</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-purple-100 border-r border-gray-400 min-w-16 whitespace-nowrap">Snowmobile</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-purple-100 border-r border-gray-400 min-w-16 whitespace-nowrap">Ice Lake Tour</th>
+                    <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-purple-100 border-r border-gray-400 min-w-20 whitespace-nowrap">Aurora Village</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-gray-200 border-r border-gray-400 min-w-12 whitespace-nowrap">PAY</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-gray-200 border-r border-gray-400 min-w-14 whitespace-nowrap">RES#</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-gray-200 border-r border-gray-400 min-w-14 whitespace-nowrap">RMK</th>
@@ -711,6 +714,15 @@ export default function Schedule() {
                           <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
                             <div>{auroraVillageDetails.text}</div>
                             {auroraVillageDetails.notes && <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {auroraVillageDetails.notes}</div>}
+                          </td>
+                        );
+                      })()}
+                      {(() => {
+                        const auroraVillageActivityDetails = getActivityDetails(tour, "aurora_village_activity");
+                        return (
+                          <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-left min-w-28 whitespace-normal">
+                            <div>{auroraVillageActivityDetails.text}</div>
+                            {auroraVillageActivityDetails.notes && <div className="text-[9px] text-gray-600 italic mt-0.5">Note: {auroraVillageActivityDetails.notes}</div>}
                           </td>
                         );
                       })()}
