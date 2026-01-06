@@ -303,9 +303,12 @@ export default function MonthlyPlan() {
         agentMap.set(agent.code, 0);
       });
 
-      // Count tours for each agent
+      // Count tours for each agent - only count tours with arrivals in the date range
       let othersCount = 0;
-      filteredTours.forEach((tour) => {
+      tours.forEach((tour) => {
+        const arrivalDate = extractDateFromValue(tour.arrival);
+        if (!arrivalDate || arrivalDate < rangeStartStr || arrivalDate > rangeEndStr) return;
+
         const agentCode = tour.agent?.trim();
         if (agentCode && agentMap.has(agentCode)) {
           agentMap.set(agentCode, (agentMap.get(agentCode) || 0) + 1);
