@@ -76,6 +76,7 @@ export function createServer() {
   app.get("/api/tours/:id/schedule", getTourSchedule);
   app.post("/api/tours", createTour);
   app.put("/api/tours/:id", updateTour);
+  app.patch("/api/tours/:id", updateTour);
   app.delete("/api/tours/:id", deleteTour);
   app.post("/api/tours/:id/schedule", saveTourSchedule);
   app.post("/api/translate", translateText);
