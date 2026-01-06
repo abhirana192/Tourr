@@ -74,6 +74,7 @@ interface GuestActivityRow {
   dayNumber?: number;
   activityDate?: string;
   activityName?: string;
+  activityNotes?: string;
 }
 
 
