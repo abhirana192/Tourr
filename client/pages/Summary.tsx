@@ -106,6 +106,14 @@ const ACTIVITY_TIMINGS: { [key: string]: Activity } = {
     name: "Aurora Viewing",
     timings: ["9:30~9:50 PM - 1:30 AM", "10:00~10:15 PM - 2:00 AM"],
   },
+  aurora_village_activity: {
+    name: "Aurora Village",
+    timings: [],
+  },
+  snowmobile_atv_activity: {
+    name: "Snowmobile/ATV",
+    timings: [],
+  },
 };
 
 interface ActivityData {
