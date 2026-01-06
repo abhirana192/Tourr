@@ -26,6 +26,8 @@ export interface Tour {
   reservation_number: string;
   remarks: string;
   activity_schedule?: string;
+  leader: string;
+  members?: string;
 }
 
 export interface ActivityAssignment {
