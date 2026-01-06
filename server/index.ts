@@ -86,6 +86,11 @@ export function createServer() {
   app.put("/api/staff/:id", updateStaff);
   app.delete("/api/staff/:id", deleteStaff);
 
+  // Activity Assignment API routes
+  app.get("/api/assignments", getAssignments);
+  app.post("/api/assignments", saveAssignment);
+  app.delete("/api/assignments/:id", deleteAssignment);
+
   // SPA Fallback - serve index.html for all non-API routes
   // This allows client-side routing to work properly
   // MUST BE LAST - catch-all route
