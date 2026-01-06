@@ -31,6 +31,7 @@ export interface Tour {
   members?: string;
   arrival_notes?: string;
   departure_notes?: string;
+  activity_notes?: string;
 }
 
 export interface ActivityAssignment {
