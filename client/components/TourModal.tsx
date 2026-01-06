@@ -320,8 +320,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
       }
     }
 
-    // Filter members to only include non-empty values
-    const filteredMembers = members.filter((m) => m.trim());
+    // Filter members to only include non-empty values and limit to (PAX - 1) count
+    const filteredMembers = members.slice(0, formData.pax - 1).filter((m) => m.trim());
 
     const updatedTourData = {
       ...formData,
