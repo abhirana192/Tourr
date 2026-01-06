@@ -520,8 +520,84 @@ export default function Summary() {
         {/* Arrivals Table */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-8">
           <div className="bg-gradient-to-r from-green-50 to-green-100 border-b border-green-200 px-6 py-4">
-            <h2 className="text-xl font-bold text-green-900">Arrivals</h2>
-            <p className="text-sm text-green-700 mt-1">{arrivals.length} guest{arrivals.length !== 1 ? "s" : ""}</p>
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-xl font-bold text-green-900">Arrivals</h2>
+                <p className="text-sm text-green-700 mt-1">{arrivals.length} guest{arrivals.length !== 1 ? "s" : ""}</p>
+              </div>
+              <div className="flex gap-4 items-end">
+                {editingTableKey === "arrival" ? (
+                  <div className="flex gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Van</label>
+                      <input
+                        type="text"
+                        value={tableAssignments.get("arrival-arrival-" + filterFromDate)?.van || ""}
+                        onChange={(e) => {
+                          const key = "arrival-arrival-" + filterFromDate;
+                          const newAssignments = new Map(tableAssignments);
+                          newAssignments.set(key, {
+                            van: e.target.value,
+                            employee: newAssignments.get(key)?.employee || "",
+                          });
+                          setTableAssignments(newAssignments);
+                        }}
+                        placeholder="e.g., Van A"
+                        className="px-2 py-1 border border-gray-300 rounded text-sm w-32"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Employee</label>
+                      <select
+                        value={tableAssignments.get("arrival-arrival-" + filterFromDate)?.employee || ""}
+                        onChange={(e) => {
+                          const key = "arrival-arrival-" + filterFromDate;
+                          const newAssignments = new Map(tableAssignments);
+                          newAssignments.set(key, {
+                            van: newAssignments.get(key)?.van || "",
+                            employee: e.target.value,
+                          });
+                          setTableAssignments(newAssignments);
+                        }}
+                        className="px-2 py-1 border border-gray-300 rounded text-sm w-40"
+                      >
+                        <option value="">Select Employee</option>
+                        {staffList.map((staff) => (
+                          <option key={staff.id} value={staff.name}>
+                            {staff.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        const key = "arrival-arrival-" + filterFromDate;
+                        const assignment = tableAssignments.get(key) || { van: "", employee: "" };
+                        await saveTableAssignment("arrival", "arrival", filterFromDate, assignment.van, assignment.employee);
+                        setEditingTableKey(null);
+                      }}
+                      disabled={isSaving}
+                      className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700 disabled:bg-gray-400"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditingTableKey(null)}
+                      className="px-3 py-1 bg-gray-400 text-white rounded text-sm hover:bg-gray-500"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setEditingTableKey("arrival")}
+                    className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 text-xs"
+                  >
+                    Assign Van & Employee
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
