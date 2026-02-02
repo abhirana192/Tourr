@@ -55,38 +55,8 @@ export const initializeDemo: RequestHandler = async (req, res) => {
 };
 
 export const initializePasswords: RequestHandler = async (req, res) => {
-  try {
-    // Get all staff without password_hash
-    const allStaff = await makeSupabaseRequest(
-      "GET",
-      "/staff?password_hash=is.null&select=id",
-    );
-
-    if (allStaff.length === 0) {
-      res.json({
-        success: true,
-        message: "All staff members already have passwords",
-      });
-      return;
-    }
-
-    // Update all staff with null password_hash to have the demo password hash
-    const passwordHash = hashPassword(DEMO_PASSWORD);
-
-    for (const staff of allStaff) {
-      await makeSupabaseRequest("PATCH", `/staff?id=eq.${staff.id}`, {
-        password_hash: passwordHash,
-      });
-    }
-
-    res.json({
-      success: true,
-      message: `Initialized passwords for ${allStaff.length} staff members`,
-    });
-  } catch (error) {
-    console.error("Initialize passwords error:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Initialization failed";
-    res.status(500).json({ error: errorMessage });
-  }
+  res.json({
+    success: true,
+    message: "Password initialization is no longer needed. Use the setup endpoint to create users.",
+  });
 };
