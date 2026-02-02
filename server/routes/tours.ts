@@ -75,13 +75,13 @@ export const updateTour: RequestHandler = async (req, res) => {
     const { customRecipients, ...updates } = req.body;
 
     // Get the old tour data
-    const oldTour = db.getTourById(id);
+    const oldTour = await tourDb.getTourById(id);
     if (!oldTour) {
       res.status(404).json({ error: "Tour not found" });
       return;
     }
 
-    const updated = db.updateTour(id, {
+    const updated = await tourDb.updateTour(id, {
       ...updates,
       start_date: updates.start_date,
     });
