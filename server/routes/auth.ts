@@ -62,7 +62,7 @@ async function getStaffByName(name: string) {
   }
 
   try {
-    const staff = await db.getStaffByFirstName(name);
+    const staff = await staffDb.getStaffByName(name);
     return staff;
   } catch (error) {
     console.error("[getStaffByName] Database error:", error);
