@@ -182,6 +182,36 @@ export default function Arrival() {
   const [pendingScheduleData, setPendingScheduleData] = useState<any>(null);
   const [showPrintLanguageDialog, setShowPrintLanguageDialog] = useState(false);
 
+  // Subscribe to real-time changes
+  useRealtimeSync({
+    table: "tours",
+    onInsert: (newTour) => {
+      setTours((prev) => [...prev, newTour]);
+      toast.success(`New tour added: ${newTour.name || newTour.invoice}`);
+    },
+    onUpdate: (updatedTour) => {
+      setTours((prev) =>
+        prev.map((tour) =>
+          tour.id === updatedTour.id ? updatedTour : tour
+        )
+      );
+      // If the updated tour is currently selected, update it
+      if (selectedTour?.id === updatedTour.id) {
+        setSelectedTour(updatedTour);
+      }
+      toast.success(`Tour updated: ${updatedTour.name || updatedTour.invoice}`);
+    },
+    onDelete: (deletedTour) => {
+      setTours((prev) =>
+        prev.filter((tour) => tour.id !== deletedTour.id)
+      );
+      if (selectedTour?.id === deletedTour.id) {
+        setSelectedTour(null);
+      }
+      toast.success(`Tour deleted: ${deletedTour.name || deletedTour.invoice}`);
+    },
+  });
+
   const extractDateAndTime = (value: any) => {
     if (!value) return { date: "", time: "" };
     const str = String(value).trim();
