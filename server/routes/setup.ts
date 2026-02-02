@@ -1,56 +1,12 @@
 import { RequestHandler } from "express";
 import crypto from "crypto";
+import { staffDb } from "../supabase-db";
 
 function hashPassword(password: string): string {
   return crypto
     .createHash("sha256")
     .update(password + "salt")
     .digest("hex");
-}
-
-const DEMO_EMAIL = "admin@example.com";
-const DEMO_PASSWORD = "password";
-
-async function makeSupabaseRequest(method: string, path: string, body?: any) {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !anonKey) {
-    throw new Error("Database service is not configured");
-  }
-
-  try {
-    const response = await fetch(`${supabaseUrl}/rest/v1${path}`, {
-      method,
-      headers: {
-        Authorization: `Bearer ${anonKey}`,
-        apikey: anonKey,
-        "Content-Type": "application/json",
-        Prefer: "return=representation",
-      },
-      ...(body && { body: JSON.stringify(body) }),
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`Supabase API error: ${response.status} ${error}`);
-    }
-
-    const text = await response.text();
-    if (!text) {
-      return [];
-    }
-
-    return JSON.parse(text);
-  } catch (error) {
-    console.error("Supabase request failed:", error);
-    if (error instanceof TypeError && error.message.includes("fetch failed")) {
-      throw new Error(
-        "Database connection failed. Please check your internet connection and try again.",
-      );
-    }
-    throw error;
-  }
 }
 
 export const initializeDemo: RequestHandler = async (req, res) => {
