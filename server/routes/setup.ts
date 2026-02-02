@@ -11,8 +11,13 @@ function hashPassword(password: string): string {
 
 export const initializeDemo: RequestHandler = async (req, res) => {
   try {
+    console.log("[Setup] Starting admin user initialization...");
+
     // Check if admin user already exists
+    console.log("[Setup] Checking if Admin user exists...");
     const existingAdmin = await staffDb.getStaffByName("Admin");
+    console.log("[Setup] Admin user search result:", existingAdmin);
+
     if (existingAdmin) {
       console.log("[Setup] Admin user already exists");
       res.json({
@@ -27,17 +32,25 @@ export const initializeDemo: RequestHandler = async (req, res) => {
     }
 
     // Create admin user using proper database helper
+    console.log("[Setup] Creating new admin user...");
+    const passwordHash = hashPassword("admin123");
+    console.log("[Setup] Password hash generated");
+
     const adminUser = await staffDb.createStaff({
       id: `admin-${Date.now()}`,
       email: "admin@tourmanager.com",
       first_name: "Admin",
       last_name: "User",
       role: "admin",
-      password_hash: hashPassword("admin123"),
+      password_hash: passwordHash,
       availability_status: "available",
     });
 
     console.log("[Setup] Admin user created successfully:", adminUser);
+
+    // Verify the user was created
+    const verifyAdmin = await staffDb.getStaffByName("Admin");
+    console.log("[Setup] Verification - Admin user found:", verifyAdmin);
 
     res.json({
       success: true,
@@ -46,11 +59,18 @@ export const initializeDemo: RequestHandler = async (req, res) => {
         username: "Admin",
         password: "admin123",
       },
+      debug: {
+        userCreated: !!adminUser,
+        userVerified: !!verifyAdmin,
+      },
     });
   } catch (error) {
     console.error("[Setup] Error:", error);
     const errorMessage = error instanceof Error ? error.message : "Setup failed";
-    res.status(500).json({ error: errorMessage });
+    res.status(500).json({
+      error: errorMessage,
+      debug: error instanceof Error ? error.stack : undefined,
+    });
   }
 };
 
