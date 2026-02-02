@@ -30,7 +30,7 @@ export const createTour: RequestHandler = async (req, res) => {
   try {
     const currentUser = getSessionFromRequest(req);
     const { customRecipients, ...tour } = req.body;
-    const newTour = db.addTour({
+    const newTour = await tourDb.addTour({
       ...tour,
       start_date: tour.start_date,
     });
