@@ -44,7 +44,7 @@ export const createStaff: RequestHandler = async (req, res) => {
     const passwordHash = hashPassword(password);
 
     const staffId = `staff-${Date.now()}`;
-    const createdStaff = await db.createStaff({
+    const createdStaff = await staffDb.createStaff({
       id: staffId,
       email,
       first_name: firstName,
@@ -52,7 +52,6 @@ export const createStaff: RequestHandler = async (req, res) => {
       role,
       password_hash: passwordHash,
       availability_status: "available",
-      created_at: new Date().toISOString(),
     });
 
     let emailResult = null;
