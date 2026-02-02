@@ -11,6 +11,7 @@ import { getAllStaff, createStaff, updateStaff, deleteStaff } from "./routes/sta
 import { login, logout, getSession } from "./routes/auth";
 import { initializeDemo, initializePasswords } from "./routes/setup";
 import { getAssignments, saveAssignment, deleteAssignment } from "./routes/assignments";
+import { debugStatus, debugCreateAdminManual } from "./routes/debug";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
