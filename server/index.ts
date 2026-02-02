@@ -32,6 +32,10 @@ export async function initializeServer() {
 
 export function createServer() {
   const app = express();
+  const httpServer = http.createServer(app);
+
+  // Initialize WebSocket server
+  initializeWebSocket(httpServer);
 
   // Middleware
   app.use(cors({
