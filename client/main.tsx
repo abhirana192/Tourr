@@ -12,6 +12,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Navigation from "./components/Navigation";
 import Login from "./pages/Login";
 import Setup from "./pages/Setup";
+import Debug from "./pages/Debug";
 import Schedule from "./pages/Schedule";
 import MonthlyPlan from "./pages/MonthlyPlan";
 import Arrival from "./pages/Arrival";
