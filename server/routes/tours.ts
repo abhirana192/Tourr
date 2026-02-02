@@ -289,7 +289,7 @@ export const saveTourSchedule: RequestHandler = async (req, res) => {
       return;
     }
 
-    const tour = db.getTourById(id);
+    const tour = await tourDb.getTourById(id);
     if (!tour) {
       res.status(404).json({ error: "Tour not found" });
       return;
@@ -312,7 +312,7 @@ export const saveTourSchedule: RequestHandler = async (req, res) => {
       nlt: presentActivities.has("nlt") ? "Yes" : "No",
     };
 
-    const updated = db.updateTour(id, {
+    const updated = await tourDb.updateTour(id, {
       ...tour,
       activity_schedule: scheduleJson,
       ...activityFlags,
