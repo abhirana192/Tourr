@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { db } from "../database";
+import { tourDb } from "../supabase-db";
 import { sendNotificationEmail, EmailNotification } from "../email";
 import { getSessionFromRequest } from "./auth";
 
