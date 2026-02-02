@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import crypto from "crypto";
-import * as db from "../db";
+import { staffDb } from "../supabase-db";
 
 function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password + "salt").digest("hex");
