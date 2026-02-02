@@ -165,6 +165,29 @@ export default function Schedule() {
   // Ensure tours is always an array
   const safeTours = Array.isArray(tours) ? tours : [];
 
+  // Subscribe to real-time changes
+  useRealtimeSync({
+    table: "tours",
+    onInsert: (newTour) => {
+      toast.success(`New tour added: ${newTour.name || newTour.invoice}`);
+      fetchTours(searchDateFrom, searchDateTo, searchInvoice, searchName);
+    },
+    onUpdate: (updatedTour) => {
+      setTours((prevTours) =>
+        prevTours.map((tour) =>
+          tour.id === updatedTour.id ? updatedTour : tour
+        )
+      );
+      toast.success(`Tour updated: ${updatedTour.name || updatedTour.invoice}`);
+    },
+    onDelete: (deletedTour) => {
+      setTours((prevTours) =>
+        prevTours.filter((tour) => tour.id !== deletedTour.id)
+      );
+      toast.success(`Tour deleted: ${deletedTour.name || deletedTour.invoice}`);
+    },
+  });
+
   useEffect(() => {
     fetchTours();
   }, []);
