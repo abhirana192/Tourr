@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import crypto from "crypto";
 import { sendNotificationEmail, EmailNotification } from "../email";
 import { getSessionFromRequest } from "./auth";
-import * as db from "../db";
+import { staffDb } from "../supabase-db";
 
 function hashPassword(password: string): string {
   return crypto
