@@ -47,20 +47,7 @@ export function getSessionFromRequest(
   };
 }
 
-const DEMO_USER = {
-  id: "demo-user-1",
-  email: "admin@example.com",
-  first_name: "abhi",
-  last_name: "admin",
-  role: "admin",
-  password_hash: hashPassword("password"),
-};
-
 async function getStaffByName(name: string) {
-  if (name.toLowerCase() === DEMO_USER.first_name.toLowerCase()) {
-    return DEMO_USER;
-  }
-
   try {
     const staff = await staffDb.getStaffByName(name);
     return staff;
