@@ -5,6 +5,7 @@ import { Plus, Trash2, Edit2, Search, AlertTriangle, RotateCcw, Printer } from "
 import TourModal from "@/components/TourModal";
 import { EmailRecipientsDialog } from "@/components/EmailRecipientsDialog";
 import { toast } from "sonner";
+import { useRealtimeSync } from "@/hooks/useRealtimeSync";
 import {
   AlertDialog,
   AlertDialogAction,
