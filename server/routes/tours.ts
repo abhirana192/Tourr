@@ -3,7 +3,7 @@ import { tourDb } from "../supabase-db";
 import { sendNotificationEmail, EmailNotification } from "../email";
 import { getSessionFromRequest } from "./auth";
 
-export const getTours: RequestHandler = (req, res) => {
+export const getTours: RequestHandler = async (req, res) => {
   try {
     console.log("[getTours] Request received with query:", req.query);
     const dateFrom = (req.query.dateFrom as string) || "";
@@ -11,7 +11,7 @@ export const getTours: RequestHandler = (req, res) => {
     const invoice = (req.query.invoice as string) || "";
     const name = (req.query.name as string) || "";
 
-    const tours = db.searchTours(
+    const tours = await tourDb.searchTours(
       dateFrom || undefined,
       dateTo || undefined,
       invoice || undefined,
