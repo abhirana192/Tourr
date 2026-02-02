@@ -52,7 +52,7 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
-  // Debug endpoint
+  // Debug endpoints
   app.get("/api/debug/env", (_req, res) => {
     res.json({
       SUPABASE_URL: process.env.SUPABASE_URL ? "✓ set" : "✗ missing",
@@ -60,6 +60,9 @@ export function createServer() {
       NODE_ENV: process.env.NODE_ENV,
     });
   });
+
+  app.get("/api/debug/status", debugStatus);
+  app.post("/api/debug/create-admin", debugCreateAdminManual);
 
 
   // API routes MUST come before the SPA fallback
