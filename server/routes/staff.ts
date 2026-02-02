@@ -106,7 +106,7 @@ export const updateStaff: RequestHandler = async (req, res) => {
     }
 
     const currentUser = getSessionFromRequest(req);
-    const oldStaff = await db.getStaffById(id);
+    const oldStaff = await staffDb.getStaffById(id);
 
     if (!oldStaff) {
       res.status(404).json({ error: "Staff member not found" });
