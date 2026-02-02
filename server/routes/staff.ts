@@ -210,7 +210,7 @@ export const deleteStaff: RequestHandler = async (req, res) => {
     }
 
     const currentUser = getSessionFromRequest(req);
-    const staff = await db.getStaffById(id);
+    const staff = await staffDb.getStaffById(id);
 
     if (!staff) {
       res.status(404).json({ error: "Staff member not found" });
@@ -221,7 +221,7 @@ export const deleteStaff: RequestHandler = async (req, res) => {
       ? `${staff.first_name} ${staff.last_name}`
       : staff.first_name;
 
-    await db.deleteStaff(id);
+    await staffDb.deleteStaff(id);
 
     let emailResult = null;
     if (currentUser) {
