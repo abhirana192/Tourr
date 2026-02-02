@@ -351,7 +351,7 @@ export const saveTourSchedule: RequestHandler = async (req, res) => {
   }
 };
 
-export const getTourSchedule: RequestHandler = (req, res) => {
+export const getTourSchedule: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -360,7 +360,7 @@ export const getTourSchedule: RequestHandler = (req, res) => {
       return;
     }
 
-    const tour = db.getTourById(id);
+    const tour = await tourDb.getTourById(id);
     if (!tour) {
       res.status(404).json({ error: "Tour not found" });
       return;
