@@ -109,34 +109,8 @@ function initializeSchema() {
 }
 
 async function seedDemoUser() {
-  if (!db) return;
-
-  try {
-    const result = db.exec("SELECT id FROM staff WHERE first_name = 'abhi' LIMIT 1");
-    if (result.length > 0 && result[0].values.length > 0) {
-      console.log("[Database] Demo user already exists");
-      return;
-    }
-
-    const demoUserId = "demo-user-1";
-    const demoEmail = "admin@example.com";
-    const demoFirstName = "abhi";
-    const demoLastName = "admin";
-    const demoRole = "admin";
-    const demoPasswordHash = hashPassword("password");
-    const now = new Date().toISOString();
-
-    db.run(
-      `INSERT INTO staff (id, email, first_name, last_name, role, password_hash, availability_status, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [demoUserId, demoEmail, demoFirstName, demoLastName, demoRole, demoPasswordHash, "available", now]
-    );
-
-    saveDatabase();
-    console.log("[Database] Demo user seeded successfully");
-  } catch (error) {
-    console.error("[Database] Error seeding demo user:", error);
-  }
+  // Demo user seeding removed - use Supabase directly for user management
+  console.log("[Database] Skipping demo user seed - use Supabase for user management");
 }
 
 function saveDatabase() {
