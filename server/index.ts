@@ -4,7 +4,9 @@ import cors from "cors";
 import crypto from "crypto";
 import path from "path";
 import { fileURLToPath } from "url";
-import { getDatabase } from "./db";
+import http from "http";
+import { initializeDatabase } from "./postgres-db";
+import { initializeWebSocket } from "./websocket";
 import { handleDemo } from "./routes/demo";
 import { getTours, createTour, updateTour, deleteTour, saveTourSchedule, getTourSchedule, translateText } from "./routes/tours";
 import { getAllStaff, createStaff, updateStaff, deleteStaff } from "./routes/staff";
@@ -19,9 +21,9 @@ let dbReady = false;
 
 export async function initializeServer() {
   try {
-    await getDatabase();
+    await initializeDatabase();
     dbReady = true;
-    console.log("[Server] Database initialized and ready");
+    console.log("[Server] PostgreSQL database initialized and ready");
   } catch (error) {
     console.error("[Server] Failed to initialize database:", error);
     throw error;
