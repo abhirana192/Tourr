@@ -45,40 +45,8 @@ export interface ActivityAssignment {
   updated_at: string;
 }
 
-let tours: Tour[] = [
-  {
-    id: "1",
-    start_date: "2024-01-15",
-    invoice: "INV001",
-    language: "English",
-    name: "John Smith (5)",
-    pax: 5,
-    group_id: "G001",
-    dnr: "Yes",
-    td: "2h",
-    agent: "ABC Tours",
-    arrival: "2024-01-15|09:00|AC123",
-    departure: "2024-01-18|17:00|AC456",
-    accommodation: "Hotel X",
-    gears: "Included",
-    snowshoe: "Yes",
-    nlt: "Yes",
-    city_tour: "Yes",
-    hiking: "Yes",
-    fishing: "Yes",
-    dog_sledging: "Yes",
-    snowmobile_atv: "Yes",
-    aurora_village: "Yes",
-    aurora_village_activity: "Yes",
-    payment: "Paid",
-    reservation_number: "RES001",
-    remarks: "VIP Group",
-    activity_schedule: undefined,
-    leader: "John Smith",
-    members: '["Sarah Smith", "Emily Smith", "Tom Smith", "Lucy Smith"]',
-  },
-];
-
+// All data is now stored in Supabase - no dummy data
+let tours: Tour[] = [];
 let assignments: ActivityAssignment[] = [];
 
 export const db = {
