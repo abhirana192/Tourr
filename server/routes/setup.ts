@@ -55,39 +55,12 @@ async function makeSupabaseRequest(method: string, path: string, body?: any) {
 
 export const initializeDemo: RequestHandler = async (req, res) => {
   try {
-    // Check if demo user already exists
-    const existingUsers = await makeSupabaseRequest(
-      "GET",
-      `/staff?email=eq.${encodeURIComponent(DEMO_EMAIL)}&select=id`,
-    );
-
-    if (existingUsers.length > 0) {
-      res.json({
-        success: true,
-        message: "Demo user already exists",
-      });
-      return;
-    }
-
-    // Create demo user in staff table with hashed password
-    const passwordHash = hashPassword(DEMO_PASSWORD);
-
-    const createdStaff = await makeSupabaseRequest("POST", "/staff", {
-      email: DEMO_EMAIL,
-      first_name: "Admin",
-      last_name: "User",
-      role: "admin",
-      availability_status: "available",
-      password_hash: passwordHash,
-    });
-
+    // Demo initialization has been removed
+    // Users must be created manually in Supabase or through the staff management API
     res.json({
       success: true,
-      message: "Demo user created successfully",
-      user: {
-        email: DEMO_EMAIL,
-        password: DEMO_PASSWORD,
-      },
+      message: "Demo data initialization skipped - use Supabase directly to create staff users",
+      instructions: "Create staff users in Supabase staff table or use the Staff Management API",
     });
   } catch (error) {
     console.error("Setup error:", error);
