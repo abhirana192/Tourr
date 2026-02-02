@@ -83,6 +83,23 @@ export default function MonthlyPlan() {
   const [dateTo, setDateTo] = useState<string>(defaultToStr);
   const [isCustomRange, setIsCustomRange] = useState(false);
 
+  // Subscribe to real-time changes
+  useRealtimeSync({
+    table: "tours",
+    onInsert: () => {
+      toast.success("New tour added");
+      fetchActivities();
+    },
+    onUpdate: () => {
+      toast.info("Tour updated");
+      fetchActivities();
+    },
+    onDelete: () => {
+      toast.info("Tour deleted");
+      fetchActivities();
+    },
+  });
+
   useEffect(() => {
     fetchActivities();
   }, [selectedMonth, isCustomRange, dateFrom, dateTo]);
