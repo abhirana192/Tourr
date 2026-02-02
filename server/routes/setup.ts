@@ -11,35 +11,10 @@ function hashPassword(password: string): string {
 
 export const initializeDemo: RequestHandler = async (req, res) => {
   try {
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_KEY;
-
-    if (!supabaseUrl || !serviceKey) {
-      throw new Error("Supabase configuration is missing");
-    }
-
-    const ADMIN_USER = {
-      id: "admin-user-001",
-      email: "admin@tourmanager.com",
-      first_name: "Admin",
-      last_name: "User",
-      role: "admin",
-      password_hash: hashPassword("admin123"),
-      availability_status: "available",
-    };
-
-    // Check if user already exists
-    const checkResponse = await fetch(`${supabaseUrl}/rest/v1/staff?id=eq.${ADMIN_USER.id}&select=id`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${serviceKey}`,
-        apikey: serviceKey,
-        "Content-Type": "application/json",
-      },
-    });
-
-    const existingUsers = await checkResponse.json();
-    if (Array.isArray(existingUsers) && existingUsers.length > 0) {
+    // Check if admin user already exists
+    const existingAdmin = await staffDb.getStaffByName("Admin");
+    if (existingAdmin) {
+      console.log("[Setup] Admin user already exists");
       res.json({
         success: true,
         message: "Admin user already exists",
@@ -51,22 +26,18 @@ export const initializeDemo: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Create admin user
-    const createResponse = await fetch(`${supabaseUrl}/rest/v1/staff`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${serviceKey}`,
-        apikey: serviceKey,
-        "Content-Type": "application/json",
-        Prefer: "return=representation",
-      },
-      body: JSON.stringify(ADMIN_USER),
+    // Create admin user using proper database helper
+    const adminUser = await staffDb.createStaff({
+      id: `admin-${Date.now()}`,
+      email: "admin@tourmanager.com",
+      first_name: "Admin",
+      last_name: "User",
+      role: "admin",
+      password_hash: hashPassword("admin123"),
+      availability_status: "available",
     });
 
-    if (!createResponse.ok) {
-      const error = await createResponse.text();
-      throw new Error(`Failed to create admin user: ${error}`);
-    }
+    console.log("[Setup] Admin user created successfully:", adminUser);
 
     res.json({
       success: true,
@@ -77,9 +48,8 @@ export const initializeDemo: RequestHandler = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Setup error:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Setup failed";
+    console.error("[Setup] Error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Setup failed";
     res.status(500).json({ error: errorMessage });
   }
 };
