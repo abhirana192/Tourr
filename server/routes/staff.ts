@@ -156,7 +156,7 @@ export const updateStaff: RequestHandler = async (req, res) => {
       return;
     }
 
-    const staff = await db.updateStaff(id, updates);
+    const staff = await staffDb.updateStaff(id, updates);
 
     if (!staff) {
       res.status(404).json({ error: "Staff member not found" });
