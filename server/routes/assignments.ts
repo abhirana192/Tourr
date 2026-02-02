@@ -1,9 +1,9 @@
 import { RequestHandler } from "express";
-import { db } from "../database";
+import { assignmentDb } from "../supabase-db";
 
-export const getAssignments: RequestHandler = (req, res) => {
+export const getAssignments: RequestHandler = async (req, res) => {
   try {
-    const assignments = db.getAssignments();
+    const assignments = await assignmentDb.getAssignments();
     res.json(assignments);
   } catch (error) {
     console.error("Error fetching assignments:", error);
@@ -11,7 +11,7 @@ export const getAssignments: RequestHandler = (req, res) => {
   }
 };
 
-export const saveAssignment: RequestHandler = (req, res) => {
+export const saveAssignment: RequestHandler = async (req, res) => {
   try {
     const {
       assignmentType,
@@ -28,7 +28,7 @@ export const saveAssignment: RequestHandler = (req, res) => {
       return;
     }
 
-    const assignment = db.saveAssignment(
+    const assignment = await assignmentDb.saveAssignment(
       assignmentType,
       assignmentKey,
       activityDate,
@@ -43,7 +43,7 @@ export const saveAssignment: RequestHandler = (req, res) => {
   }
 };
 
-export const deleteAssignment: RequestHandler = (req, res) => {
+export const deleteAssignment: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -52,7 +52,7 @@ export const deleteAssignment: RequestHandler = (req, res) => {
       return;
     }
 
-    const success = db.deleteAssignment(id);
+    const success = await assignmentDb.deleteAssignment(id);
 
     if (!success) {
       res.status(404).json({ error: "Assignment not found" });
