@@ -13,7 +13,7 @@ function hashPassword(password: string): string {
 
 export const getAllStaff: RequestHandler = async (req, res) => {
   try {
-    const staff = await db.getAllStaff();
+    const staff = await staffDb.getAllStaff();
     const formatted = staff.map((s: any) => ({
       id: s.id,
       email: s.email,
