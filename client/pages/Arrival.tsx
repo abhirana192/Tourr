@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertCircle, Edit2, RotateCcw, Printer } from "lucide-react";
 import { toast } from "sonner";
+import { useRealtimeSync } from "@/hooks/useRealtimeSync";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ActivityPickerModal } from "./ActivityPickerModal";
 import { EmailRecipientsDialog } from "@/components/EmailRecipientsDialog";
