@@ -121,5 +121,5 @@ export function createServer() {
     }
   });
 
-  return app;
+  return { app, httpServer };
 }
