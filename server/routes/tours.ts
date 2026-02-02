@@ -133,13 +133,13 @@ export const deleteTour: RequestHandler = async (req, res) => {
     const { id } = req.params;
 
     // Get the tour data before deletion
-    const tour = db.getTourById(id);
+    const tour = await tourDb.getTourById(id);
     if (!tour) {
       res.status(404).json({ error: "Tour not found" });
       return;
     }
 
-    const success = db.deleteTour(id);
+    const success = await tourDb.deleteTour(id);
 
     if (!success) {
       res.status(404).json({ error: "Tour not found" });
