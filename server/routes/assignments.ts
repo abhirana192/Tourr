@@ -1,9 +1,17 @@
 import { RequestHandler } from "express";
 import { assignmentDb } from "../supabase-db";
+import { inMemoryAssignmentsDb } from "../in-memory-assignments-db";
 
 export const getAssignments: RequestHandler = async (req, res) => {
   try {
-    const assignments = await assignmentDb.getAssignments();
+    let assignments;
+    try {
+      assignments = await assignmentDb.getAssignments();
+    } catch (error) {
+      console.warn("[getAssignments] Supabase unavailable, using in-memory fallback");
+      assignments = await inMemoryAssignmentsDb.getAssignments();
+    }
+
     res.json(assignments);
   } catch (error) {
     console.error("Error fetching assignments:", error);
@@ -28,13 +36,25 @@ export const saveAssignment: RequestHandler = async (req, res) => {
       return;
     }
 
-    const assignment = await assignmentDb.saveAssignment(
-      assignmentType,
-      assignmentKey,
-      activityDate,
-      van || "",
-      employees || ""
-    );
+    let assignment;
+    try {
+      assignment = await assignmentDb.saveAssignment(
+        assignmentType,
+        assignmentKey,
+        activityDate,
+        van || "",
+        employees || ""
+      );
+    } catch (error) {
+      console.warn("[saveAssignment] Supabase unavailable, using in-memory fallback");
+      assignment = await inMemoryAssignmentsDb.saveAssignment(
+        assignmentType,
+        assignmentKey,
+        activityDate,
+        van || "",
+        employees || ""
+      );
+    }
 
     res.json(assignment);
   } catch (error) {
@@ -52,7 +72,13 @@ export const deleteAssignment: RequestHandler = async (req, res) => {
       return;
     }
 
-    const success = await assignmentDb.deleteAssignment(id);
+    let success;
+    try {
+      success = await assignmentDb.deleteAssignment(id);
+    } catch (error) {
+      console.warn("[deleteAssignment] Supabase unavailable, using in-memory fallback");
+      success = await inMemoryAssignmentsDb.deleteAssignment(id);
+    }
 
     if (!success) {
       res.status(404).json({ error: "Assignment not found" });

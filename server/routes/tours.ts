@@ -1,7 +1,18 @@
 import { RequestHandler } from "express";
 import { tourDb } from "../supabase-db";
+import { inMemoryToursDb } from "../in-memory-tours-db";
 import { sendNotificationEmail, EmailNotification } from "../email";
 import { getSessionFromRequest } from "./auth";
+
+async function getToursFromDb(dateFrom?: string, dateTo?: string, invoice?: string, name?: string) {
+  try {
+    // Try Supabase first
+    return await tourDb.searchTours(dateFrom, dateTo, invoice, name);
+  } catch (error) {
+    console.warn("[getTours] Supabase unavailable, using in-memory fallback");
+    return await inMemoryToursDb.searchTours(dateFrom, dateTo, invoice, name);
+  }
+}
 
 export const getTours: RequestHandler = async (req, res) => {
   try {
@@ -11,7 +22,7 @@ export const getTours: RequestHandler = async (req, res) => {
     const invoice = (req.query.invoice as string) || "";
     const name = (req.query.name as string) || "";
 
-    const tours = await tourDb.searchTours(
+    const tours = await getToursFromDb(
       dateFrom || undefined,
       dateTo || undefined,
       invoice || undefined,
@@ -30,10 +41,21 @@ export const createTour: RequestHandler = async (req, res) => {
   try {
     const currentUser = getSessionFromRequest(req);
     const { customRecipients, ...tour } = req.body;
-    const newTour = await tourDb.addTour({
-      ...tour,
-      start_date: tour.start_date,
-    });
+
+    let newTour;
+    try {
+      // Try Supabase first
+      newTour = await tourDb.addTour({
+        ...tour,
+        start_date: tour.start_date,
+      });
+    } catch (error) {
+      console.warn("[createTour] Supabase unavailable, using in-memory fallback");
+      newTour = await inMemoryToursDb.addTour({
+        ...tour,
+        start_date: tour.start_date,
+      });
+    }
 
     // Send notification email if user is authenticated
     let emailResult = null;
@@ -75,16 +97,32 @@ export const updateTour: RequestHandler = async (req, res) => {
     const { customRecipients, ...updates } = req.body;
 
     // Get the old tour data
-    const oldTour = await tourDb.getTourById(id);
+    let oldTour;
+    try {
+      oldTour = await tourDb.getTourById(id);
+    } catch (error) {
+      console.warn("[updateTour] Supabase unavailable, using in-memory fallback");
+      oldTour = await inMemoryToursDb.getTourById(id);
+    }
+
     if (!oldTour) {
       res.status(404).json({ error: "Tour not found" });
       return;
     }
 
-    const updated = await tourDb.updateTour(id, {
-      ...updates,
-      start_date: updates.start_date,
-    });
+    let updated;
+    try {
+      updated = await tourDb.updateTour(id, {
+        ...updates,
+        start_date: updates.start_date,
+      });
+    } catch (error) {
+      console.warn("[updateTour] Supabase unavailable, using in-memory fallback");
+      updated = await inMemoryToursDb.updateTour(id, {
+        ...updates,
+        start_date: updates.start_date,
+      });
+    }
 
     if (!updated) {
       res.status(404).json({ error: "Tour not found" });
@@ -133,13 +171,26 @@ export const deleteTour: RequestHandler = async (req, res) => {
     const { id } = req.params;
 
     // Get the tour data before deletion
-    const tour = await tourDb.getTourById(id);
+    let tour;
+    try {
+      tour = await tourDb.getTourById(id);
+    } catch (error) {
+      console.warn("[deleteTour] Supabase unavailable, using in-memory fallback");
+      tour = await inMemoryToursDb.getTourById(id);
+    }
+
     if (!tour) {
       res.status(404).json({ error: "Tour not found" });
       return;
     }
 
-    const success = await tourDb.deleteTour(id);
+    let success;
+    try {
+      success = await tourDb.deleteTour(id);
+    } catch (error) {
+      console.warn("[deleteTour] Supabase unavailable, using in-memory fallback");
+      success = await inMemoryToursDb.deleteTour(id);
+    }
 
     if (!success) {
       res.status(404).json({ error: "Tour not found" });

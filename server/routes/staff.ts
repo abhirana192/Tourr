@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { sendNotificationEmail, EmailNotification } from "../email";
 import { getSessionFromRequest } from "./auth";
 import { staffDb } from "../supabase-db";
+import { inMemoryStaffDb } from "../in-memory-db";
 
 function hashPassword(password: string): string {
   return crypto
@@ -13,7 +14,14 @@ function hashPassword(password: string): string {
 
 export const getAllStaff: RequestHandler = async (req, res) => {
   try {
-    const staff = await staffDb.getAllStaff();
+    let staff;
+    try {
+      staff = await staffDb.getAllStaff();
+    } catch (error) {
+      console.warn("[getAllStaff] Supabase unavailable, using in-memory fallback");
+      staff = await inMemoryStaffDb.getAllStaff();
+    }
+
     const formatted = staff.map((s: any) => ({
       id: s.id,
       email: s.email,
@@ -44,15 +52,29 @@ export const createStaff: RequestHandler = async (req, res) => {
     const passwordHash = hashPassword(password);
 
     const staffId = `staff-${Date.now()}`;
-    const createdStaff = await staffDb.createStaff({
-      id: staffId,
-      email,
-      first_name: firstName,
-      last_name: lastName,
-      role,
-      password_hash: passwordHash,
-      availability_status: "available",
-    });
+    let createdStaff;
+    try {
+      createdStaff = await staffDb.createStaff({
+        id: staffId,
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        role,
+        password_hash: passwordHash,
+        availability_status: "available",
+      });
+    } catch (error) {
+      console.warn("[createStaff] Supabase unavailable, using in-memory fallback");
+      createdStaff = await inMemoryStaffDb.createStaff({
+        id: staffId,
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        role,
+        password_hash: passwordHash,
+        availability_status: "available",
+      });
+    }
 
     let emailResult = null;
     if (currentUser) {
@@ -106,7 +128,13 @@ export const updateStaff: RequestHandler = async (req, res) => {
     }
 
     const currentUser = getSessionFromRequest(req);
-    const oldStaff = await staffDb.getStaffById(id);
+    let oldStaff;
+    try {
+      oldStaff = await staffDb.getStaffById(id);
+    } catch (error) {
+      console.warn("[updateStaff] Supabase unavailable, using in-memory fallback");
+      oldStaff = await inMemoryStaffDb.getStaffById(id);
+    }
 
     if (!oldStaff) {
       res.status(404).json({ error: "Staff member not found" });
@@ -156,7 +184,13 @@ export const updateStaff: RequestHandler = async (req, res) => {
       return;
     }
 
-    const staff = await staffDb.updateStaff(id, updates);
+    let staff;
+    try {
+      staff = await staffDb.updateStaff(id, updates);
+    } catch (error) {
+      console.warn("[updateStaff] Supabase unavailable, using in-memory fallback");
+      staff = await inMemoryStaffDb.updateStaff(id, updates);
+    }
 
     if (!staff) {
       res.status(404).json({ error: "Staff member not found" });
@@ -210,7 +244,13 @@ export const deleteStaff: RequestHandler = async (req, res) => {
     }
 
     const currentUser = getSessionFromRequest(req);
-    const staff = await staffDb.getStaffById(id);
+    let staff;
+    try {
+      staff = await staffDb.getStaffById(id);
+    } catch (error) {
+      console.warn("[deleteStaff] Supabase unavailable, using in-memory fallback");
+      staff = await inMemoryStaffDb.getStaffById(id);
+    }
 
     if (!staff) {
       res.status(404).json({ error: "Staff member not found" });
@@ -221,7 +261,12 @@ export const deleteStaff: RequestHandler = async (req, res) => {
       ? `${staff.first_name} ${staff.last_name}`
       : staff.first_name;
 
-    await staffDb.deleteStaff(id);
+    try {
+      await staffDb.deleteStaff(id);
+    } catch (error) {
+      console.warn("[deleteStaff] Supabase unavailable, using in-memory fallback");
+      await inMemoryStaffDb.deleteStaff(id);
+    }
 
     let emailResult = null;
     if (currentUser) {
