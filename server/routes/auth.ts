@@ -1,6 +1,8 @@
 import { RequestHandler } from "express";
 import crypto from "crypto";
 import { staffDb } from "../supabase-db";
+import { inMemoryStaffDb } from "../in-memory-db";
+import { isDatabaseReady } from "../postgres-db";
 
 function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password + "salt").digest("hex");
@@ -49,8 +51,20 @@ export function getSessionFromRequest(
 
 async function getStaffByName(name: string) {
   try {
-    const staff = await staffDb.getStaffByName(name);
-    return staff;
+    // Try in-memory database first (always available)
+    let staff = await inMemoryStaffDb.getStaffByName(name);
+    if (staff) {
+      return staff;
+    }
+
+    // Then try Supabase if it's available
+    try {
+      staff = await staffDb.getStaffByName(name);
+      return staff;
+    } catch (err) {
+      console.warn("[getStaffByName] Supabase unavailable, using in-memory fallback");
+      return null;
+    }
   } catch (error) {
     console.error("[getStaffByName] Database error:", error);
     return null;

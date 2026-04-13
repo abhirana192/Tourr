@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import crypto from "crypto";
 import { staffDb } from "../supabase-db";
+import { inMemoryStaffDb, initializeInMemoryDb } from "../in-memory-db";
 
 function hashPassword(password: string): string {
   return crypto
@@ -13,10 +14,13 @@ export const initializeDemo: RequestHandler = async (req, res) => {
   try {
     console.log("[Setup] Starting admin user initialization...");
 
-    // Check if admin user already exists
+    // Initialize in-memory DB if not already done
+    initializeInMemoryDb();
+
+    // Check if admin user already exists (try in-memory first)
     console.log("[Setup] Checking if Admin user exists...");
-    const existingAdmin = await staffDb.getStaffByName("Admin");
-    console.log("[Setup] Admin user search result:", existingAdmin);
+    let existingAdmin = await inMemoryStaffDb.getStaffByName("Admin");
+    console.log("[Setup] In-memory admin user search result:", existingAdmin);
 
     if (existingAdmin) {
       console.log("[Setup] Admin user already exists");
@@ -31,12 +35,12 @@ export const initializeDemo: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Create admin user using proper database helper
-    console.log("[Setup] Creating new admin user...");
+    // Create admin user in in-memory database
+    console.log("[Setup] Creating new admin user in in-memory database...");
     const passwordHash = hashPassword("admin123");
     console.log("[Setup] Password hash generated");
 
-    const adminUser = await staffDb.createStaff({
+    const adminUser = await inMemoryStaffDb.createStaff({
       id: `admin-${Date.now()}`,
       email: "admin@tourmanager.com",
       first_name: "Admin",
@@ -49,7 +53,7 @@ export const initializeDemo: RequestHandler = async (req, res) => {
     console.log("[Setup] Admin user created successfully:", adminUser);
 
     // Verify the user was created
-    const verifyAdmin = await staffDb.getStaffByName("Admin");
+    const verifyAdmin = await inMemoryStaffDb.getStaffByName("Admin");
     console.log("[Setup] Verification - Admin user found:", verifyAdmin);
 
     res.json({
