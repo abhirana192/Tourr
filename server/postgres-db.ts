@@ -13,6 +13,8 @@ pool.on("error", (err) => {
   console.error("[PostgreSQL] Unexpected error on idle client", err);
 });
 
+let isInitialized = false;
+
 export async function initializeDatabase() {
   try {
     // Test connection
@@ -22,10 +24,17 @@ export async function initializeDatabase() {
     // Create tables if they don't exist
     await createTables();
     console.log("[PostgreSQL] Database tables initialized");
+    isInitialized = true;
   } catch (error) {
-    console.error("[PostgreSQL] Connection failed:", error);
-    throw error;
+    console.warn("[PostgreSQL] Connection failed - running in fallback mode:", (error as any).message);
+    console.warn("[PostgreSQL] The app will work but without persistent storage.");
+    console.warn("[PostgreSQL] To enable full functionality, set up a PostgreSQL database and configure DB_HOST, DB_USER, DB_PASSWORD, DB_PORT, DB_NAME environment variables.");
+    isInitialized = false;
   }
+}
+
+export function isDatabaseReady(): boolean {
+  return isInitialized;
 }
 
 async function createTables() {

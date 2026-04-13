@@ -11,7 +11,7 @@ async function start() {
     await initializeServer();
 
     // Then create and start the server
-    const app = createServer();
+    const { app, httpServer } = createServer();
     const port = process.env.PORT || 3000;
 
     // Check if spa files exist
@@ -31,7 +31,7 @@ async function start() {
       console.log(`[Startup] __dirname: ${__dirname}`);
     }
 
-    app.listen(port, () => {
+    httpServer.listen(port, () => {
       console.log(`🚀 Fusion Starter server running on port ${port}`);
       console.log(`📱 Frontend: http://localhost:${port}`);
       console.log(`🔧 API: http://localhost:${port}/api`);

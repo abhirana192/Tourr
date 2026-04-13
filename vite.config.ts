@@ -29,8 +29,13 @@ function expressPlugin(): Plugin {
     name: "express-plugin",
     apply: "serve",
     async configureServer(server) {
-      const { createServer } = await import("./server/index.ts");
-      const app = createServer();
+      const { createServer, initializeServer } = await import("./server/index.ts");
+
+      // Initialize database first
+      await initializeServer();
+
+      // Now create the server
+      const { app } = createServer();
 
       // Create our custom middleware
       const middleware = (req: any, res: any, next: any) => {
