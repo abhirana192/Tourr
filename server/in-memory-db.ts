@@ -20,10 +20,17 @@ function hashPassword(password: string): string {
 }
 
 export function initializeInMemoryDb() {
-  // Create default admin user
+  // Create default admin user if it doesn't exist
   const adminId = "admin-default";
+
+  // Check if admin already exists
+  if (staffMembers.has(adminId)) {
+    console.log("[InMemoryDB] Admin user already exists, skipping initialization");
+    return;
+  }
+
   const adminHash = hashPassword("admin123");
-  
+
   staffMembers.set(adminId, {
     id: adminId,
     email: "admin@tourmanager.com",
@@ -34,7 +41,7 @@ export function initializeInMemoryDb() {
     availability_status: "available",
     created_at: new Date().toISOString(),
   });
-  
+
   console.log("[InMemoryDB] Initialized with default admin user");
 }
 

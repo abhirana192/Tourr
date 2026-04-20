@@ -360,11 +360,14 @@ export default function Arrival() {
           [selectedTour.id]: savedSchedule,
         }));
       } else {
-        // Generate random schedule for new tours
-        const randomSchedule = generateRandomSchedule(selectedTour, daysDiff);
+        // Create empty schedule for new tours (don't auto-assign activities)
+        const emptySchedule: ActivitySchedule = {};
+        for (let i = 0; i < daysDiff; i++) {
+          emptySchedule[i] = { plannedActivities: [], arrivalActivities: [], hotelActivities: [], note: "" };
+        }
         setSchedules((prev) => ({
           ...prev,
-          [selectedTour.id]: randomSchedule,
+          [selectedTour.id]: emptySchedule,
         }));
       }
 
