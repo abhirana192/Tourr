@@ -979,6 +979,8 @@ export default function Arrival() {
     const hasLeader = selectedTour.leader && selectedTour.leader.trim();
     const hasMembers = selectedTour.members && selectedTour.members.trim();
 
+    console.log("[Print] Tour pax:", selectedTour.pax, "Leader:", selectedTour.leader, "Members:", selectedTour.members);
+
     if (selectedTour.pax > 2 && (hasLeader || hasMembers)) {
       // Show leader in big font
       const leaderName = hasLeader ? selectedTour.leader : guestName;
