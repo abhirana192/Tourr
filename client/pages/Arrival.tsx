@@ -916,17 +916,32 @@ export default function Arrival() {
 
     // Format guest name with leader and members if there are more than 2 people
     let guestNameHTML = `<div class="guest-title">${guestName}</div>`;
-    if (selectedTour.pax > 2 && selectedTour.leader && selectedTour.members) {
-      const membersList = selectedTour.members.split(",").map((m: string) => m.trim());
+
+    // Check if we have more than 2 people and leader/members info
+    const hasLeader = selectedTour.leader && selectedTour.leader.trim();
+    const hasMembers = selectedTour.members && selectedTour.members.trim();
+
+    if (selectedTour.pax > 2 && (hasLeader || hasMembers)) {
+      // Show leader in big font
+      const leaderName = hasLeader ? selectedTour.leader : guestName;
+
+      // Show members in small font if available
+      let membersHTML = "";
+      if (hasMembers) {
+        const membersList = selectedTour.members.split(",").map((m: string) => m.trim()).filter((m: string) => m);
+        if (membersList.length > 0) {
+          membersHTML = `
+            <div style="margin-top: 10px; font-size: 14px; color: #666;">
+              ${membersList.map((member: string) => `<div>${member}</div>`).join("")}
+            </div>
+          `;
+        }
+      }
+
       guestNameHTML = `
-        <div class="guest-title">${selectedTour.leader}</div>
-        <div style="margin-top: 10px; font-size: 14px; color: #666;">
-          ${membersList.map((member: string) => `<div>${member}</div>`).join("")}
-        </div>
+        <div class="guest-title">${leaderName}</div>
+        ${membersHTML}
       `;
-    } else if (selectedTour.pax > 2 && selectedTour.leader) {
-      // If only leader is available, show it prominently
-      guestNameHTML = `<div class="guest-title">${selectedTour.leader}</div>`;
     }
 
     const htmlContent = `
@@ -1405,6 +1420,20 @@ export default function Arrival() {
                       <p className="font-semibold text-gray-900">{selectedTour.group_id}</p>
                     </div>
                   </div>
+
+                  {/* Leader and Members Info */}
+                  {selectedTour.pax > 2 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 text-sm pt-4 border-t border-gray-200">
+                      <div>
+                        <span className="text-gray-600">Leader:</span>
+                        <p className="font-semibold text-gray-900">{selectedTour.leader || "Not set"}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Members:</span>
+                        <p className="font-semibold text-gray-900">{selectedTour.members || "Not set"}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   {!isEditMode ? (
