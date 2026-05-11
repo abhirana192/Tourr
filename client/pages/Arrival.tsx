@@ -35,6 +35,8 @@ interface Tour {
   payment: string;
   reservation_number: string;
   remarks: string;
+  leader?: string;
+  members?: string;
 }
 
 interface Activity {
@@ -912,6 +914,21 @@ export default function Arrival() {
       language
     );
 
+    // Format guest name with leader and members if there are more than 2 people
+    let guestNameHTML = `<div class="guest-title">${guestName}</div>`;
+    if (selectedTour.pax > 2 && selectedTour.leader && selectedTour.members) {
+      const membersList = selectedTour.members.split(",").map((m: string) => m.trim());
+      guestNameHTML = `
+        <div class="guest-title">${selectedTour.leader}</div>
+        <div style="margin-top: 10px; font-size: 14px; color: #666;">
+          ${membersList.map((member: string) => `<div>${member}</div>`).join("")}
+        </div>
+      `;
+    } else if (selectedTour.pax > 2 && selectedTour.leader) {
+      // If only leader is available, show it prominently
+      guestNameHTML = `<div class="guest-title">${selectedTour.leader}</div>`;
+    }
+
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -1242,7 +1259,7 @@ export default function Arrival() {
           <div class="welcome-header">
             <div class="header-content" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
               <div class="welcome-text">${welcomeText}</div>
-              <div class="guest-title">${guestName}</div>
+              ${guestNameHTML}
               <div class="guest-info">
                 <div class="info-item">
                   <div class="info-label">Invoice</div>
