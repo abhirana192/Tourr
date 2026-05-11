@@ -183,6 +183,9 @@ export default function Arrival() {
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [pendingScheduleData, setPendingScheduleData] = useState<any>(null);
   const [showPrintLanguageDialog, setShowPrintLanguageDialog] = useState(false);
+  const [isEditingGroupInfo, setIsEditingGroupInfo] = useState(false);
+  const [editingLeader, setEditingLeader] = useState("");
+  const [editingMembers, setEditingMembers] = useState("");
 
   // Subscribe to real-time changes
   useRealtimeSync({
@@ -754,6 +757,61 @@ export default function Arrival() {
     }
 
     return translations;
+  };
+
+  const handleEditGroupInfo = () => {
+    if (selectedTour) {
+      setEditingLeader(selectedTour.leader || "");
+      setEditingMembers(selectedTour.members || "");
+      setIsEditingGroupInfo(true);
+    }
+  };
+
+  const handleSaveGroupInfo = async () => {
+    if (!selectedTour) return;
+
+    setIsSaving(true);
+    try {
+      const sessionToken = localStorage.getItem("sessionToken");
+
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (sessionToken) {
+        headers["Authorization"] = `Bearer ${sessionToken}`;
+      }
+
+      const response = await fetch(`/api/tours/${selectedTour.id}`, {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({
+          leader: editingLeader,
+          members: editingMembers,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save group information");
+      }
+
+      const updatedTour = await response.json();
+
+      // Update the selected tour
+      setSelectedTour(updatedTour);
+
+      // Update the tours list
+      setTours((prev) =>
+        prev.map((tour) =>
+          tour.id === selectedTour.id ? updatedTour : tour
+        )
+      );
+
+      setIsEditingGroupInfo(false);
+      toast.success("Group information saved successfully!");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to save group information";
+      toast.error(errorMessage);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handlePrint = () => {
@@ -1423,15 +1481,57 @@ export default function Arrival() {
 
                   {/* Leader and Members Info */}
                   {selectedTour.pax > 2 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 text-sm pt-4 border-t border-gray-200">
-                      <div>
-                        <span className="text-gray-600">Leader:</span>
-                        <p className="font-semibold text-gray-900">{selectedTour.leader || "Not set"}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-600">Members:</span>
-                        <p className="font-semibold text-gray-900">{selectedTour.members || "Not set"}</p>
-                      </div>
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      {!isEditingGroupInfo ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-600">Leader:</span>
+                            <p className="font-semibold text-gray-900">{selectedTour.leader || "Not set"}</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Members:</span>
+                            <p className="font-semibold text-gray-900">{selectedTour.members || "Not set"}</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <label className="block text-gray-600 mb-1">Leader:</label>
+                            <Input
+                              type="text"
+                              placeholder="Enter leader name"
+                              value={editingLeader}
+                              onChange={(e) => setEditingLeader(e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-gray-600 mb-1">Members (comma-separated):</label>
+                            <Input
+                              type="text"
+                              placeholder="e.g., John Doe, Jane Smith"
+                              value={editingMembers}
+                              onChange={(e) => setEditingMembers(e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <Button
+                        onClick={isEditingGroupInfo ? handleSaveGroupInfo : handleEditGroupInfo}
+                        disabled={isSaving}
+                        className="mt-3 bg-purple-600 hover:bg-purple-700 text-white text-xs py-1.5 px-3 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {isSaving ? "Saving..." : isEditingGroupInfo ? "Save Group Info" : "Edit Group Info"}
+                      </Button>
+                      {isEditingGroupInfo && (
+                        <Button
+                          onClick={() => setIsEditingGroupInfo(false)}
+                          className="mt-3 ml-2 bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-3 rounded-lg"
+                        >
+                          Cancel
+                        </Button>
+                      )}
                     </div>
                   )}
                 </div>
