@@ -582,7 +582,7 @@ export default function Arrival() {
     setActivityPickerOpen(true);
   };
 
-  const handleSelectActivity = (activityKey: string) => {
+  const handleSelectActivity = (activityKey: string, customTiming: string) => {
     if (!selectedTour || selectedDayForActivity === null || !selectedColumnForActivity) {
       return;
     }
@@ -594,7 +594,7 @@ export default function Arrival() {
 
     const newActivity: Activity = {
       name: activityData.name,
-      timings: [activityData.timings[0]],
+      timings: [customTiming],
     };
 
     setSchedules((prev) => {
