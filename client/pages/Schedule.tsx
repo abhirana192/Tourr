@@ -375,6 +375,43 @@ export default function Schedule() {
     }
   };
 
+  const handleRestoreTour = async (tour: Tour) => {
+    if (isTourActionInProgress || !tour.is_cancelled) return;
+
+    setIsTourActionInProgress(true);
+    try {
+      const sessionToken = localStorage.getItem("sessionToken");
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (sessionToken) {
+        headers["Authorization"] = `Bearer ${sessionToken}`;
+      }
+
+      const response = await fetch(`/api/tours/${tour.id}`, {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({ is_cancelled: false }),
+      });
+      if (!response.ok) throw new Error("Failed to restore tour");
+
+      const updatedTour = await response.json();
+      setTours((currentTours) =>
+        currentTours.map((currentTour) =>
+          currentTour.id === tour.id ? updatedTour : currentTour,
+        ),
+      );
+      toast.success("Tour restored", {
+        description: "The tour is active and displayed normally in the schedule.",
+      });
+    } catch (error) {
+      console.error("Error restoring tour:", error);
+      toast.error("Failed to restore tour", {
+        description: "The tour status was not changed. Please try again.",
+      });
+    } finally {
+      setIsTourActionInProgress(false);
+    }
+  };
+
   const handleDeleteClick = (tour: Tour) => {
     if (!tour.is_cancelled) {
       void handleCancelTour(tour);
@@ -826,6 +863,17 @@ export default function Schedule() {
                         <button onClick={() => handleEditClick(tour)} className="text-blue-600 hover:text-blue-800 p-0.5">
                           <Edit2 size={12} />
                         </button>
+                        {tour.is_cancelled && (
+                          <button
+                            onClick={() => void handleRestoreTour(tour)}
+                            disabled={isTourActionInProgress}
+                            aria-label="Restore canceled tour"
+                            title="Restore canceled tour"
+                            className="text-green-700 hover:text-green-900 disabled:opacity-50 p-0.5"
+                          >
+                            <RotateCcw size={12} />
+                          </button>
+                        )}
                         <button
                           onClick={() => handleDeleteClick(tour)}
                           disabled={isTourActionInProgress}
