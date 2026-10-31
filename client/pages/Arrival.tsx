@@ -336,16 +336,14 @@ export default function Arrival() {
       const arrival = extractDateAndTime(selectedTour.arrival);
       const departure = extractDateAndTime(selectedTour.departure);
 
-      let daysDiff = 3; // Default to 3 days
+      let daysDiff = 3;
 
       if (arrival.date && departure.date) {
-        try {
-          const arrivalDate = new Date(arrival.date);
-          const departureDate = new Date(departure.date);
+        const arrivalDate = new Date(arrival.date);
+        const departureDate = new Date(departure.date);
+        if (Number.isFinite(arrivalDate.getTime()) && Number.isFinite(departureDate.getTime())) {
           const timeDiff = departureDate.getTime() - arrivalDate.getTime();
           daysDiff = Math.max(1, Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1);
-        } catch (e) {
-          console.warn("Failed to calculate day difference, using default 3 days");
         }
       }
 
@@ -444,18 +442,27 @@ export default function Arrival() {
     const arrival = extractDateAndTime(tour.arrival);
     const departure = extractDateAndTime(tour.departure);
     const itinerary: DayItinerary[] = [];
+    const tourSchedule = schedules[tour.id] || {};
+    const scheduleDayCount = Object.keys(tourSchedule).reduce((count, dayIndex) => {
+      const parsedDayIndex = Number(dayIndex);
+      return Number.isInteger(parsedDayIndex) && parsedDayIndex >= 0
+        ? Math.max(count, parsedDayIndex + 1)
+        : count;
+    }, 0);
 
-    if (!arrival.date || !departure.date) {
-      return itinerary;
-    }
-
-    // Parse dates
-    const arrivalDate = new Date(arrival.date);
-    const departureDate = new Date(departure.date);
-
-    // Calculate number of days
-    const timeDiff = departureDate.getTime() - arrivalDate.getTime();
-    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+    const arrivalDate = arrival.date ? new Date(arrival.date) : null;
+    const departureDate = departure.date ? new Date(departure.date) : null;
+    const hasValidDateRange =
+      arrivalDate &&
+      departureDate &&
+      Number.isFinite(arrivalDate.getTime()) &&
+      Number.isFinite(departureDate.getTime());
+    const daysDiff = hasValidDateRange
+      ? Math.max(
+          1,
+          Math.ceil((departureDate.getTime() - arrivalDate.getTime()) / (1000 * 3600 * 24)) + 1,
+        )
+      : Math.max(scheduleDayCount, 3);
 
     const dayLabels = ["Arrival Day"];
     for (let i = 1; i < daysDiff; i++) {
@@ -464,8 +471,6 @@ export default function Arrival() {
       else if (i === 3) dayLabels.push("3rd Day");
       else dayLabels.push(`${i}th Day`);
     }
-
-    const tourSchedule = schedules[tour.id] || {};
 
     // Generate itinerary for each day
     for (let i = 0; i < daysDiff; i++) {
