@@ -5,9 +5,8 @@ import crypto from "crypto";
 import path from "path";
 import { fileURLToPath } from "url";
 import http from "http";
-import { initializeDatabase } from "./postgres-db";
 import { initializeWebSocket } from "./websocket";
-import { initializeInMemoryDb } from "./in-memory-db";
+import { getDatabase } from "./db";
 import { handleDemo } from "./routes/demo";
 import { getTours, createTour, updateTour, deleteTour, saveTourSchedule, getTourSchedule, translateText } from "./routes/tours";
 import { getAllStaff, createStaff, updateStaff, deleteStaff } from "./routes/staff";
@@ -18,21 +17,9 @@ import { debugStatus, debugCreateAdminManual } from "./routes/debug";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-let dbReady = false;
-
 export async function initializeServer() {
-  try {
-    // Initialize in-memory database first (always available as fallback)
-    initializeInMemoryDb();
-
-    // Try to initialize PostgreSQL
-    await initializeDatabase();
-    dbReady = true;
-    console.log("[Server] PostgreSQL database initialized and ready");
-  } catch (error) {
-    console.error("[Server] Failed to initialize database:", error);
-    throw error;
-  }
+  await getDatabase();
+  console.log("[Server] Persistent SQLite database initialized");
 }
 
 export function createServer() {

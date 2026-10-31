@@ -1,8 +1,6 @@
 import { RequestHandler } from "express";
 import crypto from "crypto";
-import { staffDb } from "../supabase-db";
-import { inMemoryStaffDb, initializeInMemoryDb } from "../in-memory-db";
-import { isDatabaseReady } from "../postgres-db";
+import { getStaffByFirstName } from "../db";
 
 function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password + "salt").digest("hex");
@@ -50,64 +48,29 @@ export function getSessionFromRequest(
 }
 
 async function getStaffByName(name: string) {
-  try {
-    // Try in-memory database first (always available)
-    console.log("[getStaffByName] Looking for staff with name:", name);
-    let staff = await inMemoryStaffDb.getStaffByName(name);
-    console.log("[getStaffByName] In-memory result:", staff ? `Found ${staff.first_name}` : "Not found");
-
-    if (staff) {
-      return staff;
-    }
-
-    // Then try Supabase if it's available
-    try {
-      console.log("[getStaffByName] Trying Supabase...");
-      staff = await staffDb.getStaffByName(name);
-      return staff;
-    } catch (err) {
-      console.warn("[getStaffByName] Supabase unavailable, using in-memory fallback");
-      return null;
-    }
-  } catch (error) {
-    console.error("[getStaffByName] Database error:", error);
-    return null;
-  }
+  return getStaffByFirstName(name);
 }
 
 export const login: RequestHandler = async (req, res) => {
   try {
     const { name, password } = req.body;
 
-    console.log("[login] Login attempt with name:", name);
-
     if (!name || !password) {
       res.status(400).json({ error: "Name and password are required" });
       return;
     }
 
-    // Ensure default admin user exists (for development/fallback)
-    // This is important in case the in-memory DB was reset by hot reload
-    initializeInMemoryDb();
-
     const staffData = await getStaffByName(name);
 
     if (!staffData) {
-      console.log("[login] Staff not found for name:", name);
-      console.log("[login] Available staff:", (await inMemoryStaffDb.getAllStaff()).map(s => s.first_name));
       res.status(401).json({ error: "Invalid name or password" });
       return;
     }
-
-    console.log("[login] Staff found:", staffData.first_name, "with password_hash:", !!staffData.password_hash);
-    const providedHash = hashPassword(password);
-    console.log("[login] Provided hash matches:", providedHash === staffData.password_hash);
 
     if (
       !staffData.password_hash ||
       !verifyPassword(password, staffData.password_hash)
     ) {
-      console.log("[login] Password verification failed for:", staffData.first_name);
       res.status(401).json({ error: "Invalid name or password" });
       return;
     }

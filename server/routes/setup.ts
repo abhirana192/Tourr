@@ -1,7 +1,6 @@
 import { RequestHandler } from "express";
 import crypto from "crypto";
-import { staffDb } from "../supabase-db";
-import { inMemoryStaffDb, initializeInMemoryDb } from "../in-memory-db";
+import { createStaff, getStaffByFirstName } from "../db";
 
 function hashPassword(password: string): string {
   return crypto
@@ -14,13 +13,7 @@ export const initializeDemo: RequestHandler = async (req, res) => {
   try {
     console.log("[Setup] Starting admin user initialization...");
 
-    // Initialize in-memory DB if not already done
-    initializeInMemoryDb();
-
-    // Check if admin user already exists (try in-memory first)
-    console.log("[Setup] Checking if Admin user exists...");
-    let existingAdmin = await inMemoryStaffDb.getStaffByName("Admin");
-    console.log("[Setup] In-memory admin user search result:", existingAdmin);
+    const existingAdmin = await getStaffByFirstName("Admin");
 
     if (existingAdmin) {
       console.log("[Setup] Admin user already exists");
@@ -35,12 +28,8 @@ export const initializeDemo: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Create admin user in in-memory database
-    console.log("[Setup] Creating new admin user in in-memory database...");
     const passwordHash = hashPassword("admin123");
-    console.log("[Setup] Password hash generated");
-
-    const adminUser = await inMemoryStaffDb.createStaff({
+    const adminUser = await createStaff({
       id: `admin-${Date.now()}`,
       email: "admin@tourmanager.com",
       first_name: "Admin",
@@ -50,11 +39,7 @@ export const initializeDemo: RequestHandler = async (req, res) => {
       availability_status: "available",
     });
 
-    console.log("[Setup] Admin user created successfully:", adminUser);
-
-    // Verify the user was created
-    const verifyAdmin = await inMemoryStaffDb.getStaffByName("Admin");
-    console.log("[Setup] Verification - Admin user found:", verifyAdmin);
+    const verifyAdmin = await getStaffByFirstName("Admin");
 
     res.json({
       success: true,

@@ -1,61 +1,104 @@
 import initSqlJs, { Database as SqlJsDatabase } from "sql.js";
 import fs from "fs";
+import os from "os";
 import path from "path";
-import { fileURLToPath } from "url";
 import crypto from "crypto";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = path.join(__dirname, "../data.db");
+const defaultDataDirectory = process.env.LOCALAPPDATA
+  ? path.join(process.env.LOCALAPPDATA, "Tour Manager")
+  : process.env.XDG_DATA_HOME
+    ? path.join(process.env.XDG_DATA_HOME, "tour-manager")
+    : process.platform === "darwin"
+      ? path.join(os.homedir(), "Library", "Application Support", "Tour Manager")
+      : path.join(os.homedir(), ".local", "share", "tour-manager");
+const dbPath = path.resolve(process.env.SQLITE_DB_PATH || path.join(defaultDataDirectory, "data.db"));
 
 let db: SqlJsDatabase | null = null;
-let SQL: any = null;
 let initPromise: Promise<SqlJsDatabase> | null = null;
+
+const tourColumns = [
+  "invoice",
+  "language",
+  "name",
+  "pax",
+  "group_id",
+  "dnr",
+  "td",
+  "agent",
+  "arrival",
+  "departure",
+  "accommodation",
+  "gears",
+  "snowshoe",
+  "nlt",
+  "city_tour",
+  "hiking",
+  "fishing",
+  "dog_sledging",
+  "snowmobile_atv",
+  "aurora_village",
+  "aurora_village_activity",
+  "payment",
+  "reservation_number",
+  "remarks",
+  "start_date",
+  "activity_schedule",
+  "leader",
+  "members",
+  "arrival_notes",
+  "departure_notes",
+  "activity_notes",
+  "is_cancelled",
+] as const;
 
 function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password + "salt").digest("hex");
 }
 
-async function initDatabase() {
-  if (db && SQL) return db;
-
-  if (initPromise) return initPromise;
-
-  initPromise = (async () => {
-    SQL = await initSqlJs();
-
-    if (fs.existsSync(dbPath)) {
-      const buffer = fs.readFileSync(dbPath);
-      db = new SQL.Database(buffer);
-      console.log("[Database] Loaded existing SQLite database");
-    } else {
-      db = new SQL.Database();
-      console.log("[Database] Created new SQLite database");
-    }
-
-    initializeSchema();
-    await seedDemoUser();
-    return db as SqlJsDatabase;
-  })();
-
-  return initPromise;
+function serializeValue(value: unknown): string | number | null {
+  if (value === undefined || value === null) return null;
+  if (typeof value === "boolean") return value ? 1 : 0;
+  if (typeof value === "object") return JSON.stringify(value);
+  return value as string | number;
 }
 
-function initializeSchema() {
-  if (!db) return;
+function queryRows<T extends Record<string, any>>(
+  database: SqlJsDatabase,
+  query: string,
+  values: any[] = [],
+): T[] {
+  const result = database.exec(query, values);
+  if (result.length === 0) return [];
+  return result[0].values.map((row) =>
+    Object.fromEntries(result[0].columns.map((column, index) => [column, row[index]])),
+  ) as T[];
+}
 
-  const queries = [
-    `CREATE TABLE IF NOT EXISTS staff (
+function queryOne<T extends Record<string, any>>(
+  database: SqlJsDatabase,
+  query: string,
+  values: any[] = [],
+): T | null {
+  return queryRows<T>(database, query, values)[0] || null;
+}
+
+function initializeSchema(database: SqlJsDatabase) {
+  database.run(`
+    CREATE TABLE IF NOT EXISTS staff (
       id TEXT PRIMARY KEY,
       email TEXT NOT NULL UNIQUE,
       first_name TEXT NOT NULL,
-      last_name TEXT NOT NULL,
+      last_name TEXT NOT NULL DEFAULT '',
       role TEXT NOT NULL CHECK(role IN ('admin', 'staff')),
       password_hash TEXT,
       availability_status TEXT,
-      created_at TEXT NOT NULL
-    )`,
+      created_at TEXT NOT NULL,
+      updated_at TEXT
+    )
+  `);
 
-    `CREATE TABLE IF NOT EXISTS tours (
+  database.run(`
+    CREATE TABLE IF NOT EXISTS tours (
       id TEXT PRIMARY KEY,
       invoice TEXT NOT NULL,
       language TEXT,
@@ -82,142 +125,152 @@ function initializeSchema() {
       reservation_number TEXT,
       remarks TEXT,
       start_date TEXT NOT NULL,
-      created_at TEXT NOT NULL
-    )`,
+      activity_schedule TEXT,
+      leader TEXT,
+      members TEXT,
+      arrival_notes TEXT,
+      departure_notes TEXT,
+      activity_notes TEXT,
+      is_cancelled INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL,
+      updated_at TEXT
+    )
+  `);
 
-    `CREATE TABLE IF NOT EXISTS tour_schedules (
+  const tourSchemaMigrations = [
+    ["activity_schedule", "TEXT"],
+    ["leader", "TEXT"],
+    ["members", "TEXT"],
+    ["arrival_notes", "TEXT"],
+    ["departure_notes", "TEXT"],
+    ["activity_notes", "TEXT"],
+    ["is_cancelled", "INTEGER NOT NULL DEFAULT 0"],
+    ["updated_at", "TEXT"],
+  ];
+  const existingTourColumns = new Set(
+    queryRows<{ name: string }>(database, "PRAGMA table_info(tours)").map((column) => column.name),
+  );
+  for (const [column, definition] of tourSchemaMigrations) {
+    if (!existingTourColumns.has(column)) {
+      database.run(`ALTER TABLE tours ADD COLUMN ${column} ${definition}`);
+    }
+  }
+
+  database.run(`
+    CREATE TABLE IF NOT EXISTS tour_schedules (
       id TEXT PRIMARY KEY,
       tour_id TEXT NOT NULL UNIQUE,
       schedule_data TEXT NOT NULL,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
       FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE
-    )`,
-  ];
+    )
+  `);
 
-  for (const query of queries) {
-    try {
-      db.run(query);
-    } catch (error: any) {
-      if (!error.message.includes("already exists")) {
-        console.error("Schema error:", error);
-      }
-    }
-  }
+  database.run(`
+    CREATE TABLE IF NOT EXISTS assignments (
+      id TEXT PRIMARY KEY,
+      assignment_type TEXT NOT NULL CHECK (assignment_type IN ('arrival', 'departure', 'activity')),
+      assignment_key TEXT NOT NULL,
+      activity_date TEXT NOT NULL,
+      van TEXT NOT NULL DEFAULT '',
+      employees TEXT NOT NULL DEFAULT '',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      UNIQUE (assignment_type, assignment_key, activity_date)
+    )
+  `);
 
-  console.log("[Database] Schema initialized");
-}
-
-async function seedDemoUser() {
-  // Demo user seeding removed - use Supabase directly for user management
-  console.log("[Database] Skipping demo user seed - use Supabase for user management");
+  database.run("CREATE INDEX IF NOT EXISTS idx_tours_start_date ON tours(start_date)");
+  database.run("CREATE INDEX IF NOT EXISTS idx_tours_invoice ON tours(invoice)");
+  database.run("CREATE INDEX IF NOT EXISTS idx_tours_name ON tours(name)");
+  database.run("CREATE INDEX IF NOT EXISTS idx_assignments_date ON assignments(activity_date)");
 }
 
 function saveDatabase() {
-  if (!db) return;
-  try {
-    const data = db.export();
-    const buffer = Buffer.from(data);
-    fs.writeFileSync(dbPath, buffer);
-  } catch (error) {
-    console.error("[Database] Error saving database:", error);
-  }
+  if (!db) throw new Error("SQLite database is not initialized");
+  fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+  const temporaryPath = `${dbPath}.${process.pid}.tmp`;
+  fs.writeFileSync(temporaryPath, Buffer.from(db.export()));
+  fs.renameSync(temporaryPath, dbPath);
 }
 
-export async function getDatabase() {
-  if (!db) {
-    await initDatabase();
-  }
+async function initializeDatabase(): Promise<SqlJsDatabase> {
+  if (db) return db;
+  if (initPromise) return initPromise;
+
+  initPromise = (async () => {
+    const SQL = await initSqlJs();
+    fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+
+    if (fs.existsSync(dbPath)) {
+      db = new SQL.Database(fs.readFileSync(dbPath));
+      console.log(`[SQLite] Loaded database from ${dbPath}`);
+    } else {
+      db = new SQL.Database();
+      console.log(`[SQLite] Created database at ${dbPath}`);
+    }
+
+    db.run("PRAGMA foreign_keys = ON");
+    initializeSchema(db);
+
+    const admin = queryOne(db, "SELECT id FROM staff WHERE lower(first_name) = lower(?)", ["Admin"]);
+    if (!admin) {
+      const now = new Date().toISOString();
+      db.run(
+        `INSERT INTO staff (id, email, first_name, last_name, role, password_hash, availability_status, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        ["admin-default", "admin@tourmanager.com", "Admin", "User", "admin", hashPassword("admin123"), "available", now],
+      );
+    }
+
+    saveDatabase();
+    return db;
+  })();
+
+  return initPromise;
+}
+
+export async function getDatabase(): Promise<SqlJsDatabase> {
+  if (!db) await initializeDatabase();
   return db as SqlJsDatabase;
 }
 
 export async function getAllStaff() {
   const database = await getDatabase();
-  const result = database.exec(
-    "SELECT id, email, first_name, last_name, role, created_at FROM staff ORDER BY created_at ASC"
-  );
-  if (result.length === 0) return [];
-  return result[0].values.map((row) => ({
-    id: row[0],
-    email: row[1],
-    first_name: row[2],
-    last_name: row[3],
-    role: row[4],
-    created_at: row[5],
-  }));
+  return queryRows(database, "SELECT id, email, first_name, last_name, role, created_at, availability_status FROM staff ORDER BY created_at ASC");
 }
 
 export async function getStaffById(id: string) {
   const database = await getDatabase();
-  const result = database.exec("SELECT * FROM staff WHERE id = ?", [id]);
-  if (result.length === 0 || result[0].values.length === 0) return null;
-  const row = result[0].values[0];
-  return {
-    id: row[0],
-    email: row[1],
-    first_name: row[2],
-    last_name: row[3],
-    role: row[4],
-    password_hash: row[5],
-    availability_status: row[6],
-    created_at: row[7],
-  };
+  return queryOne(database, "SELECT * FROM staff WHERE id = ?", [id]);
 }
 
 export async function getStaffByEmail(email: string) {
   const database = await getDatabase();
-  const result = database.exec("SELECT * FROM staff WHERE email = ?", [email]);
-  if (result.length === 0 || result[0].values.length === 0) return null;
-  const row = result[0].values[0];
-  return {
-    id: row[0],
-    email: row[1],
-    first_name: row[2],
-    last_name: row[3],
-    role: row[4],
-    password_hash: row[5],
-    availability_status: row[6],
-    created_at: row[7],
-  };
+  return queryOne(database, "SELECT * FROM staff WHERE lower(email) = lower(?)", [email]);
 }
 
 export async function getStaffByFirstName(firstName: string) {
   const database = await getDatabase();
-  const result = database.exec("SELECT * FROM staff WHERE first_name = ?", [
-    firstName,
-  ]);
-  if (result.length === 0 || result[0].values.length === 0) return null;
-  const row = result[0].values[0];
-  return {
-    id: row[0],
-    email: row[1],
-    first_name: row[2],
-    last_name: row[3],
-    role: row[4],
-    password_hash: row[5],
-    availability_status: row[6],
-    created_at: row[7],
-  };
+  return queryOne(database, "SELECT * FROM staff WHERE lower(first_name) = lower(?)", [firstName]);
 }
 
 export async function createStaff(data: any) {
   const database = await getDatabase();
+  const staff = {
+    ...data,
+    id: data.id || `staff-${Date.now()}`,
+    last_name: data.last_name || "",
+    created_at: data.created_at || new Date().toISOString(),
+  };
   database.run(
     `INSERT INTO staff (id, email, first_name, last_name, role, password_hash, availability_status, created_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      data.id,
-      data.email,
-      data.first_name,
-      data.last_name,
-      data.role,
-      data.password_hash,
-      data.availability_status,
-      data.created_at,
-    ]
+    [staff.id, staff.email, staff.first_name, staff.last_name, staff.role, staff.password_hash || null, staff.availability_status || "available", staff.created_at],
   );
   saveDatabase();
-  return getStaffById(data.id);
+  return getStaffById(staff.id);
 }
 
 export async function updateStaff(id: string, updates: any) {
@@ -225,141 +278,77 @@ export async function updateStaff(id: string, updates: any) {
   const current = await getStaffById(id);
   if (!current) return null;
 
-  database.run(
-    `UPDATE staff SET email = ?, first_name = ?, last_name = ?, role = ?, password_hash = ?, availability_status = ? WHERE id = ?`,
-    [
-      updates.email ?? current.email,
-      updates.first_name ?? current.first_name,
-      updates.last_name ?? current.last_name,
-      updates.role ?? current.role,
-      updates.password_hash ?? current.password_hash,
-      updates.availability_status ?? current.availability_status,
-      id,
-    ]
-  );
+  const fields = ["email", "first_name", "last_name", "role", "password_hash", "availability_status"];
+  const values = fields.map((field) => updates[field] ?? current[field]);
+  values.push(id);
+  database.run(`UPDATE staff SET ${fields.map((field) => `${field} = ?`).join(", ")} WHERE id = ?`, values);
   saveDatabase();
   return getStaffById(id);
 }
 
 export async function deleteStaff(id: string) {
   const database = await getDatabase();
+  const existing = await getStaffById(id);
+  if (!existing) return false;
   database.run("DELETE FROM staff WHERE id = ?", [id]);
   saveDatabase();
   return true;
 }
 
+function formatTour(row: Record<string, any>): Record<string, any> {
+  return { ...row, is_cancelled: row.is_cancelled === 1 || row.is_cancelled === true };
+}
+
 export async function getAllTours() {
   const database = await getDatabase();
-  const result = database.exec(
-    "SELECT * FROM tours ORDER BY start_date ASC"
-  );
-  if (result.length === 0) return [];
-  return result[0].values.map((row) => ({
-    id: row[0],
-    invoice: row[1],
-    language: row[2],
-    name: row[3],
-    pax: row[4],
-    group_id: row[5],
-    dnr: row[6],
-    td: row[7],
-    agent: row[8],
-    arrival: row[9],
-    departure: row[10],
-    accommodation: row[11],
-    gears: row[12],
-    snowshoe: row[13],
-    nlt: row[14],
-    city_tour: row[15],
-    hiking: row[16],
-    fishing: row[17],
-    dog_sledging: row[18],
-    snowmobile_atv: row[19],
-    aurora_village: row[20],
-    aurora_village_activity: row[21],
-    payment: row[22],
-    reservation_number: row[23],
-    remarks: row[24],
-    start_date: row[25],
-    created_at: row[26],
-  }));
+  return queryRows(database, "SELECT * FROM tours ORDER BY start_date ASC").map(formatTour);
+}
+
+export async function searchTours(dateFrom?: string, dateTo?: string, invoice?: string, name?: string) {
+  const database = await getDatabase();
+  const conditions: string[] = [];
+  const values: string[] = [];
+  if (dateFrom) {
+    conditions.push("start_date >= ?");
+    values.push(dateFrom);
+  }
+  if (dateTo) {
+    conditions.push("start_date <= ?");
+    values.push(dateTo);
+  }
+  if (invoice) {
+    conditions.push("lower(invoice) LIKE lower(?)");
+    values.push(`%${invoice}%`);
+  }
+  if (name) {
+    conditions.push("lower(name) LIKE lower(?)");
+    values.push(`%${name}%`);
+  }
+  const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+  return queryRows(database, `SELECT * FROM tours ${where} ORDER BY start_date ASC`, values).map(formatTour);
 }
 
 export async function getTourById(id: string) {
   const database = await getDatabase();
-  const result = database.exec("SELECT * FROM tours WHERE id = ?", [id]);
-  if (result.length === 0 || result[0].values.length === 0) return null;
-  const row = result[0].values[0];
-  return {
-    id: row[0],
-    invoice: row[1],
-    language: row[2],
-    name: row[3],
-    pax: row[4],
-    group_id: row[5],
-    dnr: row[6],
-    td: row[7],
-    agent: row[8],
-    arrival: row[9],
-    departure: row[10],
-    accommodation: row[11],
-    gears: row[12],
-    snowshoe: row[13],
-    nlt: row[14],
-    city_tour: row[15],
-    hiking: row[16],
-    fishing: row[17],
-    dog_sledging: row[18],
-    snowmobile_atv: row[19],
-    aurora_village: row[20],
-    aurora_village_activity: row[21],
-    payment: row[22],
-    reservation_number: row[23],
-    remarks: row[24],
-    start_date: row[25],
-    created_at: row[26],
-  };
+  const row = queryOne(database, "SELECT * FROM tours WHERE id = ?", [id]);
+  return row ? formatTour(row) : null;
 }
 
-export async function createTour(data: any) {
+export async function createTour(data: any): Promise<any> {
   const database = await getDatabase();
+  const tour = {
+    ...data,
+    id: data.id || `tour-${Date.now()}`,
+    is_cancelled: data.is_cancelled === true,
+    created_at: data.created_at || new Date().toISOString(),
+  };
+  const columns = ["id", ...tourColumns, "created_at"];
   database.run(
-    `INSERT INTO tours (id, invoice, language, name, pax, group_id, dnr, td, agent, arrival, departure,
-                        accommodation, gears, snowshoe, nlt, city_tour, hiking, fishing, dog_sledging,
-                        snowmobile_atv, aurora_village, aurora_village_activity, payment, reservation_number, remarks, start_date, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      data.id,
-      data.invoice,
-      data.language,
-      data.name,
-      data.pax,
-      data.group_id,
-      data.dnr,
-      data.td,
-      data.agent,
-      data.arrival,
-      data.departure,
-      data.accommodation,
-      data.gears,
-      data.snowshoe,
-      data.nlt,
-      data.city_tour,
-      data.hiking,
-      data.fishing,
-      data.dog_sledging,
-      data.snowmobile_atv,
-      data.aurora_village,
-      data.aurora_village_activity,
-      data.payment,
-      data.reservation_number,
-      data.remarks,
-      data.start_date,
-      data.created_at,
-    ]
+    `INSERT INTO tours (${columns.join(", ")}) VALUES (${columns.map(() => "?").join(", ")})`,
+    columns.map((column) => serializeValue(tour[column as keyof typeof tour])),
   );
   saveDatabase();
-  return getTourById(data.id);
+  return getTourById(tour.id);
 }
 
 export async function updateTour(id: string, updates: any) {
@@ -367,47 +356,23 @@ export async function updateTour(id: string, updates: any) {
   const current = await getTourById(id);
   if (!current) return null;
 
-  const fields = [
-    "invoice",
-    "language",
-    "name",
-    "pax",
-    "group_id",
-    "dnr",
-    "td",
-    "agent",
-    "arrival",
-    "departure",
-    "accommodation",
-    "gears",
-    "snowshoe",
-    "nlt",
-    "city_tour",
-    "hiking",
-    "fishing",
-    "dog_sledging",
-    "snowmobile_atv",
-    "aurora_village",
-    "aurora_village_activity",
-    "payment",
-    "reservation_number",
-    "remarks",
-    "start_date",
-  ];
+  const fields = tourColumns.filter((column) => Object.prototype.hasOwnProperty.call(updates, column) && updates[column] !== undefined);
+  if (fields.length === 0) return current;
 
-  const values = fields.map((field) => updates[field] ?? current[field as keyof typeof current]);
+  const values = fields.map((field) => serializeValue(updates[field]));
   values.push(id);
-
-  database.run(
-    `UPDATE tours SET ${fields.map((f) => `${f} = ?`).join(", ")} WHERE id = ?`,
-    values
-  );
+  database.run(`UPDATE tours SET ${fields.map((field) => `${field} = ?`).join(", ")}, updated_at = ? WHERE id = ?`, [
+    ...values.slice(0, -1),
+    new Date().toISOString(),
+    id,
+  ]);
   saveDatabase();
   return getTourById(id);
 }
 
 export async function deleteTour(id: string) {
   const database = await getDatabase();
+  if (!(await getTourById(id))) return false;
   database.run("DELETE FROM tours WHERE id = ?", [id]);
   saveDatabase();
   return true;
@@ -415,42 +380,72 @@ export async function deleteTour(id: string) {
 
 export async function getScheduleByTourId(tourId: string) {
   const database = await getDatabase();
-  const result = database.exec(
-    "SELECT * FROM tour_schedules WHERE tour_id = ?",
-    [tourId]
-  );
-  if (result.length === 0 || result[0].values.length === 0) return null;
-  const row = result[0].values[0];
+  const row = queryOne(database, "SELECT * FROM tour_schedules WHERE tour_id = ?", [tourId]);
+  if (!row) return null;
   return {
-    id: row[0],
-    tour_id: row[1],
-    schedule_data: JSON.parse(row[2]),
-    created_at: row[3],
-    updated_at: row[4],
+    ...row,
+    schedule_data: JSON.parse(row.schedule_data),
   };
 }
 
 export async function saveSchedule(tourId: string, scheduleData: any) {
   const database = await getDatabase();
+  const now = new Date().toISOString();
   const existing = await getScheduleByTourId(tourId);
-
   if (existing) {
-    database.run(
-      "UPDATE tour_schedules SET schedule_data = ?, updated_at = ? WHERE tour_id = ?",
-      [
-        JSON.stringify(scheduleData),
-        new Date().toISOString(),
-        tourId,
-      ]
-    );
+    database.run("UPDATE tour_schedules SET schedule_data = ?, updated_at = ? WHERE tour_id = ?", [JSON.stringify(scheduleData), now, tourId]);
   } else {
-    const id = `schedule-${Date.now()}`;
     database.run(
       "INSERT INTO tour_schedules (id, tour_id, schedule_data, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-      [id, tourId, JSON.stringify(scheduleData), new Date().toISOString(), new Date().toISOString()]
+      [`schedule-${Date.now()}`, tourId, JSON.stringify(scheduleData), now, now],
     );
   }
-
+  await updateTour(tourId, { activity_schedule: JSON.stringify(scheduleData) });
   saveDatabase();
   return getScheduleByTourId(tourId);
+}
+
+export async function getAssignments() {
+  const database = await getDatabase();
+  return queryRows(database, "SELECT * FROM assignments ORDER BY activity_date ASC");
+}
+
+export async function getAssignmentByKey(assignmentType: string, assignmentKey: string, activityDate: string) {
+  const database = await getDatabase();
+  return queryOne(database,
+    "SELECT * FROM assignments WHERE assignment_type = ? AND assignment_key = ? AND activity_date = ?",
+    [assignmentType, assignmentKey, activityDate],
+  );
+}
+
+export async function saveAssignment(
+  assignmentType: "arrival" | "departure" | "activity",
+  assignmentKey: string,
+  activityDate: string,
+  van: string,
+  employees: string,
+) {
+  const database = await getDatabase();
+  const existing = await getAssignmentByKey(assignmentType, assignmentKey, activityDate);
+  const now = new Date().toISOString();
+  if (existing) {
+    database.run("UPDATE assignments SET van = ?, employees = ?, updated_at = ? WHERE id = ?", [van, employees, now, existing.id]);
+  } else {
+    database.run(
+      `INSERT INTO assignments (id, assignment_type, assignment_key, activity_date, van, employees, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [`assignment-${Date.now()}`, assignmentType, assignmentKey, activityDate, van, employees, now, now],
+    );
+  }
+  saveDatabase();
+  return getAssignmentByKey(assignmentType, assignmentKey, activityDate);
+}
+
+export async function deleteAssignment(id: string) {
+  const database = await getDatabase();
+  const existing = queryOne(database, "SELECT id FROM assignments WHERE id = ?", [id]);
+  if (!existing) return false;
+  database.run("DELETE FROM assignments WHERE id = ?", [id]);
+  saveDatabase();
+  return true;
 }

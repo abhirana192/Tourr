@@ -1,16 +1,13 @@
 import { RequestHandler } from "express";
-import { assignmentDb } from "../supabase-db";
-import { inMemoryAssignmentsDb } from "../in-memory-assignments-db";
+import {
+  deleteAssignment as deleteAssignmentFromSqlite,
+  getAssignments as getAssignmentsFromSqlite,
+  saveAssignment as saveAssignmentInSqlite,
+} from "../db";
 
 export const getAssignments: RequestHandler = async (req, res) => {
   try {
-    let assignments;
-    try {
-      assignments = await assignmentDb.getAssignments();
-    } catch (error) {
-      console.warn("[getAssignments] Supabase unavailable, using in-memory fallback");
-      assignments = await inMemoryAssignmentsDb.getAssignments();
-    }
+    const assignments = await getAssignmentsFromSqlite();
 
     res.json(assignments);
   } catch (error) {
@@ -36,25 +33,13 @@ export const saveAssignment: RequestHandler = async (req, res) => {
       return;
     }
 
-    let assignment;
-    try {
-      assignment = await assignmentDb.saveAssignment(
-        assignmentType,
-        assignmentKey,
-        activityDate,
-        van || "",
-        employees || ""
-      );
-    } catch (error) {
-      console.warn("[saveAssignment] Supabase unavailable, using in-memory fallback");
-      assignment = await inMemoryAssignmentsDb.saveAssignment(
-        assignmentType,
-        assignmentKey,
-        activityDate,
-        van || "",
-        employees || ""
-      );
-    }
+    const assignment = await saveAssignmentInSqlite(
+      assignmentType,
+      assignmentKey,
+      activityDate,
+      van || "",
+      employees || "",
+    );
 
     res.json(assignment);
   } catch (error) {
@@ -72,13 +57,7 @@ export const deleteAssignment: RequestHandler = async (req, res) => {
       return;
     }
 
-    let success;
-    try {
-      success = await assignmentDb.deleteAssignment(id);
-    } catch (error) {
-      console.warn("[deleteAssignment] Supabase unavailable, using in-memory fallback");
-      success = await inMemoryAssignmentsDb.deleteAssignment(id);
-    }
+    const success = await deleteAssignmentFromSqlite(id);
 
     if (!success) {
       res.status(404).json({ error: "Assignment not found" });

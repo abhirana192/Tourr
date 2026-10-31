@@ -1,17 +1,12 @@
 import { RequestHandler } from "express";
-import { staffDb } from "../supabase-db";
-import { inMemoryStaffDb } from "../in-memory-db";
+import { createStaff, getAllStaff, getStaffByFirstName } from "../db";
 
 export const debugStatus: RequestHandler = async (req, res) => {
   try {
     console.log("[Debug] Checking system status...");
 
-    // Check in-memory database first
-    let allStaff = await inMemoryStaffDb.getAllStaff();
-    console.log("[Debug] All staff members (in-memory):", allStaff);
-
-    // Try to find Admin user
-    let adminUser = await inMemoryStaffDb.getStaffByName("Admin");
+    const allStaff = await getAllStaff();
+    const adminUser = await getStaffByFirstName("Admin");
     console.log("[Debug] Admin user search result:", adminUser);
 
     // Return status
@@ -43,13 +38,11 @@ export const debugCreateAdminManual: RequestHandler = async (req, res) => {
   try {
     console.log("[Debug] Attempting to create admin user manually...");
 
-    // Import password hashing function
     const crypto = await import("crypto");
     const hashPassword = (password: string) =>
       crypto.createHash("sha256").update(password + "salt").digest("hex");
 
-    // Create admin user directly in in-memory database
-    const adminUser = await inMemoryStaffDb.createStaff({
+    const adminUser = await createStaff({
       email: "admin@tourmanager.com",
       first_name: "Admin",
       last_name: "User",
@@ -58,10 +51,7 @@ export const debugCreateAdminManual: RequestHandler = async (req, res) => {
       availability_status: "available",
     });
 
-    console.log("[Debug] Admin user created:", adminUser);
-
-    // Verify it was created by searching
-    const found = await inMemoryStaffDb.getStaffByName("Admin");
+    const found = await getStaffByFirstName("Admin");
     console.log("[Debug] Verification search result:", found);
 
     res.json({
