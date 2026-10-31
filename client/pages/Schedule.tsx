@@ -162,6 +162,10 @@ export default function Schedule() {
     operation: "create" | "update";
     tourName?: string;
   } | null>(null);
+  const [pendingStatusChange, setPendingStatusChange] = useState<{
+    tour: Tour;
+    is_cancelled: boolean;
+  } | null>(null);
   const [sendingEmail, setSendingEmail] = useState(false);
 
   // Ensure tours is always an array
@@ -254,6 +258,7 @@ export default function Schedule() {
   };
 
   const handleAddTour = async (tourData: Omit<Tour, "id">) => {
+    setPendingStatusChange(null);
     setIsModalOpen(false);
     setPendingTourData({
       tourData,
@@ -264,6 +269,7 @@ export default function Schedule() {
   };
 
   const handleUpdateTour = async (id: string, tourData: Omit<Tour, "id">) => {
+    setPendingStatusChange(null);
     setIsModalOpen(false);
     setPendingTourData({
       tourData,
@@ -275,7 +281,7 @@ export default function Schedule() {
   };
 
   const handleConfirmEmailRecipients = async (recipients: string[]) => {
-    if (!pendingTourData) return;
+    if (!pendingTourData && !pendingStatusChange) return;
 
     try {
       setSendingEmail(true);
@@ -285,49 +291,81 @@ export default function Schedule() {
         headers["Authorization"] = `Bearer ${sessionToken}`;
       }
 
-      const payload = {
-        ...pendingTourData.tourData,
-        customRecipients: recipients,
-      };
-
-      let response;
-      if (pendingTourData.operation === "create") {
-        response = await fetch("/api/tours", {
-          method: "POST",
+      if (pendingStatusChange) {
+        const response = await fetch(`/api/tours/${pendingStatusChange.tour.id}`, {
+          method: "PATCH",
           headers,
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            is_cancelled: pendingStatusChange.is_cancelled,
+            customRecipients: recipients,
+          }),
         });
-      } else {
-        response = await fetch(`/api/tours/${pendingTourData.tourId}`, {
-          method: "PUT",
-          headers,
-          body: JSON.stringify(payload),
-        });
-      }
+        if (!response.ok) throw new Error("Failed to update tour status");
 
-      const result = await response.json();
+        const result = await response.json();
+        setTours((currentTours) =>
+          currentTours.map((tour) =>
+            tour.id === pendingStatusChange.tour.id ? result : tour,
+          ),
+        );
 
-      if (pendingTourData.operation === "create") {
-        setTours([...tours, result]);
-      } else {
-        setTours(tours.map((t) => (t.id === pendingTourData.tourId ? result : t)));
-      }
+        const action = pendingStatusChange.is_cancelled ? "canceled" : "restored";
+        if (result.emailSent) {
+          const emailTime = new Date(result.emailSent.timestamp).toLocaleTimeString();
+          toast.success(`Email sent to ${result.emailSent.recipientCount} staff members at ${emailTime}`, {
+            description: `${result.emailSent.senderName} notified that the tour was ${action}`,
+          });
+        } else {
+          toast.success(`Tour ${action}`, {
+            description: recipients.length === 0 ? "No email notification was sent." : "The status was updated without an email notification.",
+          });
+        }
+      } else if (pendingTourData) {
+        const payload = {
+          ...pendingTourData.tourData,
+          customRecipients: recipients,
+        };
 
-      if (result.emailSent) {
-        const emailTime = new Date(result.emailSent.timestamp).toLocaleTimeString();
-        const action = pendingTourData.operation === "create" ? "created" : "updated";
-        toast.success(`Email sent to ${result.emailSent.recipientCount} staff members at ${emailTime}`, {
-          description: `From: ${result.emailSent.senderName} - Tour ${action}`,
-        });
-      } else {
-        const action = pendingTourData.operation === "create" ? "created" : "updated";
-        toast.success(`Tour ${action} successfully`, {
-          description: "No email recipients were selected",
-        });
+        let response;
+        if (pendingTourData.operation === "create") {
+          response = await fetch("/api/tours", {
+            method: "POST",
+            headers,
+            body: JSON.stringify(payload),
+          });
+        } else {
+          response = await fetch(`/api/tours/${pendingTourData.tourId}`, {
+            method: "PUT",
+            headers,
+            body: JSON.stringify(payload),
+          });
+        }
+
+        const result = await response.json();
+
+        if (pendingTourData.operation === "create") {
+          setTours([...tours, result]);
+        } else {
+          setTours(tours.map((tour) => (tour.id === pendingTourData.tourId ? result : tour)));
+        }
+
+        if (result.emailSent) {
+          const emailTime = new Date(result.emailSent.timestamp).toLocaleTimeString();
+          const action = pendingTourData.operation === "create" ? "created" : "updated";
+          toast.success(`Email sent to ${result.emailSent.recipientCount} staff members at ${emailTime}`, {
+            description: `From: ${result.emailSent.senderName} - Tour ${action}`,
+          });
+        } else {
+          const action = pendingTourData.operation === "create" ? "created" : "updated";
+          toast.success(`Tour ${action} successfully`, {
+            description: "No email recipients were selected",
+          });
+        }
       }
 
       setEmailDialogOpen(false);
       setPendingTourData(null);
+      setPendingStatusChange(null);
     } catch (error) {
       console.error("Error processing tour:", error);
       toast.error("Failed to process tour", {
@@ -338,83 +376,22 @@ export default function Schedule() {
     }
   };
 
-  const handleCancelTour = async (tour: Tour) => {
+  const requestTourStatusChange = (tour: Tour, isCancelled: boolean) => {
     if (isTourActionInProgress) return;
 
-    setIsTourActionInProgress(true);
-    try {
-      const sessionToken = localStorage.getItem("sessionToken");
-      const headers: HeadersInit = { "Content-Type": "application/json" };
-      if (sessionToken) {
-        headers["Authorization"] = `Bearer ${sessionToken}`;
-      }
-
-      const response = await fetch(`/api/tours/${tour.id}`, {
-        method: "PATCH",
-        headers,
-        body: JSON.stringify({ is_cancelled: true }),
-      });
-      if (!response.ok) throw new Error("Failed to cancel tour");
-
-      const updatedTour = await response.json();
-      setTours((currentTours) =>
-        currentTours.map((currentTour) =>
-          currentTour.id === tour.id ? updatedTour : currentTour,
-        ),
-      );
-      toast.success("Tour canceled", {
-        description: "All tour information has been retained in the schedule.",
-      });
-    } catch (error) {
-      console.error("Error canceling tour:", error);
-      toast.error("Failed to cancel tour", {
-        description: "The tour information was not changed. Please try again.",
-      });
-    } finally {
-      setIsTourActionInProgress(false);
-    }
+    setPendingTourData(null);
+    setPendingStatusChange({ tour, is_cancelled: isCancelled });
+    setEmailDialogOpen(true);
   };
 
-  const handleRestoreTour = async (tour: Tour) => {
-    if (isTourActionInProgress || !tour.is_cancelled) return;
-
-    setIsTourActionInProgress(true);
-    try {
-      const sessionToken = localStorage.getItem("sessionToken");
-      const headers: HeadersInit = { "Content-Type": "application/json" };
-      if (sessionToken) {
-        headers["Authorization"] = `Bearer ${sessionToken}`;
-      }
-
-      const response = await fetch(`/api/tours/${tour.id}`, {
-        method: "PATCH",
-        headers,
-        body: JSON.stringify({ is_cancelled: false }),
-      });
-      if (!response.ok) throw new Error("Failed to restore tour");
-
-      const updatedTour = await response.json();
-      setTours((currentTours) =>
-        currentTours.map((currentTour) =>
-          currentTour.id === tour.id ? updatedTour : currentTour,
-        ),
-      );
-      toast.success("Tour restored", {
-        description: "The tour is active and displayed normally in the schedule.",
-      });
-    } catch (error) {
-      console.error("Error restoring tour:", error);
-      toast.error("Failed to restore tour", {
-        description: "The tour status was not changed. Please try again.",
-      });
-    } finally {
-      setIsTourActionInProgress(false);
-    }
+  const handleRestoreTour = (tour: Tour) => {
+    if (!tour.is_cancelled) return;
+    requestTourStatusChange(tour, false);
   };
 
   const handleDeleteClick = (tour: Tour) => {
     if (!tour.is_cancelled) {
-      void handleCancelTour(tour);
+      requestTourStatusChange(tour, true);
       return;
     }
 
@@ -865,8 +842,8 @@ export default function Schedule() {
                         </button>
                         {tour.is_cancelled && (
                           <button
-                            onClick={() => void handleRestoreTour(tour)}
-                            disabled={isTourActionInProgress}
+                            onClick={() => handleRestoreTour(tour)}
+                            disabled={isTourActionInProgress || sendingEmail}
                             aria-label="Restore canceled tour"
                             title="Restore canceled tour"
                             className="text-green-700 hover:text-green-900 disabled:opacity-50 p-0.5"
@@ -876,7 +853,7 @@ export default function Schedule() {
                         )}
                         <button
                           onClick={() => handleDeleteClick(tour)}
-                          disabled={isTourActionInProgress}
+                          disabled={isTourActionInProgress || sendingEmail}
                           aria-label={tour.is_cancelled ? "Permanently delete canceled tour" : "Cancel tour"}
                           title={tour.is_cancelled ? "Permanently delete canceled tour" : "Cancel tour"}
                           className="text-red-600 hover:text-red-800 disabled:opacity-50 p-0.5"
@@ -977,9 +954,19 @@ export default function Schedule() {
       {/* Email Recipients Dialog */}
       <EmailRecipientsDialog
         open={emailDialogOpen}
-        onOpenChange={setEmailDialogOpen}
+        onOpenChange={(open) => {
+          setEmailDialogOpen(open);
+          if (!open) {
+            setPendingTourData(null);
+            setPendingStatusChange(null);
+          }
+        }}
         onConfirm={handleConfirmEmailRecipients}
-        tourName={pendingTourData?.tourName}
+        tourName={
+          pendingStatusChange
+            ? `${pendingStatusChange.is_cancelled ? "Cancel" : "Restore"}: ${pendingStatusChange.tour.name || pendingStatusChange.tour.invoice}`
+            : pendingTourData?.tourName
+        }
         isLoading={sendingEmail}
       />
     </div>
