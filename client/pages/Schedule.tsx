@@ -47,6 +47,7 @@ interface Tour {
   activity_schedule?: string;
   leader: string;
   members?: string;
+  is_cancelled?: boolean;
 }
 
 const activityNameToKey: { [key: string]: string } = {
@@ -150,6 +151,7 @@ export default function Schedule() {
   const [loading, setLoading] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [tourToDelete, setTourToDelete] = useState<string | null>(null);
+  const [isTourActionInProgress, setIsTourActionInProgress] = useState(false);
   const [printDialogOpen, setPrintDialogOpen] = useState(false);
   const [printDateFrom, setPrintDateFrom] = useState("");
   const [printDateTo, setPrintDateTo] = useState("");
@@ -336,14 +338,57 @@ export default function Schedule() {
     }
   };
 
-  const handleDeleteClick = (id: string) => {
-    setTourToDelete(id);
+  const handleCancelTour = async (tour: Tour) => {
+    if (isTourActionInProgress) return;
+
+    setIsTourActionInProgress(true);
+    try {
+      const sessionToken = localStorage.getItem("sessionToken");
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (sessionToken) {
+        headers["Authorization"] = `Bearer ${sessionToken}`;
+      }
+
+      const response = await fetch(`/api/tours/${tour.id}`, {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({ is_cancelled: true }),
+      });
+      if (!response.ok) throw new Error("Failed to cancel tour");
+
+      const updatedTour = await response.json();
+      setTours((currentTours) =>
+        currentTours.map((currentTour) =>
+          currentTour.id === tour.id ? updatedTour : currentTour,
+        ),
+      );
+      toast.success("Tour canceled", {
+        description: "All tour information has been retained in the schedule.",
+      });
+    } catch (error) {
+      console.error("Error canceling tour:", error);
+      toast.error("Failed to cancel tour", {
+        description: "The tour information was not changed. Please try again.",
+      });
+    } finally {
+      setIsTourActionInProgress(false);
+    }
+  };
+
+  const handleDeleteClick = (tour: Tour) => {
+    if (!tour.is_cancelled) {
+      void handleCancelTour(tour);
+      return;
+    }
+
+    setTourToDelete(tour.id);
     setDeleteConfirmOpen(true);
   };
 
   const confirmDelete = async () => {
-    if (!tourToDelete) return;
+    if (!tourToDelete || isTourActionInProgress) return;
 
+    setIsTourActionInProgress(true);
     try {
       const sessionToken = localStorage.getItem("sessionToken");
       const headers: HeadersInit = {};
@@ -355,26 +400,30 @@ export default function Schedule() {
         method: "DELETE",
         headers,
       });
+      if (!response.ok) throw new Error("Failed to delete tour");
+
       const result = await response.json();
-      setTours(tours.filter((t) => t.id !== tourToDelete));
+      setTours((currentTours) => currentTours.filter((tour) => tour.id !== tourToDelete));
 
       if (result.emailSent) {
         const emailTime = new Date(result.emailSent.timestamp).toLocaleTimeString();
         toast.success(`Email sent to ${result.emailSent.recipientCount} staff members at ${emailTime}`, {
-          description: `From: ${result.emailSent.senderName} - Tour deleted`,
+          description: `From: ${result.emailSent.senderName} - Tour permanently deleted`,
         });
       } else {
-        toast.success("Tour deleted successfully", {
-          description: "The tour has been permanently removed from the system.",
+        toast.success("Tour permanently deleted", {
+          description: "The canceled tour and its information were removed from the system.",
         });
       }
       setDeleteConfirmOpen(false);
       setTourToDelete(null);
     } catch (error) {
       console.error("Error deleting tour:", error);
-      toast.error("Failed to delete tour", {
-        description: "Something went wrong. Please try again.",
+      toast.error("Failed to permanently delete tour", {
+        description: "The tour information was not removed. Please try again.",
       });
+    } finally {
+      setIsTourActionInProgress(false);
     }
   };
 
@@ -663,11 +712,19 @@ export default function Schedule() {
                 </thead>
                 <tbody>
                   {(sortedTours || []).map((tour) => (
-                    <tr key={tour.id} className="border-b border-gray-300 hover:bg-gray-100">
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-16 whitespace-nowrap sticky left-0 bg-white">{tour.start_date}</td>
+                    <tr
+                      key={tour.id}
+                      className={`border-b border-gray-300 ${tour.is_cancelled ? "bg-red-100" : "hover:bg-gray-100"}`}
+                    >
+                      <td className={`px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-16 whitespace-nowrap sticky left-0 ${tour.is_cancelled ? "bg-red-100" : "bg-white"}`}>{tour.start_date}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.invoice}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.language}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 font-semibold min-w-20 whitespace-nowrap">{tour.name}</td>
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 font-semibold min-w-20 whitespace-nowrap">
+                        <div className="flex items-center gap-1">
+                          {tour.name}
+                          {tour.is_cancelled && <span className="rounded bg-red-200 px-1 text-[8px] font-bold text-red-800">CANCELLED</span>}
+                        </div>
+                      </td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-8 whitespace-nowrap">{tour.pax}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-20 whitespace-nowrap font-semibold">{tour.leader || "-"}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-32 whitespace-normal">
@@ -769,7 +826,13 @@ export default function Schedule() {
                         <button onClick={() => handleEditClick(tour)} className="text-blue-600 hover:text-blue-800 p-0.5">
                           <Edit2 size={12} />
                         </button>
-                        <button onClick={() => handleDeleteClick(tour.id)} className="text-red-600 hover:text-red-800 p-0.5">
+                        <button
+                          onClick={() => handleDeleteClick(tour)}
+                          disabled={isTourActionInProgress}
+                          aria-label={tour.is_cancelled ? "Permanently delete canceled tour" : "Cancel tour"}
+                          title={tour.is_cancelled ? "Permanently delete canceled tour" : "Cancel tour"}
+                          className="text-red-600 hover:text-red-800 disabled:opacity-50 p-0.5"
+                        >
                           <Trash2 size={12} />
                         </button>
                       </td>
@@ -800,19 +863,20 @@ export default function Schedule() {
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-red-600">
               <AlertTriangle size={20} />
-              Delete Tour Permanently?
+              Permanently Delete Canceled Tour?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-sm text-gray-600">
-              This action cannot be undone. The tour will be permanently deleted from the system and all its data will be lost.
+              This cannot be undone. The canceled tour and all of its saved information will be permanently removed from the database.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
+              disabled={isTourActionInProgress}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Delete Tour
+              Delete Permanently
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

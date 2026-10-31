@@ -33,6 +33,7 @@ export interface Tour {
   arrival_notes?: string;
   departure_notes?: string;
   activity_notes?: string;
+  is_cancelled?: boolean;
   created_at?: string;
 }
 

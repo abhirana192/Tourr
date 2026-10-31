@@ -86,6 +86,7 @@ async function createTables() {
       arrival_notes TEXT,
       departure_notes TEXT,
       activity_notes JSONB,
+      is_cancelled BOOLEAN NOT NULL DEFAULT FALSE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`,
@@ -109,6 +110,8 @@ async function createTables() {
     `CREATE INDEX IF NOT EXISTS idx_staff_email ON staff(email)`,
     `CREATE INDEX IF NOT EXISTS idx_assignments_date ON assignments(activity_date)`,
   ];
+
+  queries.push("ALTER TABLE tours ADD COLUMN IF NOT EXISTS is_cancelled BOOLEAN NOT NULL DEFAULT FALSE");
 
   for (const query of queries) {
     try {

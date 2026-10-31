@@ -112,16 +112,10 @@ export const updateTour: RequestHandler = async (req, res) => {
 
     let updated;
     try {
-      updated = await tourDb.updateTour(id, {
-        ...updates,
-        start_date: updates.start_date,
-      });
+      updated = await tourDb.updateTour(id, updates);
     } catch (error) {
       console.warn("[updateTour] Supabase unavailable, using in-memory fallback");
-      updated = await inMemoryToursDb.updateTour(id, {
-        ...updates,
-        start_date: updates.start_date,
-      });
+      updated = await inMemoryToursDb.updateTour(id, updates);
     }
 
     if (!updated) {
@@ -181,6 +175,11 @@ export const deleteTour: RequestHandler = async (req, res) => {
 
     if (!tour) {
       res.status(404).json({ error: "Tour not found" });
+      return;
+    }
+
+    if (tour.is_cancelled !== true) {
+      res.status(409).json({ error: "Cancel the tour before permanently deleting it" });
       return;
     }
 
