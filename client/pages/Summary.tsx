@@ -1059,34 +1059,6 @@ export default function Summary() {
           </div>
         </div>
 
-        {/* Arrivals by Accommodation */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-8">
-          <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200 px-6 py-4">
-            <h2 className="text-xl font-bold text-blue-900">Arrivals by Accommodation</h2>
-            <p className="text-sm text-blue-700 mt-1">Guest names grouped by hotel for the selected date range</p>
-          </div>
-          {arrivals.length === 0 ? (
-            <p className="p-8 text-center text-gray-500">No arrivals to group for this date range</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
-              {groupGuestsByAccommodation(arrivals).map(([accommodation, guests]) => (
-                <section key={accommodation} className="border border-gray-200 rounded-lg overflow-hidden">
-                  <h3 className="bg-gray-50 px-4 py-3 font-semibold text-gray-900">
-                    {accommodation} — {guests.length} guest{guests.length !== 1 ? "s" : ""}
-                  </h3>
-                  <ol className="list-decimal list-inside divide-y divide-gray-100">
-                    {guests.map((guest) => (
-                      <li key={guest.tourId} className="px-4 py-3 text-sm text-gray-800">
-                        {guest.guestName} <span className="text-gray-500">({guest.pax} pax)</span>
-                      </li>
-                    ))}
-                  </ol>
-                </section>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Departures Table */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-8">
           <div className="bg-gradient-to-r from-red-50 to-red-100 border-b border-red-200 px-6 py-4">
@@ -1458,6 +1430,7 @@ export default function Summary() {
                       <tr className="bg-gray-100 border-b border-gray-200">
                         {activityData.activityKey === "aurora_village_activity" ? (
                           <>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">No.</th>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Name</th>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Language</th>
                             <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 border-r border-gray-200">Pax</th>
@@ -1472,6 +1445,7 @@ export default function Summary() {
                           </>
                         ) : (
                           <>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">No.</th>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Name</th>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 border-r border-gray-200">Language</th>
                             <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 border-r border-gray-200">Pax</th>
@@ -1486,8 +1460,14 @@ export default function Summary() {
                         )}
                       </tr>
                     </thead>
-                    <tbody>
-                      {activityData.guests.map((guest, idx) => {
+                    {groupGuestsByAccommodation(activityData.guests).map(([accommodation, guests]) => (
+                      <tbody key={accommodation}>
+                        <tr className="bg-blue-50 border-b border-blue-200">
+                          <td colSpan={activityData.activityKey === "aurora_village_activity" ? 12 : 11} className="px-4 py-2 text-sm font-semibold text-blue-900">
+                            {accommodation} — {guests.length} guest{guests.length !== 1 ? "s" : ""} <span className="font-normal text-blue-700">({guests.reduce((sum, guest) => sum + (guest.pax || 0), 0)} pax)</span>
+                          </td>
+                        </tr>
+                        {guests.map((guest, idx) => {
                         const arrivalInfo = [guest.arrival, guest.arrivalTime].filter(Boolean).join(" ") + (guest.arrivalFlight ? ` | ${guest.arrivalFlight}` : "");
                         const departureInfo = [guest.departure, guest.departureTime].filter(Boolean).join(" ") + (guest.departureFlight ? ` | ${guest.departureFlight}` : "");
                         const noteKey = `${guest.tourId}-${activityData.activityName}`;
@@ -1495,7 +1475,8 @@ export default function Summary() {
 
                         if (activityData.activityKey === "aurora_village_activity") {
                           return (
-                            <tr key={idx} className={`border-b border-gray-200 hover:bg-blue-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+                            <tr key={guest.tourId} className={`border-b border-gray-200 hover:bg-blue-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+                              <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{idx + 1}</td>
                               <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{guest.guestName}</td>
                               <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.language}</td>
                               <td className="px-4 py-3 text-sm text-gray-900 text-center border-r border-gray-200 font-medium">{guest.pax}</td>
@@ -1556,7 +1537,8 @@ export default function Summary() {
                         }
 
                         return (
-                          <tr key={idx} className={`border-b border-gray-200 hover:bg-blue-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+                          <tr key={guest.tourId} className={`border-b border-gray-200 hover:bg-blue-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+                            <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{idx + 1}</td>
                             <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 font-medium">{guest.guestName}</td>
                             <td className="px-4 py-3 text-sm text-gray-600 border-r border-gray-200">{guest.language}</td>
                             <td className="px-4 py-3 text-sm text-gray-900 text-center border-r border-gray-200 font-medium">{guest.pax}</td>
@@ -1613,8 +1595,9 @@ export default function Summary() {
                             </td>
                           </tr>
                         );
-                      })}
-                    </tbody>
+                        })}
+                      </tbody>
+                    ))}
                   </table>
                 </div>
               )}
