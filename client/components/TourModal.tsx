@@ -67,6 +67,7 @@ const PREDEFINED_ACCOMMODATIONS = [
   "Quality Inn & Suites Yellowknife",
   "Capital Suites Yellowknife",
   "Super 8 by Wyndham Yellowknife",
+  "Discovery Inn",
 ];
 
 export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModalProps) {
