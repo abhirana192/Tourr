@@ -623,23 +623,31 @@ export default function Summary() {
                   ...departures.map((guest) => [guest.guestName, guest.language, guest.pax, guest.tourDuration, guest.accommodation, guest.agent, guest.departure, guest.departureTime, guest.departureFlight, guest.departure_notes || ""]),
                 ]);
                 const activitiesSheet = XLSX.utils.aoa_to_sheet([
-                  ["Activity", "Activity Date", "Day", "Time", "Guest", "Language", "Pax", "Tour", "Invoice", "Agent", "Hotel", "Arrival", "Departure", "Activity Notes"],
-                  ...filteredActivities.flatMap((activity) => activity.guests.map((guest) => [
-                    activity.activityName,
-                    guest.activityDate || guest.arrival,
-                    guest.dayNumber || "",
-                    guest.activityTiming || "",
-                    guest.guestName,
-                    guest.language,
-                    guest.pax,
-                    guest.tourName,
-                    guest.invoiceNumber,
-                    guest.agent,
-                    guest.accommodation,
-                    [guest.arrival, guest.arrivalTime, guest.arrivalFlight].filter(Boolean).join(" "),
-                    [guest.departure, guest.departureTime, guest.departureFlight].filter(Boolean).join(" "),
-                    guest.activityNotes || "",
-                  ])),
+                  ["Activity", "Hotel", "Hotel Guest #", "Hotel Guest Count", "Hotel Pax Total", "Activity Date", "Day", "Time", "Guest", "Language", "Pax", "Tour", "Invoice", "Agent", "Arrival", "Departure", "Activity Notes"],
+                  ...filteredActivities.flatMap((activity) =>
+                    groupGuestsByAccommodation(activity.guests).flatMap(([accommodation, guests]) => {
+                      const hotelPaxTotal = guests.reduce((sum, guest) => sum + (guest.pax || 0), 0);
+                      return guests.map((guest, index) => [
+                        activity.activityName,
+                        accommodation,
+                        index + 1,
+                        guests.length,
+                        hotelPaxTotal,
+                        guest.activityDate || guest.arrival,
+                        guest.dayNumber || "",
+                        guest.activityTiming || "",
+                        guest.guestName,
+                        guest.language,
+                        guest.pax,
+                        guest.tourName,
+                        guest.invoiceNumber,
+                        guest.agent,
+                        [guest.arrival, guest.arrivalTime, guest.arrivalFlight].filter(Boolean).join(" "),
+                        [guest.departure, guest.departureTime, guest.departureFlight].filter(Boolean).join(" "),
+                        guest.activityNotes || "",
+                      ]);
+                    })
+                  ),
                 ]);
                 const assignmentsSheet = XLSX.utils.aoa_to_sheet([
                   ["Assignment", "Van", "Staff", "Notes"],
@@ -653,7 +661,7 @@ export default function Summary() {
                 overviewSheet["!cols"] = [{ wch: 28 }, { wch: 24 }];
                 arrivalsSheet["!cols"] = [{ wch: 26 }, { wch: 14 }, { wch: 8 }, { wch: 16 }, { wch: 22 }, { wch: 18 }, { wch: 14 }, { wch: 14 }, { wch: 18 }, { wch: 32 }];
                 departuresSheet["!cols"] = arrivalsSheet["!cols"];
-                activitiesSheet["!cols"] = [{ wch: 22 }, { wch: 14 }, { wch: 8 }, { wch: 24 }, { wch: 26 }, { wch: 14 }, { wch: 8 }, { wch: 24 }, { wch: 16 }, { wch: 18 }, { wch: 22 }, { wch: 28 }, { wch: 28 }, { wch: 32 }];
+                activitiesSheet["!cols"] = [{ wch: 22 }, { wch: 28 }, { wch: 14 }, { wch: 18 }, { wch: 16 }, { wch: 14 }, { wch: 8 }, { wch: 24 }, { wch: 26 }, { wch: 14 }, { wch: 8 }, { wch: 24 }, { wch: 16 }, { wch: 18 }, { wch: 28 }, { wch: 28 }, { wch: 32 }];
                 assignmentsSheet["!cols"] = [{ wch: 36 }, { wch: 18 }, { wch: 36 }, { wch: 32 }];
                 XLSX.utils.book_append_sheet(workbook, overviewSheet, "Overview");
                 XLSX.utils.book_append_sheet(workbook, arrivalsSheet, "Arrivals");
