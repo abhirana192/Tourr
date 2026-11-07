@@ -60,6 +60,15 @@ const PREDEFINED_AGENTS = [
   { code: "JG", name: "JiGuang Tour" },
 ];
 
+const PREDEFINED_ACCOMMODATIONS = [
+  "Explorer Hotel",
+  "Chateau Nova Yellowknife",
+  "Nova Inn Yellowknife",
+  "Quality Inn & Suites Yellowknife",
+  "Capital Suites Yellowknife",
+  "Super 8 by Wyndham Yellowknife",
+];
+
 export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModalProps) {
   const [formData, setFormData] = useState<Omit<Tour, "id">>({
     start_date: "",
@@ -94,6 +103,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
   });
 
   const [agentType, setAgentType] = useState<"predefined" | "other">("predefined");
+  const [accommodationType, setAccommodationType] = useState<"predefined" | "airbnb" | "other">("predefined");
+  const [customAccommodation, setCustomAccommodation] = useState("");
   const [arrivalDate, setArrivalDate] = useState<string>("");
   const [arrivalTime, setArrivalTime] = useState<string>("");
   const [arrivalFlight, setArrivalFlight] = useState<string>("");
@@ -206,6 +217,19 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
       const isPredefined = PREDEFINED_AGENTS.some(a => a.code === rest.agent);
       setAgentType(isPredefined ? "predefined" : "other");
 
+      const savedAccommodation = rest.accommodation || "";
+      const airbnbMatch = savedAccommodation.match(/^Airbnb(?:\s*[-:]\s*(.*))?$/i);
+      if (PREDEFINED_ACCOMMODATIONS.includes(savedAccommodation)) {
+        setAccommodationType("predefined");
+        setCustomAccommodation("");
+      } else if (airbnbMatch) {
+        setAccommodationType("airbnb");
+        setCustomAccommodation(airbnbMatch[1] || "");
+      } else {
+        setAccommodationType("other");
+        setCustomAccommodation(savedAccommodation);
+      }
+
       const arrivalParsed = parseArrivalDeparture(rest.arrival);
       setArrivalDate(arrivalParsed.date);
       setArrivalTime(arrivalParsed.time);
@@ -264,6 +288,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
       setLeaderLastName("");
       setMembers([]);
       setAgentType("predefined");
+      setAccommodationType("predefined");
+      setCustomAccommodation("");
       setArrivalDate("");
       setArrivalTime("");
       setArrivalFlight("");
@@ -643,13 +669,54 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Accommodation
               </label>
-              <Input
-                type="text"
-                name="accommodation"
-                value={formData.accommodation}
-                onChange={handleChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
+              <div className="space-y-2">
+                <select
+                  value={accommodationType === "airbnb" ? "AIRBNB" : accommodationType === "other" ? "OTHER" : formData.accommodation}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "AIRBNB") {
+                      setAccommodationType("airbnb");
+                      setCustomAccommodation("");
+                      setFormData((prev) => ({ ...prev, accommodation: "Airbnb" }));
+                    } else if (value === "OTHER") {
+                      setAccommodationType("other");
+                      setCustomAccommodation("");
+                      setFormData((prev) => ({ ...prev, accommodation: "" }));
+                    } else {
+                      setAccommodationType("predefined");
+                      setCustomAccommodation("");
+                      setFormData((prev) => ({ ...prev, accommodation: value }));
+                    }
+                  }}
+                  className="border border-gray-300 rounded px-3 py-2 w-full"
+                >
+                  <option value="">-- Select Accommodation --</option>
+                  {PREDEFINED_ACCOMMODATIONS.map((hotel) => (
+                    <option key={hotel} value={hotel}>{hotel}</option>
+                  ))}
+                  <option value="AIRBNB">Airbnb</option>
+                  <option value="OTHER">Other</option>
+                </select>
+
+                {(accommodationType === "airbnb" || accommodationType === "other") && (
+                  <Input
+                    type="text"
+                    name="accommodation"
+                    placeholder={accommodationType === "airbnb" ? "Enter Airbnb name or address" : "Enter accommodation name"}
+                    value={customAccommodation}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setCustomAccommodation(value);
+                      setFormData((prev) => ({
+                        ...prev,
+                        accommodation: accommodationType === "airbnb" ? `Airbnb - ${value}` : value,
+                      }));
+                    }}
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                    required
+                  />
+                )}
+              </div>
             </div>
 
             {/* GEARS */}
