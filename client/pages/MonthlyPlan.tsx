@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calendar, AlertCircle, Printer } from "lucide-react";
+import { Calendar, AlertCircle, Printer, FileSpreadsheet } from "lucide-react";
 import { useRealtimeSync } from "@/hooks/useRealtimeSync";
 import { toast } from "sonner";
 
@@ -408,6 +408,51 @@ export default function MonthlyPlan() {
     }
   };
 
+  const handleExportExcel = async () => {
+    if (activities.length === 0) {
+      toast.error("There is no monthly plan data to export.");
+      return;
+    }
+
+    const XLSX = await import("xlsx");
+    const planHeaders = [
+      "Date", "Total", "Cameron Fall Hiking", "Ice Fishing", "Dog Sledging", "Snowmobile", "Ice Lake Tour", "City Tour", "Aurora Viewing", "Aurora Village", "Arrival", "Departure",
+    ];
+    const planRows = activities.map((day) => [
+      day.date,
+      day.count,
+      day.hiking,
+      day.fishing,
+      day.dog_sledging,
+      day.snowmobile_atv,
+      day.aurora_village,
+      day.city_tour,
+      day.nlt,
+      day.aurora_village_activity,
+      day.arrival,
+      day.departure,
+    ]);
+    const planSheet = XLSX.utils.aoa_to_sheet([planHeaders, ...planRows]);
+    planSheet["!autofilter"] = { ref: planSheet["!ref"] || "A1" };
+    planSheet["!cols"] = planHeaders.map((header, index) => ({
+      wch: index === 0 ? 16 : Math.min(Math.max(header.length + 2, 10), 28),
+    }));
+
+    const agentHeaders = ["Agent", "Total Tours"];
+    const agentSheet = XLSX.utils.aoa_to_sheet([
+      agentHeaders,
+      ...agents.map((agent) => [agent.agent, agent.total]),
+    ]);
+    agentSheet["!autofilter"] = { ref: agentSheet["!ref"] || "A1" };
+    agentSheet["!cols"] = [{ wch: 32 }, { wch: 14 }];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, planSheet, "Monthly Plan");
+    XLSX.utils.book_append_sheet(workbook, agentSheet, "Agents Summary");
+    XLSX.writeFile(workbook, `monthly-plan-${activities[0].date}-to-${activities[activities.length - 1].date}.xlsx`);
+    toast.success("Monthly Plan Excel workbook downloaded.");
+  };
+
   const handlePrint = () => {
     const printWindow = window.open("", "", "height=900,width=900");
     const monthlyPlanDiv = document.querySelector("[data-print='monthly-plan']");
@@ -553,6 +598,14 @@ export default function MonthlyPlan() {
               >
                 <Printer className="w-4 h-4" />
                 Print
+              </button>
+              <button
+                onClick={handleExportExcel}
+                disabled={loading || !!error || activities.length === 0}
+                className="px-4 py-2 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50 transition-colors flex items-center gap-2"
+              >
+                <FileSpreadsheet className="w-4 h-4" />
+                Export Excel
               </button>
             </div>
           </div>
