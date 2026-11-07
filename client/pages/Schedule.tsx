@@ -155,6 +155,7 @@ export default function Schedule() {
   const [printDialogOpen, setPrintDialogOpen] = useState(false);
   const [printDateFrom, setPrintDateFrom] = useState("");
   const [printDateTo, setPrintDateTo] = useState("");
+  const [exportPreviewOpen, setExportPreviewOpen] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [pendingTourData, setPendingTourData] = useState<{
     tourData: Omit<Tour, "id">;
@@ -610,12 +611,32 @@ export default function Schedule() {
     );
   });
 
+  const exportPreviewTours = sortedTours.filter(
+    (tour) => tour.start_date >= searchDateFrom && tour.start_date <= searchDateTo,
+  );
+
   const handleExportExcel = () => {
+    if (!searchDateFrom || !searchDateTo) {
+      toast.error("Please select both From Date and To Date before exporting.");
+      return;
+    }
+    if (searchDateFrom > searchDateTo) {
+      toast.error("From Date must be before or equal to To Date.");
+      return;
+    }
+    if (exportPreviewTours.length === 0) {
+      toast.error("No tours found in the selected date range.");
+      return;
+    }
+    setExportPreviewOpen(true);
+  };
+
+  const handleConfirmExportExcel = () => {
     const headers = [
       "DATE", "INV", "LANG", "NAME", "PAX", "LEADER", "MEMBERS", "GRP", "DNR", "T/D", "AGT", "ARR", "DEP", "ACCOM", "Gears", "Snowshoe",
       "Aurora Viewing", "City Tour", "Cameron Fall Hiking", "Ice Fishing", "Dog Sledging", "Snowmobile", "Ice Lake Tour", "Aurora Village", "PAY", "RES#", "RMK",
     ];
-    const rows = sortedTours.map((tour) => {
+    const rows = exportPreviewTours.map((tour) => {
       const activityCell = (key: string) => {
         const details = getActivityDetails(tour, key);
         return details.notes ? `${details.text} | Note: ${details.notes}` : details.text;
@@ -661,9 +682,10 @@ export default function Schedule() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `tour-schedule-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `tour-schedule-${searchDateFrom}-to-${searchDateTo}.csv`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 0);
+    setExportPreviewOpen(false);
     toast.success("Excel-compatible schedule file downloaded.");
   };
 
@@ -1010,6 +1032,54 @@ export default function Schedule() {
               className="bg-green-600 hover:bg-green-700 text-white"
             >
               Print
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={exportPreviewOpen} onOpenChange={setExportPreviewOpen}>
+        <AlertDialogContent className="max-w-5xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-emerald-700">
+              <FileSpreadsheet size={20} />
+              Preview Excel Export
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {exportPreviewTours.length} tour{exportPreviewTours.length === 1 ? "" : "s"} from {searchDateFrom} to {searchDateTo}. Confirm to download the Excel-compatible file.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="max-h-[55vh] overflow-auto rounded border border-gray-200">
+            <table className="w-full border-collapse text-left text-xs">
+              <thead className="sticky top-0 bg-gray-100">
+                <tr>
+                  <th className="border-b px-3 py-2">Date</th>
+                  <th className="border-b px-3 py-2">Invoice</th>
+                  <th className="border-b px-3 py-2">Name</th>
+                  <th className="border-b px-3 py-2">Leader</th>
+                  <th className="border-b px-3 py-2">Members</th>
+                  <th className="border-b px-3 py-2">Pax</th>
+                  <th className="border-b px-3 py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {exportPreviewTours.map((tour) => (
+                  <tr key={tour.id} className="border-b last:border-b-0">
+                    <td className="px-3 py-2 whitespace-nowrap">{tour.start_date}</td>
+                    <td className="px-3 py-2">{tour.invoice}</td>
+                    <td className="px-3 py-2">{tour.name}</td>
+                    <td className="px-3 py-2">{tour.leader || "-"}</td>
+                    <td className="px-3 py-2">{tour.members ? JSON.parse(tour.members).join(", ") : "-"}</td>
+                    <td className="px-3 py-2">{tour.pax}</td>
+                    <td className="px-3 py-2">{tour.is_cancelled ? "CANCELLED" : "Active"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmExportExcel} className="bg-emerald-700 hover:bg-emerald-800 text-white">
+              Export Excel
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
