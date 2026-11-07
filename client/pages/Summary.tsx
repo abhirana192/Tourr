@@ -312,6 +312,17 @@ export default function Summary() {
     return { date: str, time: "", flight: "" };
   };
 
+  const getTimeInMinutes = (value: string) => {
+    const match = value.match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?/i);
+    if (!match) return Number.POSITIVE_INFINITY;
+
+    let hours = Number(match[1]);
+    const minutes = Number(match[2] || 0);
+    const meridiem = match[3]?.toUpperCase();
+    if (meridiem) hours = (hours % 12) + (meridiem === "PM" ? 12 : 0);
+    return hours * 60 + minutes;
+  };
+
   useEffect(() => {
     const fetchStaffAndAssignments = async () => {
       try {
@@ -514,12 +525,12 @@ export default function Summary() {
   const arrivals = uniqueGuestsByTour.filter((guest) => {
     if (!guest.arrival) return false;
     return guest.arrival >= filterFromDate && guest.arrival <= filterToDate;
-  });
+  }).sort((a, b) => getTimeInMinutes(a.arrivalTime) - getTimeInMinutes(b.arrivalTime));
 
   const departures = uniqueGuestsByTour.filter((guest) => {
     if (!guest.departure) return false;
     return guest.departure >= filterFromDate && guest.departure <= filterToDate;
-  });
+  }).sort((a, b) => getTimeInMinutes(a.departureTime) - getTimeInMinutes(b.departureTime));
 
   console.log("Date filter:", { filterFromDate, filterToDate });
   console.log("Arrivals:", arrivals.length);
