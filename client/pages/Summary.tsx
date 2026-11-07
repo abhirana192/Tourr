@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AlertCircle, Loader2, Edit2, Save, X, Printer } from "lucide-react";
+import { AlertCircle, Loader2, Edit2, Save, X, Printer, FileSpreadsheet } from "lucide-react";
 
 interface Tour {
   id: string;
@@ -189,7 +189,7 @@ export default function Summary() {
       const savedAssignment: ActivityAssignment = await response.json();
       const key = `${assignmentType}-${assignmentKey}-${activityDate}`;
       const newTableAssignments = new Map(tableAssignments);
-      newTableAssignments.set(key, { van, employees });
+      newTableAssignments.set(key, { van, employees, notes: tableAssignments.get(key)?.notes || "" });
       setTableAssignments(newTableAssignments);
     } catch (err) {
       console.error("Error saving assignment:", err);
@@ -328,13 +328,14 @@ export default function Summary() {
         const assignmentsResponse = await fetch("/api/assignments");
         if (assignmentsResponse.ok) {
           const assignmentsData: ActivityAssignment[] = await assignmentsResponse.json();
-          const assignmentMap = new Map<string, { van: string; employees: string[] }>();
+          const assignmentMap = new Map<string, { van: string; employees: string[]; notes: string }>();
 
           for (const assignment of assignmentsData) {
             const key = `${assignment.assignment_type}-${assignment.assignment_key}-${assignment.activity_date}`;
             assignmentMap.set(key, {
               van: assignment.van,
               employees: assignment.employees ? assignment.employees.split(",") : [],
+              notes: "",
             });
           }
 
@@ -576,6 +577,72 @@ export default function Summary() {
               className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium"
             >
               Reset to Today
+            </button>
+            <button
+              onClick={async () => {
+                const XLSX = await import("xlsx");
+                const workbook = XLSX.utils.book_new();
+                const overviewSheet = XLSX.utils.aoa_to_sheet([
+                  ["Summary Report"],
+                  ["From Date", filterFromDate],
+                  ["To Date", filterToDate],
+                  ["Arrivals", arrivals.length],
+                  ["Arrival Pax", arrivals.reduce((sum, guest) => sum + (guest.pax || 0), 0)],
+                  ["Departures", departures.length],
+                  ["Departure Pax", departures.reduce((sum, guest) => sum + (guest.pax || 0), 0)],
+                  ["Activity Participants", filteredActivities.reduce((sum, activity) => sum + activity.guests.length, 0)],
+                ]);
+                const arrivalsSheet = XLSX.utils.aoa_to_sheet([
+                  ["Name", "Language", "Pax", "Tour Duration", "Hotel", "Agent", "Arrival Date", "Arrival Time", "Arrival Flight", "Notes"],
+                  ...arrivals.map((guest) => [guest.guestName, guest.language, guest.pax, guest.tourDuration, guest.accommodation, guest.agent, guest.arrival, guest.arrivalTime, guest.arrivalFlight, guest.arrival_notes || ""]),
+                ]);
+                const departuresSheet = XLSX.utils.aoa_to_sheet([
+                  ["Name", "Language", "Pax", "Tour Duration", "Hotel", "Agent", "Departure Date", "Departure Time", "Departure Flight", "Notes"],
+                  ...departures.map((guest) => [guest.guestName, guest.language, guest.pax, guest.tourDuration, guest.accommodation, guest.agent, guest.departure, guest.departureTime, guest.departureFlight, guest.departure_notes || ""]),
+                ]);
+                const activitiesSheet = XLSX.utils.aoa_to_sheet([
+                  ["Activity", "Activity Date", "Day", "Time", "Guest", "Language", "Pax", "Tour", "Invoice", "Agent", "Hotel", "Arrival", "Departure", "Activity Notes"],
+                  ...filteredActivities.flatMap((activity) => activity.guests.map((guest) => [
+                    activity.activityName,
+                    guest.activityDate || guest.arrival,
+                    guest.dayNumber || "",
+                    guest.activityTiming || "",
+                    guest.guestName,
+                    guest.language,
+                    guest.pax,
+                    guest.tourName,
+                    guest.invoiceNumber,
+                    guest.agent,
+                    guest.accommodation,
+                    [guest.arrival, guest.arrivalTime, guest.arrivalFlight].filter(Boolean).join(" "),
+                    [guest.departure, guest.departureTime, guest.departureFlight].filter(Boolean).join(" "),
+                    guest.activityNotes || "",
+                  ])),
+                ]);
+                const assignmentsSheet = XLSX.utils.aoa_to_sheet([
+                  ["Assignment", "Van", "Staff", "Notes"],
+                  ...Array.from(tableAssignments)
+                    .filter(([key]) => {
+                      const assignmentDate = key.match(/\d{4}-\d{2}-\d{2}$/)?.[0];
+                      return assignmentDate && assignmentDate >= filterFromDate && assignmentDate <= filterToDate;
+                    })
+                    .map(([key, assignment]) => [key, assignment.van, assignment.employees.join(", "), assignment.notes]),
+                ]);
+                overviewSheet["!cols"] = [{ wch: 28 }, { wch: 24 }];
+                arrivalsSheet["!cols"] = [{ wch: 26 }, { wch: 14 }, { wch: 8 }, { wch: 16 }, { wch: 22 }, { wch: 18 }, { wch: 14 }, { wch: 14 }, { wch: 18 }, { wch: 32 }];
+                departuresSheet["!cols"] = arrivalsSheet["!cols"];
+                activitiesSheet["!cols"] = [{ wch: 22 }, { wch: 14 }, { wch: 8 }, { wch: 24 }, { wch: 26 }, { wch: 14 }, { wch: 8 }, { wch: 24 }, { wch: 16 }, { wch: 18 }, { wch: 22 }, { wch: 28 }, { wch: 28 }, { wch: 32 }];
+                assignmentsSheet["!cols"] = [{ wch: 36 }, { wch: 18 }, { wch: 36 }, { wch: 32 }];
+                XLSX.utils.book_append_sheet(workbook, overviewSheet, "Overview");
+                XLSX.utils.book_append_sheet(workbook, arrivalsSheet, "Arrivals");
+                XLSX.utils.book_append_sheet(workbook, departuresSheet, "Departures");
+                XLSX.utils.book_append_sheet(workbook, activitiesSheet, "Activities");
+                XLSX.utils.book_append_sheet(workbook, assignmentsSheet, "Assignments");
+                XLSX.writeFile(workbook, `summary-${filterFromDate}-to-${filterToDate}.xlsx`);
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium flex items-center gap-2"
+            >
+              <FileSpreadsheet size={16} /> Export Excel
             </button>
             <button
               onClick={() => {
