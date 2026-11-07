@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, Edit2, RotateCcw, Printer } from "lucide-react";
+import { AlertCircle, Edit2, RotateCcw, Printer, FileSpreadsheet } from "lucide-react";
 import { toast } from "sonner";
 import { useRealtimeSync } from "@/hooks/useRealtimeSync";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -1384,6 +1384,63 @@ export default function Arrival() {
 
   const dayItinerary = selectedTour ? generateDayItinerary(selectedTour) : [];
 
+  const handleExportExcel = async () => {
+    if (!selectedTour) return;
+
+    const XLSX = await import("xlsx");
+    const leaderNameParts = (selectedTour.leader || selectedTour.name || "").trim().split(/\s+/);
+    const guestInfo = [
+      ["Guest Arrival Information"],
+      ["Guest Name", selectedTour.name],
+      ["Leader First Name", selectedTour.leader_first_name || leaderNameParts[0] || ""],
+      ["Leader Last Name", selectedTour.leader_last_name || leaderNameParts.slice(1).join(" ")],
+      ["Invoice", selectedTour.invoice],
+      ["Pax", selectedTour.pax],
+      ["Language", selectedTour.language],
+      ["Group ID", selectedTour.group_id],
+      ["Arrival", selectedTour.arrival],
+      ["Departure", selectedTour.departure],
+      ["Accommodation", selectedTour.accommodation],
+      ["Members", selectedTour.members ? JSON.parse(selectedTour.members).join(", ") : ""],
+    ];
+    const infoSheet = XLSX.utils.aoa_to_sheet(guestInfo);
+    infoSheet["!cols"] = [{ wch: 24 }, { wch: 52 }];
+
+    const itineraryRows = dayItinerary.map((day) => {
+      const formatActivities = (activities: Activity[]) => activities
+        .map((activity) => [
+          activity.name,
+          activity.timings.filter(Boolean).join(", "),
+          activity.notes ? `Note: ${activity.notes}` : "",
+        ].filter(Boolean).join(" — "))
+        .join("\n");
+
+      return [
+        day.day,
+        day.arrivalInfo,
+        formatActivities(day.plannedActivities),
+        formatActivities(day.arrivalActivities),
+        formatActivities(day.hotelActivities),
+        day.hotelInfo,
+        day.paymentInfo,
+        day.note,
+      ];
+    });
+    const itineraryHeaders = ["Day", "Arrival Information", "Planned Activities", "Arrival Activities", "Hotel Activities", "Hotel Stay", "People / Payment", "Day Notes"];
+    const itinerarySheet = XLSX.utils.aoa_to_sheet([itineraryHeaders, ...itineraryRows]);
+    itinerarySheet["!autofilter"] = { ref: itinerarySheet["!ref"] || "A1" };
+    itinerarySheet["!cols"] = [
+      { wch: 18 }, { wch: 42 }, { wch: 36 }, { wch: 36 }, { wch: 36 }, { wch: 40 }, { wch: 24 }, { wch: 36 },
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, infoSheet, "Guest Info");
+    XLSX.utils.book_append_sheet(workbook, itinerarySheet, "Itinerary");
+    const invoice = selectedTour.invoice.replace(/[^a-zA-Z0-9_-]/g, "_");
+    XLSX.writeFile(workbook, `guest-arrival-${invoice}.xlsx`);
+    toast.success("Guest Arrival Excel workbook downloaded.");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col p-2 pt-6">
       <div className="flex-1 flex flex-col">
@@ -1578,6 +1635,13 @@ export default function Arrival() {
                     className="bg-green-600 hover:bg-green-700 text-white text-xs py-1.5 px-3 rounded-lg flex items-center gap-1.5"
                   >
                     <Printer size={14} /> Print
+                  </Button>
+                  <Button
+                    onClick={handleExportExcel}
+                    disabled={loading || isSaving}
+                    className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs py-1.5 px-3 rounded-lg flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    <FileSpreadsheet size={14} /> Export Excel
                   </Button>
                 </div>
               </div>
