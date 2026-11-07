@@ -123,6 +123,17 @@ interface ActivityData {
   guests: GuestActivityRow[];
 }
 
+const groupGuestsByAccommodation = (guests: GuestActivityRow[]) => {
+  const groups = new Map<string, GuestActivityRow[]>();
+  for (const guest of guests) {
+    const accommodation = guest.accommodation?.trim() || "Not specified";
+    const group = groups.get(accommodation) || [];
+    group.push(guest);
+    groups.set(accommodation, group);
+  }
+  return Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+};
+
 interface ActivityAssignment {
   id: string;
   assignment_type: "arrival" | "departure" | "activity";
@@ -1447,8 +1458,14 @@ export default function Summary() {
                         )}
                       </tr>
                     </thead>
-                    <tbody>
-                      {activityData.guests.map((guest, idx) => {
+                    {groupGuestsByAccommodation(activityData.guests).map(([accommodation, guests]) => (
+                      <tbody key={accommodation}>
+                        <tr className="bg-blue-50 border-b border-blue-200">
+                          <td colSpan={activityData.activityKey === "aurora_village_activity" ? 11 : 10} className="px-4 py-2 text-sm font-semibold text-blue-900">
+                            {accommodation} <span className="font-normal text-blue-700">({guests.reduce((sum, guest) => sum + (guest.pax || 0), 0)} pax)</span>
+                          </td>
+                        </tr>
+                        {guests.map((guest, idx) => {
                         const arrivalInfo = [guest.arrival, guest.arrivalTime].filter(Boolean).join(" ") + (guest.arrivalFlight ? ` | ${guest.arrivalFlight}` : "");
                         const departureInfo = [guest.departure, guest.departureTime].filter(Boolean).join(" ") + (guest.departureFlight ? ` | ${guest.departureFlight}` : "");
                         const noteKey = `${guest.tourId}-${activityData.activityName}`;
@@ -1574,8 +1591,9 @@ export default function Summary() {
                             </td>
                           </tr>
                         );
-                      })}
-                    </tbody>
+                        })}
+                      </tbody>
+                    ))}
                   </table>
                 </div>
               )}
