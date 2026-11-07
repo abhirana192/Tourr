@@ -1059,6 +1059,34 @@ export default function Summary() {
           </div>
         </div>
 
+        {/* Arrivals by Accommodation */}
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-8">
+          <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200 px-6 py-4">
+            <h2 className="text-xl font-bold text-blue-900">Arrivals by Accommodation</h2>
+            <p className="text-sm text-blue-700 mt-1">Guest names grouped by hotel for the selected date range</p>
+          </div>
+          {arrivals.length === 0 ? (
+            <p className="p-8 text-center text-gray-500">No arrivals to group for this date range</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
+              {groupGuestsByAccommodation(arrivals).map(([accommodation, guests]) => (
+                <section key={accommodation} className="border border-gray-200 rounded-lg overflow-hidden">
+                  <h3 className="bg-gray-50 px-4 py-3 font-semibold text-gray-900">
+                    {accommodation} — {guests.length} guest{guests.length !== 1 ? "s" : ""}
+                  </h3>
+                  <ol className="list-decimal list-inside divide-y divide-gray-100">
+                    {guests.map((guest) => (
+                      <li key={guest.tourId} className="px-4 py-3 text-sm text-gray-800">
+                        {guest.guestName} <span className="text-gray-500">({guest.pax} pax)</span>
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Departures Table */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-8">
           <div className="bg-gradient-to-r from-red-50 to-red-100 border-b border-red-200 px-6 py-4">
@@ -1458,14 +1486,8 @@ export default function Summary() {
                         )}
                       </tr>
                     </thead>
-                    {groupGuestsByAccommodation(activityData.guests).map(([accommodation, guests]) => (
-                      <tbody key={accommodation}>
-                        <tr className="bg-blue-50 border-b border-blue-200">
-                          <td colSpan={activityData.activityKey === "aurora_village_activity" ? 11 : 10} className="px-4 py-2 text-sm font-semibold text-blue-900">
-                            {accommodation} <span className="font-normal text-blue-700">({guests.reduce((sum, guest) => sum + (guest.pax || 0), 0)} pax)</span>
-                          </td>
-                        </tr>
-                        {guests.map((guest, idx) => {
+                    <tbody>
+                      {activityData.guests.map((guest, idx) => {
                         const arrivalInfo = [guest.arrival, guest.arrivalTime].filter(Boolean).join(" ") + (guest.arrivalFlight ? ` | ${guest.arrivalFlight}` : "");
                         const departureInfo = [guest.departure, guest.departureTime].filter(Boolean).join(" ") + (guest.departureFlight ? ` | ${guest.departureFlight}` : "");
                         const noteKey = `${guest.tourId}-${activityData.activityName}`;
@@ -1591,9 +1613,8 @@ export default function Summary() {
                             </td>
                           </tr>
                         );
-                        })}
-                      </tbody>
-                    ))}
+                      })}
+                    </tbody>
                   </table>
                 </div>
               )}
