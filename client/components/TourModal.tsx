@@ -32,6 +32,8 @@ interface Tour {
   remarks: string;
   activity_schedule?: string;
   leader: string;
+  leader_first_name?: string;
+  leader_last_name?: string;
   members?: string;
 }
 
@@ -86,6 +88,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
     reservation_number: "",
     remarks: "",
     leader: "",
+    leader_first_name: "",
+    leader_last_name: "",
     members: "",
   });
 
@@ -197,8 +201,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
       const { id, ...rest } = tour;
       setFormData(rest);
       const leaderNameParts = (rest.leader || "").trim().split(/\s+/);
-      setLeaderFirstName(leaderNameParts.shift() || "");
-      setLeaderLastName(leaderNameParts.join(" "));
+      setLeaderFirstName(rest.leader_first_name || leaderNameParts[0] || "");
+      setLeaderLastName(rest.leader_last_name || leaderNameParts.slice(1).join(" "));
       const isPredefined = PREDEFINED_AGENTS.some(a => a.code === rest.agent);
       setAgentType(isPredefined ? "predefined" : "other");
 
@@ -252,6 +256,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
         reservation_number: "",
         remarks: "",
         leader: "",
+        leader_first_name: "",
+        leader_last_name: "",
         members: "",
       });
       setLeaderFirstName("");
@@ -342,6 +348,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
       ...formData,
       name: fullLeaderName,
       leader: fullLeaderName,
+      leader_first_name: leaderFirstName.trim(),
+      leader_last_name: leaderLastName.trim(),
       arrival: combinedArrival,
       departure: combinedDeparture,
       members: filteredMembers.length > 0 ? JSON.stringify(filteredMembers) : "",

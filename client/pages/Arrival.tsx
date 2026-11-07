@@ -36,6 +36,8 @@ interface Tour {
   reservation_number: string;
   remarks: string;
   leader?: string;
+  leader_first_name?: string;
+  leader_last_name?: string;
   members?: string;
 }
 
@@ -784,11 +786,15 @@ export default function Arrival() {
         headers["Authorization"] = `Bearer ${sessionToken}`;
       }
 
+      const [leaderFirstName = "", ...leaderLastNameParts] = editingLeader.trim().split(/\s+/);
       const response = await fetch(`/api/tours/${selectedTour.id}`, {
         method: "PATCH",
         headers,
         body: JSON.stringify({
+          name: editingLeader,
           leader: editingLeader,
+          leader_first_name: leaderFirstName,
+          leader_last_name: leaderLastNameParts.join(" "),
           members: editingMembers,
         }),
       });

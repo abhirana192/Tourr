@@ -46,9 +46,19 @@ interface Tour {
   remarks: string;
   activity_schedule?: string;
   leader: string;
+  leader_first_name?: string;
+  leader_last_name?: string;
   members?: string;
   is_cancelled?: boolean;
 }
+
+const getLeaderNameParts = (tour: Tour) => {
+  const nameParts = (tour.leader || tour.name || "").trim().split(/\s+/);
+  return {
+    firstName: tour.leader_first_name?.trim() || nameParts[0] || "",
+    lastName: tour.leader_last_name?.trim() || nameParts.slice(1).join(" "),
+  };
+};
 
 const activityNameToKey: { [key: string]: string } = {
   "City Tour": "city_tour",
@@ -489,9 +499,9 @@ export default function Schedule() {
           <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.start_date}</td>
           <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.invoice}</td>
           <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.language}</td>
-          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${tour.name}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${getLeaderNameParts(tour).firstName}</td>
+          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${getLeaderNameParts(tour).lastName}</td>
           <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; text-align: center;">${tour.pax}</td>
-          <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc; font-weight: bold;">${tour.leader || "-"}</td>
           <td style="padding: 4px; font-size: 9px; border: 1px solid #ccc;">${
             tour.members ? JSON.parse(tour.members).join(", ") : "-"
           }</td>
@@ -556,9 +566,9 @@ export default function Schedule() {
                 <th>DATE</th>
                 <th>INV</th>
                 <th>LANG</th>
-                <th>NAME</th>
+                <th>FIRST NAME</th>
+                <th>LAST NAME</th>
                 <th>PAX</th>
-                <th>LEADER</th>
                 <th>MEMBERS</th>
                 <th>GRP</th>
                 <th>DNR</th>
@@ -631,12 +641,14 @@ export default function Schedule() {
     setExportPreviewOpen(true);
   };
 
-  const handleConfirmExportExcel = () => {
+  const handleConfirmExportExcel = async () => {
+    const XLSX = await import("xlsx");
     const headers = [
-      "DATE", "INV", "LANG", "NAME", "PAX", "LEADER", "MEMBERS", "GRP", "DNR", "T/D", "AGT", "ARR", "DEP", "ACCOM", "Gears", "Snowshoe",
-      "Aurora Viewing", "City Tour", "Cameron Fall Hiking", "Ice Fishing", "Dog Sledging", "Snowmobile", "Ice Lake Tour", "Aurora Village", "PAY", "RES#", "RMK",
+      "DATE", "INV", "LANG", "FIRST NAME", "LAST NAME", "PAX", "MEMBERS", "GRP", "DNR", "T/D", "AGT", "ARR", "DEP", "ACCOM", "Gears", "Snowshoe",
+      "Aurora Viewing", "City Tour", "Cameron Fall Hiking", "Ice Fishing", "Dog Sledging", "Snowmobile", "Ice Lake Tour", "Aurora Village", "PAY", "RES#", "RMK", "STATUS",
     ];
     const rows = exportPreviewTours.map((tour) => {
+      const { firstName, lastName } = getLeaderNameParts(tour);
       const activityCell = (key: string) => {
         const details = getActivityDetails(tour, key);
         return details.notes ? `${details.text} | Note: ${details.notes}` : details.text;
@@ -646,9 +658,9 @@ export default function Schedule() {
         tour.start_date,
         tour.invoice,
         tour.language,
-        `${tour.name}${tour.is_cancelled ? " (CANCELLED)" : ""}`,
+        firstName,
+        lastName,
         tour.pax,
-        tour.leader || "",
         tour.members ? JSON.parse(tour.members).join(", ") : "",
         tour.group_id,
         tour.dnr,
@@ -670,23 +682,17 @@ export default function Schedule() {
         tour.payment,
         tour.reservation_number,
         tour.remarks,
+        tour.is_cancelled ? "CANCELLED" : "Active",
       ];
     });
-    const csvCell = (value: unknown) => {
-      let text = String(value ?? "");
-      if (/^[\t\r\n ]*[=+\-@]/.test(text)) text = `'${text}`;
-      return `"${text.replace(/"/g, '""')}"`;
-    };
-    const csv = [headers, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n");
-    const blob = new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `tour-schedule-${searchDateFrom}-to-${searchDateTo}.csv`;
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 0);
+    const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    worksheet["!autofilter"] = { ref: worksheet["!ref"] || "A1" };
+    worksheet["!cols"] = headers.map((header) => ({ wch: Math.min(Math.max(header.length + 2, 12), 30) }));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Tour Schedule");
+    XLSX.writeFile(workbook, `tour-schedule-${searchDateFrom}-to-${searchDateTo}.xlsx`);
     setExportPreviewOpen(false);
-    toast.success("Excel-compatible schedule file downloaded.");
+    toast.success("Excel workbook downloaded.");
   };
 
   return (
@@ -783,9 +789,9 @@ export default function Schedule() {
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-16 whitespace-nowrap sticky left-0 top-0 z-40">DATE</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-14 whitespace-nowrap">INV</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-12 whitespace-nowrap">LANG</th>
-                    <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-20 whitespace-nowrap">NAME</th>
+                    <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-20 whitespace-nowrap">FIRST NAME</th>
+                    <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-20 whitespace-nowrap">LAST NAME</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-8 whitespace-nowrap">PAX</th>
-                    <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-orange-100 border-r border-gray-400 min-w-20 whitespace-nowrap">LEADER</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-orange-100 border-r border-gray-400 min-w-32 whitespace-nowrap">MEMBERS</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-12 whitespace-nowrap">GRP</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-yellow-100 border-r border-gray-400 min-w-10 whitespace-nowrap">DNR</th>
@@ -807,6 +813,7 @@ export default function Schedule() {
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-gray-200 border-r border-gray-400 min-w-12 whitespace-nowrap">PAY</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-gray-200 border-r border-gray-400 min-w-14 whitespace-nowrap">RES#</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-gray-200 border-r border-gray-400 min-w-14 whitespace-nowrap">RMK</th>
+                    <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-gray-200 border-r border-gray-400 min-w-20 whitespace-nowrap">STATUS</th>
                     <th className="px-1 py-1 text-left text-[10px] font-bold text-gray-700 bg-gray-200 min-w-12 whitespace-nowrap">ACT</th>
                   </tr>
                 </thead>
@@ -819,15 +826,10 @@ export default function Schedule() {
                       <td className={`px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-16 whitespace-nowrap sticky left-0 ${tour.is_cancelled ? "bg-red-100" : "bg-white"}`}>{tour.start_date}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.invoice}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.language}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 font-semibold min-w-20 whitespace-nowrap">
-                        <div className="flex items-center gap-1">
-                          {tour.name}
-                          {tour.is_cancelled && <span className="rounded bg-red-200 px-1 text-[8px] font-bold text-red-800">CANCELLED</span>}
-                        </div>
-                      </td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-8 whitespace-nowrap">{tour.pax}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-20 whitespace-nowrap font-semibold">{tour.leader || "-"}</td>
-                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-32 whitespace-normal">
+                      <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 font-semibold min-w-20 whitespace-nowrap">{getLeaderNameParts(tour).firstName || "-"}</td>
+                    <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 font-semibold min-w-20 whitespace-nowrap">{getLeaderNameParts(tour).lastName || "-"}</td>
+                    <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 text-center min-w-8 whitespace-nowrap">{tour.pax}</td>
+                    <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-32 whitespace-normal">
                         {tour.members ? (
                           <div className="text-[9px]">
                             {JSON.parse(tour.members || "[]").map((member: string, idx: number) => (
@@ -922,6 +924,7 @@ export default function Schedule() {
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-12 whitespace-nowrap">{tour.payment}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.reservation_number}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 border-r border-gray-300 min-w-14 whitespace-nowrap">{tour.remarks}</td>
+                      <td className="px-1 py-1 text-[10px] border-r border-gray-300 min-w-20 whitespace-nowrap">{tour.is_cancelled ? <span className="rounded bg-red-200 px-1 font-bold text-red-800">CANCELLED</span> : "Active"}</td>
                       <td className="px-1 py-1 text-[10px] text-gray-900 flex gap-1 min-w-12">
                         <button onClick={() => handleEditClick(tour)} className="text-blue-600 hover:text-blue-800 p-0.5">
                           <Edit2 size={12} />
@@ -1045,7 +1048,7 @@ export default function Schedule() {
               Preview Excel Export
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {exportPreviewTours.length} tour{exportPreviewTours.length === 1 ? "" : "s"} from {searchDateFrom} to {searchDateTo}. Confirm to download the Excel-compatible file.
+              {exportPreviewTours.length} tour{exportPreviewTours.length === 1 ? "" : "s"} from {searchDateFrom} to {searchDateTo}. Confirm to download the Excel workbook.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="max-h-[55vh] overflow-auto rounded border border-gray-200">
@@ -1054,8 +1057,8 @@ export default function Schedule() {
                 <tr>
                   <th className="border-b px-3 py-2">Date</th>
                   <th className="border-b px-3 py-2">Invoice</th>
-                  <th className="border-b px-3 py-2">Name</th>
-                  <th className="border-b px-3 py-2">Leader</th>
+                  <th className="border-b px-3 py-2">First Name</th>
+                  <th className="border-b px-3 py-2">Last Name</th>
                   <th className="border-b px-3 py-2">Members</th>
                   <th className="border-b px-3 py-2">Pax</th>
                   <th className="border-b px-3 py-2">Status</th>
@@ -1066,8 +1069,8 @@ export default function Schedule() {
                   <tr key={tour.id} className="border-b last:border-b-0">
                     <td className="px-3 py-2 whitespace-nowrap">{tour.start_date}</td>
                     <td className="px-3 py-2">{tour.invoice}</td>
-                    <td className="px-3 py-2">{tour.name}</td>
-                    <td className="px-3 py-2">{tour.leader || "-"}</td>
+                    <td className="px-3 py-2">{getLeaderNameParts(tour).firstName || "-"}</td>
+                    <td className="px-3 py-2">{getLeaderNameParts(tour).lastName || "-"}</td>
                     <td className="px-3 py-2">{tour.members ? JSON.parse(tour.members).join(", ") : "-"}</td>
                     <td className="px-3 py-2">{tour.pax}</td>
                     <td className="px-3 py-2">{tour.is_cancelled ? "CANCELLED" : "Active"}</td>
