@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, Edit2, Search, AlertTriangle, RotateCcw, Printer } from "lucide-react";
+import { Plus, Trash2, Edit2, Search, AlertTriangle, RotateCcw, Printer, FileSpreadsheet } from "lucide-react";
 import TourModal from "@/components/TourModal";
 import { EmailRecipientsDialog } from "@/components/EmailRecipientsDialog";
 import { toast } from "sonner";
@@ -610,6 +610,63 @@ export default function Schedule() {
     );
   });
 
+  const handleExportExcel = () => {
+    const headers = [
+      "DATE", "INV", "LANG", "NAME", "PAX", "LEADER", "MEMBERS", "GRP", "DNR", "T/D", "AGT", "ARR", "DEP", "ACCOM", "Gears", "Snowshoe",
+      "Aurora Viewing", "City Tour", "Cameron Fall Hiking", "Ice Fishing", "Dog Sledging", "Snowmobile", "Ice Lake Tour", "Aurora Village", "PAY", "RES#", "RMK",
+    ];
+    const rows = sortedTours.map((tour) => {
+      const activityCell = (key: string) => {
+        const details = getActivityDetails(tour, key);
+        return details.notes ? `${details.text} | Note: ${details.notes}` : details.text;
+      };
+
+      return [
+        tour.start_date,
+        tour.invoice,
+        tour.language,
+        `${tour.name}${tour.is_cancelled ? " (CANCELLED)" : ""}`,
+        tour.pax,
+        tour.leader || "",
+        tour.members ? JSON.parse(tour.members).join(", ") : "",
+        tour.group_id,
+        tour.dnr,
+        tour.td,
+        tour.agent,
+        tour.arrival,
+        tour.departure,
+        tour.accommodation,
+        tour.gears,
+        tour.snowshoe,
+        activityCell("nlt"),
+        activityCell("city_tour"),
+        activityCell("hiking"),
+        activityCell("fishing"),
+        activityCell("dog_sledging"),
+        activityCell("snowmobile_atv"),
+        activityCell("aurora_village"),
+        activityCell("aurora_village_activity"),
+        tour.payment,
+        tour.reservation_number,
+        tour.remarks,
+      ];
+    });
+    const csvCell = (value: unknown) => {
+      let text = String(value ?? "");
+      if (/^[\t\r\n ]*[=+\-@]/.test(text)) text = `'${text}`;
+      return `"${text.replace(/"/g, '""')}"`;
+    };
+    const csv = [headers, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n");
+    const blob = new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `tour-schedule-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+    toast.success("Excel-compatible schedule file downloaded.");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="flex-1 flex flex-col p-2 pt-6">
@@ -629,7 +686,7 @@ export default function Schedule() {
 
         {/* Search Filters */}
         <div className="mb-4 bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1.5">From Date</label>
               <Input
@@ -666,7 +723,7 @@ export default function Schedule() {
                 className="py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            <div className="flex items-end gap-2">
+            <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-2">
               <Button
                 onClick={handleRefresh}
                 className="flex-1 bg-gray-500 hover:bg-gray-600 text-white text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 font-medium"
@@ -678,6 +735,13 @@ export default function Schedule() {
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 font-medium"
               >
                 <Printer size={14} /> Print
+              </Button>
+              <Button
+                onClick={handleExportExcel}
+                disabled={sortedTours.length === 0}
+                className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 font-medium"
+              >
+                <FileSpreadsheet size={14} /> Export Excel
               </Button>
             </div>
           </div>
