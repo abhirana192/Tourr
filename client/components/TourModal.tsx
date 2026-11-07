@@ -97,6 +97,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
   const [departureTime, setDepartureTime] = useState<string>("");
   const [departureFlight, setDepartureFlight] = useState<string>("");
   const [activityNotes, setActivityNotes] = useState<{ [key: string]: string }>({});
+  const [leaderFirstName, setLeaderFirstName] = useState("");
+  const [leaderLastName, setLeaderLastName] = useState("");
   const [members, setMembers] = useState<string[]>([]);
 
   const activityNameToKey: { [key: string]: string } = {
@@ -194,6 +196,9 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
     if (tour) {
       const { id, ...rest } = tour;
       setFormData(rest);
+      const leaderNameParts = (rest.leader || "").trim().split(/\s+/);
+      setLeaderFirstName(leaderNameParts.shift() || "");
+      setLeaderLastName(leaderNameParts.join(" "));
       const isPredefined = PREDEFINED_AGENTS.some(a => a.code === rest.agent);
       setAgentType(isPredefined ? "predefined" : "other");
 
@@ -249,6 +254,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
         leader: "",
         members: "",
       });
+      setLeaderFirstName("");
+      setLeaderLastName("");
       setMembers([]);
       setAgentType("predefined");
       setArrivalDate("");
@@ -273,8 +280,12 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.leader.trim()) {
-      alert("Leader name is required");
+    const fullLeaderName = [leaderFirstName.trim(), leaderLastName.trim()]
+      .filter(Boolean)
+      .join(" ");
+
+    if (!leaderFirstName.trim() || !leaderLastName.trim()) {
+      alert("Leader first and last name are required");
       return;
     }
 
@@ -329,6 +340,8 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
 
     const updatedTourData = {
       ...formData,
+      name: fullLeaderName,
+      leader: fullLeaderName,
       arrival: combinedArrival,
       departure: combinedDeparture,
       members: filteredMembers.length > 0 ? JSON.stringify(filteredMembers) : "",
@@ -403,16 +416,29 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
               />
             </div>
 
-            {/* NAME */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Name (Leader + Members)
+                Leader First Name <span className="text-red-500">*</span>
               </label>
               <Input
                 type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
+                value={leaderFirstName}
+                onChange={(e) => setLeaderFirstName(e.target.value)}
+                placeholder="Enter leader first name"
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Leader Last Name <span className="text-red-500">*</span>
+              </label>
+              <Input
+                type="text"
+                value={leaderLastName}
+                onChange={(e) => setLeaderLastName(e.target.value)}
+                placeholder="Enter leader last name"
                 className="border border-gray-300 rounded px-3 py-2 w-full"
                 required
               />
@@ -430,22 +456,6 @@ export default function TourModal({ isOpen, tour, onClose, onSubmit }: TourModal
                 onChange={handleChange}
                 className="border border-gray-300 rounded px-3 py-2 w-full"
                 min="0"
-              />
-            </div>
-
-            {/* LEADER NAME */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Leader Name <span className="text-red-500">*</span>
-              </label>
-              <Input
-                type="text"
-                name="leader"
-                value={formData.leader}
-                onChange={handleChange}
-                placeholder="Enter leader name"
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-                required
               />
             </div>
 
